@@ -34,6 +34,7 @@ group :development, :test do
 end
 
 gem 'pg'
+gem 'jsonapi-serializer'
 
 group :development do
   gem 'pry'

@@ -5,6 +5,49 @@ import {LineLayer} from '@deck.gl/layers';
 import {StaticMap} from 'react-map-gl';
 import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import {TerrainLayer} from '@deck.gl/geo-layers';
+import axios from 'axios'
+import ReactModal from 'react-modal'
+import styled from 'styled-components'
+
+const customStyles = {
+  content : {
+    top                   : '50%',
+    left                  : '50%',
+    right                 : 'auto',
+    bottom                : 'auto',
+    marginRight           : '-50%',
+    transform             : 'translate(-50%, -50%)',
+    display               : 'flex',
+    flexDirection         : 'column',
+    gap                   : '20px'
+  }
+}
+
+const ReactModalAdapter = ({ className, modalClassName, ...props }) => {
+  return (
+    <ReactModal
+      className={modalClassName}
+      portalClassName={className}
+      bodyOpenClassName="portalOpen"
+      {...props}
+    />
+  );
+}
+
+const StyledReactModal = styled(ReactModalAdapter)`
+  label {
+    text-align: center;
+  }
+
+  label, input, button {
+    font-size: 20px;
+  }
+
+  div {
+    display: flex;
+    flex-direction: column;
+  }
+`
 
 // const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN;
 
@@ -71,22 +114,80 @@ import {TerrainLayer} from '@deck.gl/geo-layers';
   // })
 
 const App = () => {
-  const deckRef = useRef(null);
+  const numberRef = useRef(null)
+  const noticeRef = useRef(null)
 
-  const [data, setData] = useState([]);
+  const [data, setData] = useState([])
+  const [modalOpen, setOpen] = useState(false)
+  const [latitude, setLatitude] = useState(null)
+  const [longitude, setLongitude] = useState(null)
 
-  const addData = (x, y) => {
-    setData([
-      ...data,
-      {
-        name: 'Colma (COLM)',
-        code:'CM',
-        address: '365 D Street, Colma CA 94014',
-        exits: 30,
-        coordinates: [x, y]
-      }
-    ])
+  const afterOpenModal = () => {
+    console.log('modal openned')
   }
+
+  const openModal = () => {
+    setOpen(true)
+  }
+
+  const closeModal = () => {
+    setOpen(false)
+  }
+
+  const applyModal = () => {
+    const token = document.querySelector('[name=csrf-token]').content
+    const params = {
+      latitude,
+      longitude,
+      number: numberRef.current.value,
+      notice: noticeRef.current.value
+    }
+
+    axios.post('api/v1/cars.json', params,  { headers: { 'X-CSRF-TOKEN': token }})
+    .then((response) => {
+      const { number, notice, longitude, latitude } = response.data.data.attributes
+
+      setData([
+        ...data,
+        {
+          number: number,
+          code: 'CM',
+          notice: notice,
+          exits: 5,
+          coordinates: [+longitude, +latitude]
+        }
+      ])
+
+      closeModal()
+      setLatitude(null)
+      setLongitude(null)
+    })
+    .catch((response) => {
+      console.log(response)
+    })
+  }
+
+  useEffect(() => {
+    axios.get('api/v1/cars.json')
+    .then((response) => {
+      const cars = response.data.data.map((car) => {
+        let { number, notice, longitude, latitude } = car.attributes
+
+        return {
+          number: number,
+          code: 'CM',
+          notice: notice,
+          exits: 3,
+          coordinates: [+longitude, +latitude]
+        }
+      })
+
+      setData(cars)
+    })
+    .catch((response) => {
+      console.log(response)
+    })
+  }, data.length)
 
   const layers = [
     new ScatterplotLayer({
@@ -96,32 +197,45 @@ const App = () => {
       opacity: 0.6,
       stroked: true,
       filled: true,
-      radiusScale: 5,
-      radiusMinPixels: 5,
+      radiusScale: 3,
+      radiusMinPixels: 1,
       radiusMaxPixels: 20,
       lineWidthMinPixels: 1,
       getPosition: d => d.coordinates,
       getRadius: d => Math.sqrt(d.exits),
-      getFillColor: d => [140, 0, 255],
+      getFillColor: d => [200, 200, 200],
       getLineColor: d => [0, 0, 0]
     })
   ]
 
   const onClick = (event) => {
-    setData([
-      ...data,
-      {
-        name: 'Colma (COLM)',
-        code:'CM',
-        address: '365 D Street, Colma CA 94014',
-        exits: 30,
-        coordinates: event.coordinate
-      }
-    ])
+    const [longitude, latitude] = event.coordinate
+
+    setLatitude(latitude)
+    setLongitude(longitude)
+
+    openModal()
   }
 
   return (
     <div>
+      <StyledReactModal
+        isOpen={modalOpen}
+        onAfterOpen={afterOpenModal}
+        onRequestClose={closeModal}
+        style={customStyles}
+        contentLabel="Example Modal"
+      >
+        <div>
+          <label for="number">Нумар</label>
+          <input id="number" ref={numberRef}></input>
+        </div>
+        <div>
+          <label for="notice">Заметка</label>
+          <input id="notice" ref={noticeRef}></input>
+        </div>
+        <button onClick={applyModal}>Прыняць</button>
+      </StyledReactModal>
       <DeckGL
         onClick={onClick}
         initialViewState={{
@@ -129,7 +243,7 @@ const App = () => {
           latitude: 53.868718,
           zoom: 16.0,
           minZoom: 15,
-          maxZoom: 19,
+          maxZoom: 25,
           pitch: 0,
           bearing: 0
         }}
@@ -137,7 +251,7 @@ const App = () => {
         width="100%"
         controller={true}
         layers={layers}
-        getTooltip={({object}) => object && `${object.name}\n${object.address}`}
+        getTooltip={({object}) => object && `${object.number}\n${object.notice}`}
       >
         <StaticMap
           mapStyle="mapbox://styles/mapbox/satellite-v9"
