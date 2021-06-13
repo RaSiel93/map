@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Map</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= stylesheet_link_tag 'application', media: 'all' %>
+    <%= javascript_include_tag 'application' %>
+    <%= javascript_pack_tag 'index' %>
+  </head>
+
+  <%= javascript_tag do %>
+    const MAPBOX_ACCESS_TOKEN = "<%= raw(Rails.application.credentials.MAPBOX_ACCESS_TOKEN) %>";
+  <% end %>
+
+  <body>
+    <div id='root'></div>
+  </body>
+</html>
