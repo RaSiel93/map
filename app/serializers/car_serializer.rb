@@ -1,4 +1,4 @@
 class CarSerializer
   include JSONAPI::Serializer
-  attributes :number, :notice, :longitude, :latitude
+  attributes :id, :number, :notice, :longitude, :latitude
 end

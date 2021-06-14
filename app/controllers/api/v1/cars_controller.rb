@@ -11,6 +11,22 @@ module Api
         render json: serialize(car)
       end
 
+      def update
+        car = Car.find(params[:id])
+
+        car.update(car_params)
+
+        render json: serialize(car)
+      end
+
+      def destroy
+        car = Car.find(params[:id])
+
+        car.destroy
+
+        render json: serialize(car)
+      end
+
       private
 
       def car_params

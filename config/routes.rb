@@ -4,7 +4,8 @@ Rails.application.routes.draw do
 
   namespace :api do
     namespace :v1 do
-      resources :cars, only: %i[index create delete]
+      resources :cars, only: %i[index create update destroy]
+      resources :people, only: %i[index create update destroy]
     end
   end
 end
