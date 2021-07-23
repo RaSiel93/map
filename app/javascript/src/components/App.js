@@ -1,9 +1,8 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import DeckGL from '@deck.gl/react';
-import {LineLayer} from '@deck.gl/layers';
+import { PathLayer, ScatterplotLayer, LineLayer, PolygonLayer } from '@deck.gl/layers';
 import {StaticMap} from 'react-map-gl';
-import { PathLayer, ScatterplotLayer } from "@deck.gl/layers";
 import {TerrainLayer} from '@deck.gl/geo-layers';
 import axios from 'axios'
 import ReactModal from 'react-modal'
@@ -14,26 +13,31 @@ import { AddPersonButton } from './buttons/AddPersonButton'
 import { AddAreaButton } from './buttons/AddAreaButton'
 
 const Mode = styled.div`
-  display: flex;
   align-items: center;
   justify-content: center;
+  display: flex;
   position: absolute;
+  top: 0;
+  left: 0;
   z-index: 10;
   height: 50px;
   background-color: #0005;
   font-size: 20px;
   color: #fff;
-  width: 90vw;
+  width: 100vw;
 `
 
 const App = () => {
   const [data, setData] = useState([])
+  const [areas, setAreas] = useState([])
   const [areaData, setAreaData] = useState([])
   const [modalAddOpen, setModalAddOpen] = useState(false)
   const [modalEditOpen, setModalEditOpen] = useState(false)
   const [latitude, setLatitude] = useState(null)
   const [longitude, setLongitude] = useState(null)
   const [selected, setSelected] = useState(null)
+  const [hoveredArea, setHoveredArea] = useState(null)
+  const [selectedArea, setSelectedArea] = useState(null)
 
   const [mode, setMode] = useState(null)
 
@@ -63,6 +67,12 @@ const App = () => {
     }
 
     return coordinates;
+  }
+
+  const lineCountours = () => {
+    return [{ contour:
+      areaData.map(data => data.coordinates)
+    }]
   }
 
   useEffect(() => {
@@ -121,9 +131,24 @@ const App = () => {
     .catch((response) => {
       console.log(response)
     })
-  }, [])
 
-  console.log(lineCoordinates())
+    axios.get('api/v1/areas.json')
+    .then((response) => {
+      const polygones = response.data.data.map((area) => {
+        let { id, coordinates } = area.attributes
+
+        return {
+          id: id,
+          contour: coordinates.map(coordinate => JSON.parse(coordinate))
+        }
+      })
+
+      setAreas(polygones)
+    })
+    .catch((response) => {
+      console.log(response)
+    })
+  }, [])
 
   const layers = [
     new ScatterplotLayer({
@@ -140,7 +165,74 @@ const App = () => {
       getPosition: d => d.coordinates,
       getRadius: d => Math.sqrt(d.exits),
       getFillColor: d => [200, 200, 200],
-      getLineColor: d => [0, 0, 0]
+      getLineColor: d => [0, 0, 0],
+      onClick: (info) => {
+        setSelected(info.object)
+
+        openEditModal()
+      }
+    }),
+    new PolygonLayer({
+      id: 'polygon-layer',
+      data: areas,
+      pickable: true,
+      stroked: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      getPolygon: d => d.contour,
+      getElevation: d => 10,
+      getFillColor: d => [100, 100, 250, 25.5],
+      getLineColor: [80, 80, 80, 65],
+      getLineWidth: 1,
+      onHover: (info) => {
+        !mode && setHoveredArea(info.object)
+      },
+      onClick: (info) => {
+        !mode && setSelectedArea(info.object)
+      }
+    }),
+    new PolygonLayer({
+      id: 'polygon-layer',
+      data: lineCountours(),
+      pickable: true,
+      stroked: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      getPolygon: d => d.contour,
+      getElevation: d => 10,
+      getFillColor: d => [250, 250, 0, 25.5],
+      getLineColor: [80, 80, 80, 125],
+      getLineWidth: 1
+    }),
+    new PolygonLayer({
+      id: 'polygon-layer',
+      data: !mode && hoveredArea && [hoveredArea],
+      pickable: true,
+      stroked: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      getPolygon: d => d.contour,
+      getElevation: d => 10,
+      getFillColor: d => [255, 255, 0, 35.5],
+      getLineColor: [255, 160, 0, 125],
+      getLineWidth: 1,
+    }),
+    new PolygonLayer({
+      id: 'polygon-layer',
+      data: selectedArea && [selectedArea],
+      pickable: true,
+      stroked: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      getPolygon: d => d.contour,
+      getElevation: d => 10,
+      getFillColor: d => [255, 255, 0, 125.5],
+      getLineColor: [255, 160, 0, 125],
+      getLineWidth: 1,
     }),
     new ScatterplotLayer({
       id: 'scatterplot-layer',
@@ -156,17 +248,23 @@ const App = () => {
       getPosition: d => d.coordinates,
       getRadius: d => Math.sqrt(d.exits),
       getFillColor: d => [250, 250, 100],
-      getLineColor: d => [0, 0, 0]
+      getLineColor: d => [0, 0, 0],
+      onDragStart: (info, event) => {
+        console.log('onDragStart', info, event)
+      },
+      onDragEnd: (info, event) => {
+        console.log('onDragEnd', info, event)
+      }
     }),
-    new LineLayer({
-      id: 'line-layer',
-      data: lineCoordinates(),
-      pickable: true,
-      getWidth: 3,
-      getSourcePosition: d => d.from.coordinates,
-      getTargetPosition: d => d.to.coordinates,
-      getColor: d => [250, 250, 100]
-    })
+    // new LineLayer({
+    //   id: 'line-layer',
+    //   data: lineCoordinates(),
+    //   pickable: true,
+    //   getWidth: 3,
+    //   getSourcePosition: d => d.from.coordinates,
+    //   getTargetPosition: d => d.to.coordinates,
+    //   getColor: d => [250, 250, 100]
+    // }),
   ]
 
   const onClick = (event) => {
@@ -177,16 +275,14 @@ const App = () => {
       setLongitude(longitude)
 
       setAreaData(areaData => [...areaData, {
-        exits: 3,
+        exits: 1,
         coordinates: [+longitude, +latitude]
       }])
     } else {
       const picked = event.object;
 
       if (picked) {
-        setSelected(picked)
 
-        openEditModal()
       } else {
         const [longitude, latitude] = event.coordinate
 
@@ -232,17 +328,18 @@ const App = () => {
         height="100%"
         width="100%"
         zIndex="5"
-        controller={true}
+        controller={{dragPan: true}}
         layers={layers}
         getTooltip={({object}) => object && `${object.number}\n${object.notice}`}
         style={{zIndex: '1'}}
+        getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (!mode && hoveredArea ? 'pointer' : 'grab'))}
       >
         <StaticMap
           mapStyle="mapbox://styles/mapbox/satellite-v9"
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
-      <AddAreaButton mode={mode} setMode={setMode}/>
+      <AddAreaButton {...{mode, setMode, areas, setAreas, areaData, setAreaData}} />
       <AddPersonButton/>
     </div>
   )
