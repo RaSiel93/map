@@ -23,7 +23,8 @@ const ReactModalAdapter = ({ className, modalClassName, ...props }) => {
     style: {
       ...props['style'],
       overlay: {
-        backgroundColor: '#0005'
+        backgroundColor: '#0005',
+        zIndex: '100'
       }
     }
   }

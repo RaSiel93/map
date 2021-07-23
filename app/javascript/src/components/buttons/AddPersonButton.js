@@ -11,6 +11,7 @@ const Button = styled.button`
   background-color: #222;
   border: none;
   border-radius: 50%;
+  z-index: 10;
 
   &:after {
     content: '+';

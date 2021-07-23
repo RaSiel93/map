@@ -11,14 +11,31 @@ import styled from 'styled-components'
 import { AddModal } from './AddModal'
 import { EditModal } from './EditModal'
 import { AddPersonButton } from './buttons/AddPersonButton'
+import { AddAreaButton } from './buttons/AddAreaButton'
+
+const Mode = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  z-index: 10;
+  height: 50px;
+  background-color: #0005;
+  font-size: 20px;
+  color: #fff;
+  width: 90vw;
+`
 
 const App = () => {
   const [data, setData] = useState([])
+  const [areaData, setAreaData] = useState([])
   const [modalAddOpen, setModalAddOpen] = useState(false)
   const [modalEditOpen, setModalEditOpen] = useState(false)
   const [latitude, setLatitude] = useState(null)
   const [longitude, setLongitude] = useState(null)
   const [selected, setSelected] = useState(null)
+
+  const [mode, setMode] = useState(null)
 
   const openAddModal = () => {
     setModalAddOpen(true)
@@ -36,6 +53,17 @@ const App = () => {
     setModalEditOpen(false)
   }
 
+  const lineCoordinates = () => {
+    let coordinates = []
+
+    for (let i = 0; i < areaData.length - 1; i++) {
+      coordinates.push({
+        from: areaData[i], to: areaData[i + 1]
+      })
+    }
+
+    return coordinates;
+  }
 
   useEffect(() => {
 
@@ -95,6 +123,8 @@ const App = () => {
     })
   }, [])
 
+  console.log(lineCoordinates())
+
   const layers = [
     new ScatterplotLayer({
       id: 'scatterplot-layer',
@@ -111,28 +141,68 @@ const App = () => {
       getRadius: d => Math.sqrt(d.exits),
       getFillColor: d => [200, 200, 200],
       getLineColor: d => [0, 0, 0]
+    }),
+    new ScatterplotLayer({
+      id: 'scatterplot-layer',
+      data: areaData,
+      pickable: true,
+      opacity: 0.6,
+      stroked: true,
+      filled: true,
+      radiusScale: 2,
+      radiusMinPixels: 1,
+      radiusMaxPixels: 20,
+      lineWidthMinPixels: 1,
+      getPosition: d => d.coordinates,
+      getRadius: d => Math.sqrt(d.exits),
+      getFillColor: d => [250, 250, 100],
+      getLineColor: d => [0, 0, 0]
+    }),
+    new LineLayer({
+      id: 'line-layer',
+      data: lineCoordinates(),
+      pickable: true,
+      getWidth: 3,
+      getSourcePosition: d => d.from.coordinates,
+      getTargetPosition: d => d.to.coordinates,
+      getColor: d => [250, 250, 100]
     })
   ]
 
   const onClick = (event) => {
-    const picked = event.object;
-
-    if (picked) {
-      setSelected(picked)
-
-      openEditModal()
-    } else {
+    if (mode === 'area') {
       const [longitude, latitude] = event.coordinate
 
       setLatitude(latitude)
       setLongitude(longitude)
 
-      openAddModal()
+      setAreaData(areaData => [...areaData, {
+        exits: 3,
+        coordinates: [+longitude, +latitude]
+      }])
+    } else {
+      const picked = event.object;
+
+      if (picked) {
+        setSelected(picked)
+
+        openEditModal()
+      } else {
+        const [longitude, latitude] = event.coordinate
+
+        setLatitude(latitude)
+        setLongitude(longitude)
+
+        openAddModal()
+      }
     }
   }
 
   return (
     <div>
+      {
+        mode && <Mode>{mode}</Mode>
+      }
       <AddModal
         isOpen={modalAddOpen}
         onRequestClose={closeAddModal}
@@ -161,15 +231,18 @@ const App = () => {
         }}
         height="100%"
         width="100%"
+        zIndex="5"
         controller={true}
         layers={layers}
         getTooltip={({object}) => object && `${object.number}\n${object.notice}`}
+        style={{zIndex: '1'}}
       >
         <StaticMap
           mapStyle="mapbox://styles/mapbox/satellite-v9"
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
+      <AddAreaButton mode={mode} setMode={setMode}/>
       <AddPersonButton/>
     </div>
   )
