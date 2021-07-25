@@ -1,16 +1,22 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
+import ReactModal from 'react-modal';
 import DeckGL from '@deck.gl/react';
 import { PathLayer, ScatterplotLayer, LineLayer, PolygonLayer } from '@deck.gl/layers';
-import {StaticMap} from 'react-map-gl';
-import {TerrainLayer} from '@deck.gl/geo-layers';
-import axios from 'axios'
-import ReactModal from 'react-modal'
-import styled from 'styled-components'
-import { AddModal } from './AddModal'
-import { EditModal } from './EditModal'
+import { StaticMap } from 'react-map-gl';
+import { TerrainLayer } from '@deck.gl/geo-layers';
+import axios from 'axios';
+import styled from 'styled-components';
+
+import { AddCarModal } from './modals/AddCarModal';
+import { EditCarModal } from './modals/EditCarModal';
+
 import { AddPersonButton } from './buttons/AddPersonButton'
 import { AddAreaButton } from './buttons/AddAreaButton'
+
+import { getCars, createCar, updateCar, removeCar } from '../api/car';
+import { getAreas } from '../api/area';
+import { carToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
 
 const Mode = styled.div`
   align-items: center;
@@ -28,16 +34,16 @@ const Mode = styled.div`
 `
 
 const App = () => {
-  const [data, setData] = useState([])
-  const [areas, setAreas] = useState([])
-  const [areaData, setAreaData] = useState([])
-  const [modalAddOpen, setModalAddOpen] = useState(false)
-  const [modalEditOpen, setModalEditOpen] = useState(false)
-  const [latitude, setLatitude] = useState(null)
-  const [longitude, setLongitude] = useState(null)
-  const [selected, setSelected] = useState(null)
-  const [hoveredArea, setHoveredArea] = useState(null)
-  const [selectedArea, setSelectedArea] = useState(null)
+  const [cars, setCars] = useState([]);
+  const [areas, setAreas] = useState([]);
+  const [areaData, setAreaData] = useState([]);
+  const [modalAddOpen, setModalAddOpen] = useState(false);
+  const [modalEditOpen, setModalEditOpen] = useState(false);
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [selected, setSelected] = useState(null);
+  const [hoveredArea, setHoveredArea] = useState(null);
+  const [selectedArea, setSelectedArea] = useState(null);
 
   const [mode, setMode] = useState(null)
 
@@ -75,85 +81,57 @@ const App = () => {
     }]
   }
 
+  const loadCars = async () => {
+    const cars = await getCars();
+    const deckGlCars = cars.map(carToScatterplotObject);
+
+    setCars(deckGlCars);
+  }
+
+  const loadAreas = async () => {
+    const areas = await getAreas();
+    const deckGlAreas = areas.map(areaToPolygonObject);
+
+    setAreas(deckGlAreas);
+  }
+
   useEffect(() => {
-
-    // setData([
-    //   {
-
-    //     number: 'fefe',
-    //     notice: 'faefaewfawe',
-    //     coordinates: [27.478700, 53.868718]
-    //   },
-    //   {
-    //     number: 'fefe2',
-    //     notice: 'faefaewfawe',
-    //     coordinates: [27.478800, 53.868718]
-    //   },
-    //   {
-    //     number: 'fefe3',
-    //     notice: 'faefaewfawe',
-    //     coordinates: [27.478900, 53.868718]
-    //   },
-    //   {
-    //     number: 'fefe0',
-    //     notice: 'faefaewfawe',
-    //     coordinates: [27.479000, 53.868718]
-    //   },
-    //   {
-    //     number: 'fefe5',
-    //     notice: 'faefaewfawe',
-    //     coordinates: [27.479100, 53.868718]
-    //   },
-    //   {
-    //     number: 'fefe6',
-    //     notice: 'faefaewfawe',
-    //     coordinates: [27.479200, 53.868718]
-    //   },
-    // ])
-
-    axios.get('api/v1/cars.json')
-    .then((response) => {
-      const cars = response.data.data.map((car) => {
-        let { id, number, notice, longitude, latitude } = car.attributes
-
-        return {
-          id: id,
-          index: id,
-          number: number,
-          notice: notice,
-          exits: 3,
-          coordinates: [+longitude, +latitude]
-        }
-      })
-
-      setData(cars)
-    })
-    .catch((response) => {
-      console.log(response)
-    })
-
-    axios.get('api/v1/areas.json')
-    .then((response) => {
-      const polygones = response.data.data.map((area) => {
-        let { id, coordinates } = area.attributes
-
-        return {
-          id: id,
-          contour: coordinates.map(coordinate => JSON.parse(coordinate))
-        }
-      })
-
-      setAreas(polygones)
-    })
-    .catch((response) => {
-      console.log(response)
-    })
+    loadCars();
+    loadAreas();
   }, [])
+
+  const addCar = async (form) => {
+    const token = document.querySelector('[name=csrf-token]').content;
+    const params = { car: { latitude, longitude, ...form }};
+    const car = await createCar(params, token);
+    const deckGlCar = carToScatterplotObject(car);
+
+    setCars([...cars, deckGlCar]);
+    closeAddModal();
+  }
+
+  const editCar = async ({ id, ...form }) => {
+    const token = document.querySelector('[name=csrf-token]').content;
+    const params = { car: { ...form }};
+    const car = await updateCar(id, params, token);
+    const deckGlCar = carToScatterplotObject(car);
+
+    setCars([...cars.filter((car) => { return car.id !== id }), deckGlCar]);
+    closeEditModal();
+  }
+
+  const deleteCar = async ({ id }) => {
+    const token = document.querySelector('[name=csrf-token]').content;
+    await removeCar(id, token);
+
+    setCars(cars.filter((car) => { return car.id !== id }));
+    closeEditModal();
+  }
 
   const layers = [
     new ScatterplotLayer({
       id: 'scatterplot-layer',
-      data,
+      data: cars,
       pickable: true,
       opacity: 0.6,
       stroked: true,
@@ -299,20 +277,17 @@ const App = () => {
       {
         mode && <Mode>{mode}</Mode>
       }
-      <AddModal
+      <AddCarModal
         isOpen={modalAddOpen}
-        onRequestClose={closeAddModal}
-        latitude={latitude}
-        longitude={longitude}
-        setData={setData}
-        data={data}
+        onClose={closeAddModal}
+        onSubmit={addCar}
       />
-      {selected && <EditModal
-        isOpen={modalEditOpen}
-        onRequestClose={closeEditModal}
+      {selected && <EditCarModal
         item={selected}
-        setData={setData}
-        data={data}
+        isOpen={modalEditOpen}
+        onClose={closeEditModal}
+        onRemove={deleteCar}
+        onSubmit={editCar}
       />}
       <DeckGL
         onClick={onClick}
@@ -320,8 +295,8 @@ const App = () => {
           longitude: 27.478700,
           latitude: 53.868718,
           zoom: 16.0,
-          minZoom: 15,
-          maxZoom: 25,
+          minZoom: 10,
+          maxZoom: 30,
           pitch: 0,
           bearing: 0
         }}
