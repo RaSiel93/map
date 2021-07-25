@@ -1,4 +1,4 @@
 class AreaSerializer
   include JSONAPI::Serializer
-  attributes :id, :coordinates
+  attributes :id, :title, :description, :coordinates
 end

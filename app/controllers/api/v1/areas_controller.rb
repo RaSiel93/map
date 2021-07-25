@@ -30,7 +30,7 @@ module Api
       private
 
       def area_params
-        @area_params ||= params.require(:area).permit(coordinates: [])
+        @area_params ||= params.require(:area).permit(:title, :description, coordinates: [])
       end
 
       def serialize(records, options = {})

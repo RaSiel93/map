@@ -10,12 +10,16 @@ import styled from 'styled-components';
 
 import { AddCarModal } from './modals/AddCarModal';
 import { EditCarModal } from './modals/EditCarModal';
+import { AddPersonModal } from './modals/AddPersonModal';
+import { EditAreaModal } from './modals/EditAreaModal';
 
-import { AddPersonButton } from './buttons/AddPersonButton'
-import { AddAreaButton } from './buttons/AddAreaButton'
+import { AddPersonButton } from './buttons/AddPersonButton';
+import { AddAreaButton } from './buttons/AddAreaButton';
+import { ModeEditButton } from './buttons/ModeEditButton';
 
 import { getCars, createCar, updateCar, removeCar } from '../api/car';
-import { getAreas } from '../api/area';
+import { getAreas, createArea, updateArea, removeArea } from '../api/area';
+import { createPerson } from '../api/person';
 import { carToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
 
 const Mode = styled.div`
@@ -37,31 +41,31 @@ const App = () => {
   const [cars, setCars] = useState([]);
   const [areas, setAreas] = useState([]);
   const [areaData, setAreaData] = useState([]);
-  const [modalAddOpen, setModalAddOpen] = useState(false);
-  const [modalEditOpen, setModalEditOpen] = useState(false);
+
+  const [modalAddCar, setModalAddCar] = useState(false);
+  const [modalEditCar, setModalEditCar] = useState(false);
+  const [modalAddPerson, setModalAddPerson] = useState(false);
+  const [modalEditArea, setModalEditArea] = useState(false);
+
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
-  const [selected, setSelected] = useState(null);
+  const [selectedCar, setSelectedCar] = useState(null);
   const [hoveredArea, setHoveredArea] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
 
   const [mode, setMode] = useState(null)
 
-  const openAddModal = () => {
-    setModalAddOpen(true)
-  }
+  const openAddCarModal = () => setModalAddCar(true);
+  const closeAddCarModal = () => setModalAddCar(false);
 
-  const closeAddModal = () => {
-    setModalAddOpen(false)
-  }
+  const openEditCarModal = () => setModalEditCar(true);
+  const closeEditCarModal = () => setModalEditCar(false);
 
-  const openEditModal = () => {
-    setModalEditOpen(true)
-  }
+  const openAddPersonModal = () => setModalAddPerson(true);
+  const closeAddPersonModal = () => setModalAddPerson(false);
 
-  const closeEditModal = () => {
-    setModalEditOpen(false)
-  }
+  const openEditAreaModal = () => setModalEditArea(true);
+  const closeEditAreaModal = () => setModalEditArea(false);
 
   const lineCoordinates = () => {
     let coordinates = []
@@ -117,7 +121,7 @@ const App = () => {
     const deckGlCar = carToScatterplotObject(car);
 
     setCars([...cars.filter((car) => { return car.id !== id }), deckGlCar]);
-    closeEditModal();
+    closeEditCarModal();
   }
 
   const deleteCar = async ({ id }) => {
@@ -125,12 +129,73 @@ const App = () => {
     await removeCar(id, token);
 
     setCars(cars.filter((car) => { return car.id !== id }));
-    closeEditModal();
+    closeEditCarModal();
+  }
+
+  const addPerson = async (form) => {
+    const token = document.querySelector('[name=csrf-token]').content;
+    const params = { person: { ...form }};
+
+    await createPerson(params, token);
+    closeAddPersonModal();
+  }
+
+  const toogleAreaMode = () => {
+    setAreaData([]);
+    if (mode === 'area') {
+      setMode(null);
+    } else {
+      setMode('area');
+    }
+  }
+
+  const handleEditMode = () => {
+    if (mode === 'edit') {
+      setMode(null);
+    } else {
+      setMode('edit');
+    }
+  }
+
+  const addArea = async (form) => {
+    const token = document.querySelector('[name=csrf-token]').content
+    const params = {
+      area: {
+        coordinates: areaData.map(data => JSON.stringify(data.coordinates))
+      }
+    }
+
+    const area = await createArea(params, token);
+    const deckGlArea = areaToPolygonObject(area);
+
+    setAreas([...areas, deckGlArea]);
+    setAreaData([]);
+    setMode(null);
+  }
+
+  const editArea = async ({ id, ...form }) => {
+    const token = document.querySelector('[name=csrf-token]').content;
+    const params = { area: { ...form }};
+    const area = await updateArea(id, params, token);
+    const deckGlArea = areaToPolygonObject(area);
+
+    setAreas([...areas.filter((area) => { return area.id !== id }), deckGlArea]);
+    setSelectedArea(null);
+    closeEditAreaModal();
+  }
+
+  const deleteArea = async ({ id }) => {
+    const token = document.querySelector('[name=csrf-token]').content;
+    await removeArea(id, token);
+
+    setAreas(areas.filter((area) => { return area.id !== id }));
+    setSelectedArea(null);
+    closeEditAreaModal();
   }
 
   const layers = [
     new ScatterplotLayer({
-      id: 'scatterplot-layer',
+      id: 'scatterplot-layer1',
       data: cars,
       pickable: true,
       opacity: 0.6,
@@ -145,48 +210,14 @@ const App = () => {
       getFillColor: d => [200, 200, 200],
       getLineColor: d => [0, 0, 0],
       onClick: (info) => {
-        setSelected(info.object)
+        setSelectedCar(info.object);
 
-        openEditModal()
+        mode === 'edit' && openEditCarModal();
       }
     }),
     new PolygonLayer({
-      id: 'polygon-layer',
-      data: areas,
-      pickable: true,
-      stroked: true,
-      filled: true,
-      wireframe: true,
-      lineWidthMinPixels: 1,
-      getPolygon: d => d.contour,
-      getElevation: d => 10,
-      getFillColor: d => [100, 100, 250, 25.5],
-      getLineColor: [80, 80, 80, 65],
-      getLineWidth: 1,
-      onHover: (info) => {
-        !mode && setHoveredArea(info.object)
-      },
-      onClick: (info) => {
-        !mode && setSelectedArea(info.object)
-      }
-    }),
-    new PolygonLayer({
-      id: 'polygon-layer',
-      data: lineCountours(),
-      pickable: true,
-      stroked: true,
-      filled: true,
-      wireframe: true,
-      lineWidthMinPixels: 1,
-      getPolygon: d => d.contour,
-      getElevation: d => 10,
-      getFillColor: d => [250, 250, 0, 25.5],
-      getLineColor: [80, 80, 80, 125],
-      getLineWidth: 1
-    }),
-    new PolygonLayer({
-      id: 'polygon-layer',
-      data: !mode && hoveredArea && [hoveredArea],
+      id: 'polygon-layer1',
+      data: hoveredArea && [hoveredArea],
       pickable: true,
       stroked: true,
       filled: true,
@@ -199,7 +230,29 @@ const App = () => {
       getLineWidth: 1,
     }),
     new PolygonLayer({
-      id: 'polygon-layer',
+      id: 'polygon-layer2',
+      data: areas,
+      pickable: true,
+      stroked: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      getPolygon: d => d.contour,
+      getElevation: d => 10,
+      getFillColor: d => [100, 100, 250, 25.5],
+      getLineColor: [80, 80, 80, 65],
+      getLineWidth: 1,
+      onHover: (info) => {
+        setHoveredArea(info.object);
+      },
+      onClick: (info) => {
+        setSelectedArea(info.object);
+
+        mode === 'edit' && openEditAreaModal();
+      }
+    }),
+    new PolygonLayer({
+      id: 'polygon-layer3',
       data: selectedArea && [selectedArea],
       pickable: true,
       stroked: true,
@@ -212,8 +265,22 @@ const App = () => {
       getLineColor: [255, 160, 0, 125],
       getLineWidth: 1,
     }),
+    new PolygonLayer({
+      id: 'polygon-layer4',
+      data: lineCountours(),
+      pickable: true,
+      stroked: true,
+      filled: true,
+      wireframe: true,
+      lineWidthMinPixels: 1,
+      getPolygon: d => d.contour,
+      getElevation: d => 10,
+      getFillColor: d => [250, 250, 0, 25.5],
+      getLineColor: [80, 80, 80, 125],
+      getLineWidth: 1
+    }),
     new ScatterplotLayer({
-      id: 'scatterplot-layer',
+      id: 'scatterplot-layer2',
       data: areaData,
       pickable: true,
       opacity: 0.6,
@@ -267,7 +334,7 @@ const App = () => {
         setLatitude(latitude)
         setLongitude(longitude)
 
-        openAddModal()
+        openAddCarModal()
       }
     }
   }
@@ -278,16 +345,28 @@ const App = () => {
         mode && <Mode>{mode}</Mode>
       }
       <AddCarModal
-        isOpen={modalAddOpen}
-        onClose={closeAddModal}
+        isOpen={modalAddCar}
+        onClose={closeAddCarModal}
         onSubmit={addCar}
       />
-      {selected && <EditCarModal
-        item={selected}
-        isOpen={modalEditOpen}
-        onClose={closeEditModal}
+      {selectedCar && <EditCarModal
+        item={selectedCar}
+        isOpen={modalEditCar}
+        onClose={closeEditCarModal}
         onRemove={deleteCar}
         onSubmit={editCar}
+      />}
+      <AddPersonModal
+        isOpen={modalAddPerson}
+        onClose={closeAddPersonModal}
+        onSubmit={addPerson}
+      />
+      {selectedArea && <EditAreaModal
+        item={selectedArea}
+        isOpen={modalEditArea}
+        onClose={closeEditAreaModal}
+        onRemove={deleteArea}
+        onSubmit={editArea}
       />}
       <DeckGL
         onClick={onClick}
@@ -307,15 +386,20 @@ const App = () => {
         layers={layers}
         getTooltip={({object}) => object && `${object.number}\n${object.notice}`}
         style={{zIndex: '1'}}
-        getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (!mode && hoveredArea ? 'pointer' : 'grab'))}
+        getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (hoveredArea ? 'pointer' : 'grab'))}
       >
         <StaticMap
           mapStyle="mapbox://styles/mapbox/satellite-v9"
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
-      <AddAreaButton {...{mode, setMode, areas, setAreas, areaData, setAreaData}} />
-      <AddPersonButton/>
+      <ModeEditButton onClick={handleEditMode}></ModeEditButton>
+      <AddAreaButton
+        mode={mode}
+        onClick={toogleAreaMode}
+        onSubmit={addArea}
+      />
+      <AddPersonButton onClick={openAddPersonModal}/>
     </div>
   )
 }

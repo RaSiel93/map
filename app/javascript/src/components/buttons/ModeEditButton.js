@@ -2,18 +2,20 @@ import React from 'react';
 import styled from 'styled-components';
 import { Button } from './Button';
 
-const AddButton = styled(Button)`
+const ModeButton = styled(Button)`
+  right: 140px;
   bottom: 20px;
-  right: 20px;
 
   &:after {
     font-size: 30px;
-    content: '+';
+    content: '/';
   }
 `
 
-export const AddPersonButton = (props) => {
+export const ModeEditButton = (props) => {
   const { onClick } = props;
 
-  return <AddButton onClick={onClick}/>
+  return <>
+    <ModeButton onClick={onClick}/>
+  </>
 }
