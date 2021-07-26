@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 
 export const AddPersonModal = (props) => {
-  const { isOpen, onClose, onSubmit } = props;
+  const { isOpen, onClose, onSubmit, item } = props;
 
   const [notice, setNotice] = useState('');
 
@@ -11,7 +11,7 @@ export const AddPersonModal = (props) => {
   }
 
   const handleSubmit = () => {
-    onSubmit({ notice });
+    onSubmit({ notice, area_id: item.id });
   }
 
   return <Modal

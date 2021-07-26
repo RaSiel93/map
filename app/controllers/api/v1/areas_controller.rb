@@ -2,7 +2,7 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        render json: serialize(Area.all)
+        render json: serialize(Area.includes(:people))
       end
 
       def create
@@ -34,7 +34,7 @@ module Api
       end
 
       def serialize(records, options = {})
-        AreaSerializer.new(records, options).serializable_hash.to_json
+        AreaSerializer.new(records).serializable_hash.to_json
       end
     end
   end

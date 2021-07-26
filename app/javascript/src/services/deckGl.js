@@ -12,13 +12,14 @@ export function carToScatterplotObject(car) {
 }
 
 export function areaToPolygonObject(area) {
-  const { id, title, description, coordinates } = area.attributes;
+  const { id, title, description, coordinates, people } = area.attributes;
 
   return {
     id: id,
     index: id,
     number: title,
     notice: description,
-    contour: coordinates.map(coordinate => JSON.parse(coordinate))
+    contour: coordinates.map(coordinate => JSON.parse(coordinate)),
+    people: people
   }
 }

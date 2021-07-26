@@ -22,7 +22,7 @@ module Api
       private
 
       def person_params
-        @person_params ||= params.require(:person).permit(:notice)
+        @person_params ||= params.require(:person).permit(:notice, :area_id)
       end
 
       def serialize(records, options = {})

@@ -11,11 +11,13 @@ import styled from 'styled-components';
 import { AddCarModal } from './modals/AddCarModal';
 import { EditCarModal } from './modals/EditCarModal';
 import { AddPersonModal } from './modals/AddPersonModal';
+import { ShowAreaModal } from './modals/ShowAreaModal';
 import { EditAreaModal } from './modals/EditAreaModal';
 
 import { AddPersonButton } from './buttons/AddPersonButton';
 import { AddAreaButton } from './buttons/AddAreaButton';
 import { ModeEditButton } from './buttons/ModeEditButton';
+import { ModeShowButton } from './buttons/ModeShowButton';
 
 import { getCars, createCar, updateCar, removeCar } from '../api/car';
 import { getAreas, createArea, updateArea, removeArea } from '../api/area';
@@ -45,6 +47,7 @@ const App = () => {
   const [modalAddCar, setModalAddCar] = useState(false);
   const [modalEditCar, setModalEditCar] = useState(false);
   const [modalAddPerson, setModalAddPerson] = useState(false);
+  const [modalShowArea, setModalShowArea] = useState(false);
   const [modalEditArea, setModalEditArea] = useState(false);
 
   const [latitude, setLatitude] = useState(null);
@@ -66,6 +69,9 @@ const App = () => {
 
   const openEditAreaModal = () => setModalEditArea(true);
   const closeEditAreaModal = () => setModalEditArea(false);
+
+  const openShowAreaModal = () => setModalShowArea(true);
+  const closeShowAreaModal = () => setModalShowArea(false);
 
   const lineCoordinates = () => {
     let coordinates = []
@@ -154,6 +160,14 @@ const App = () => {
       setMode(null);
     } else {
       setMode('edit');
+    }
+  }
+
+  const handleShowMode = () => {
+    if (mode === 'show') {
+      setMode(null);
+    } else {
+      setMode('show');
     }
   }
 
@@ -248,6 +262,7 @@ const App = () => {
       onClick: (info) => {
         setSelectedArea(info.object);
 
+        mode === 'show' && openShowAreaModal();
         mode === 'edit' && openEditAreaModal();
       }
     }),
@@ -329,12 +344,14 @@ const App = () => {
       if (picked) {
 
       } else {
-        const [longitude, latitude] = event.coordinate
+        const [longitude, latitude] = event.coordinate;
 
-        setLatitude(latitude)
-        setLongitude(longitude)
+        setSelectedArea(null);
 
-        openAddCarModal()
+        setLatitude(latitude);
+        setLongitude(longitude);
+
+        openAddCarModal();
       }
     }
   }
@@ -358,6 +375,7 @@ const App = () => {
       />}
       <AddPersonModal
         isOpen={modalAddPerson}
+        item={selectedArea}
         onClose={closeAddPersonModal}
         onSubmit={addPerson}
       />
@@ -368,14 +386,17 @@ const App = () => {
         onRemove={deleteArea}
         onSubmit={editArea}
       />}
+      {selectedArea && <ShowAreaModal
+        item={selectedArea}
+        isOpen={modalShowArea}
+        onClose={closeShowAreaModal}
+      />}
       <DeckGL
         onClick={onClick}
         initialViewState={{
           longitude: 27.478700,
           latitude: 53.868718,
           zoom: 16.0,
-          minZoom: 10,
-          maxZoom: 30,
           pitch: 0,
           bearing: 0
         }}
@@ -393,6 +414,7 @@ const App = () => {
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
+      <ModeShowButton onClick={handleShowMode}></ModeShowButton>
       <ModeEditButton onClick={handleEditMode}></ModeEditButton>
       <AddAreaButton
         mode={mode}
