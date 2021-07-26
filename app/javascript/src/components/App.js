@@ -16,8 +16,9 @@ import { EditAreaModal } from './modals/EditAreaModal';
 
 import { AddPersonButton } from './buttons/AddPersonButton';
 import { AddAreaButton } from './buttons/AddAreaButton';
-import { ModeEditButton } from './buttons/ModeEditButton';
+import { ModePointButton } from './buttons/ModePointButton';
 import { ModeShowButton } from './buttons/ModeShowButton';
+import { ModeEditButton } from './buttons/ModeEditButton';
 
 import { getCars, createCar, updateCar, removeCar } from '../api/car';
 import { getAreas, createArea, updateArea, removeArea } from '../api/area';
@@ -155,11 +156,11 @@ const App = () => {
     }
   }
 
-  const handleEditMode = () => {
-    if (mode === 'edit') {
+  const handlePointMode = () => {
+    if (mode === 'point') {
       setMode(null);
     } else {
-      setMode('edit');
+      setMode('point');
     }
   }
 
@@ -168,6 +169,14 @@ const App = () => {
       setMode(null);
     } else {
       setMode('show');
+    }
+  }
+
+  const handleEditMode = () => {
+    if (mode === 'edit') {
+      setMode(null);
+    } else {
+      setMode('edit');
     }
   }
 
@@ -344,14 +353,16 @@ const App = () => {
       if (picked) {
 
       } else {
-        const [longitude, latitude] = event.coordinate;
-
         setSelectedArea(null);
 
-        setLatitude(latitude);
-        setLongitude(longitude);
+        if (mode === 'point') {
+          const [longitude, latitude] = event.coordinate;
 
-        openAddCarModal();
+          setLatitude(latitude);
+          setLongitude(longitude);
+
+          openAddCarModal();
+        }
       }
     }
   }
@@ -414,6 +425,7 @@ const App = () => {
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
+      <ModePointButton onClick={handlePointMode}></ModePointButton>
       <ModeShowButton onClick={handleShowMode}></ModeShowButton>
       <ModeEditButton onClick={handleEditMode}></ModeEditButton>
       <AddAreaButton

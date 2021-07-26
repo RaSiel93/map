@@ -12,8 +12,6 @@ export const ShowAreaModal = (props) => {
     setDescription(item.notice || '');
   }
 
-  debugger
-
   return <Modal
     isOpen={isOpen}
     onAfterOpen={onAfterOpen}

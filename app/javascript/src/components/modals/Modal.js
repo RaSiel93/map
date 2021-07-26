@@ -12,15 +12,17 @@ const ReactModalAdapter = ({ className, modalClassName, ...props }) => {
         zIndex: '100'
       },
       content : {
-        top                   : '50%',
-        left                  : '50%',
-        right                 : 'auto',
-        bottom                : 'auto',
-        marginRight           : '-50%',
-        transform             : 'translate(-50%, -50%)',
-        display               : 'flex',
-        flexDirection         : 'column',
-        gap                   : '20px'
+        top           : '50%',
+        left          : '50%',
+        right         : 'auto',
+        bottom        : 'auto',
+        marginRight   : '-50%',
+        transform     : 'translate(-50%, -50%)',
+        display       : 'flex',
+        flexDirection : 'column',
+        gap           : '20px',
+        maxHeight     : '80vh',
+        maxWidth      : '80vw',
       }
     },
   }
@@ -48,9 +50,14 @@ export const Modal = styled(ReactModalAdapter)`
   div {
     display: flex;
     flex-direction: column;
+
+    h2, h4 {
+      text-align: center;
+    }
   }
 
   .overlay {
     opacity: 0.3;
   }
+
 `
