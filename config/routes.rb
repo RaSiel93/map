@@ -8,7 +8,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       resources :areas, only: %i[index create update destroy]
       resources :cars, only: %i[index create update destroy]
-      resources :people, only: %i[index create update destroy]
+      resources :notes, only: %i[index create update destroy]
     end
   end
 end

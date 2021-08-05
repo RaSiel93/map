@@ -3,7 +3,7 @@ class AreaSerializer
 
   attributes :id, :title, :description, :coordinates
 
-  attribute :people do |area|
-    PersonSerializer.new(area.people).as_json["data"]
+  attribute :notes do |area|
+    NoteSerializer.new(area.notes).as_json["data"]
   end
 end

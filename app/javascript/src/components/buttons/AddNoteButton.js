@@ -12,7 +12,7 @@ const AddButton = styled(Button)`
   }
 `
 
-export const AddPersonButton = (props) => {
+export const AddNoteButton = (props) => {
   const { onClick } = props;
 
   return <AddButton onClick={onClick}/>

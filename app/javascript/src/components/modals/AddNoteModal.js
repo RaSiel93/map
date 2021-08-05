@@ -1,31 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 
-export const AddPersonModal = (props) => {
+export const AddNoteModal = (props) => {
   const { isOpen, onClose, onSubmit, item } = props;
 
-  const [notice, setNotice] = useState('');
+  const [text, setText] = useState('');
 
   const onAfterOpen = () => {
-    setNotice('');
+    setText('');
   }
 
   const handleSubmit = () => {
-    onSubmit({ notice, area_id: item.id });
+    onSubmit({ text, area_id: item?.id });
   }
 
   return <Modal
     isOpen={isOpen}
     onAfterOpen={onAfterOpen}
     onRequestClose={onClose}
-    contentLabel='Дабаўленне чалавека'
+    contentLabel='Дабаўленне нататкі'
   >
     <div>
-      <label htmlFor='notice'>Нататка</label>
+      <label htmlFor='text'>Тэкст</label>
       <textarea
-        id='notice'
-        value={notice}
-        onChange={(e) => { setNotice(e.target.value) }}
+        id='text'
+        value={text}
+        onChange={(e) => { setText(e.target.value) }}
         cols='50'
         rows='10'
       ></textarea>

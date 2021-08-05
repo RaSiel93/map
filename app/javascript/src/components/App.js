@@ -10,11 +10,11 @@ import styled from 'styled-components';
 
 import { AddCarModal } from './modals/AddCarModal';
 import { EditCarModal } from './modals/EditCarModal';
-import { AddPersonModal } from './modals/AddPersonModal';
+import { AddNoteModal } from './modals/AddNoteModal';
 import { ShowAreaModal } from './modals/ShowAreaModal';
 import { EditAreaModal } from './modals/EditAreaModal';
 
-import { AddPersonButton } from './buttons/AddPersonButton';
+import { AddNoteButton } from './buttons/AddNoteButton';
 import { AddAreaButton } from './buttons/AddAreaButton';
 import { ModePointButton } from './buttons/ModePointButton';
 import { ModeShowButton } from './buttons/ModeShowButton';
@@ -22,7 +22,7 @@ import { ModeEditButton } from './buttons/ModeEditButton';
 
 import { getCars, createCar, updateCar, removeCar } from '../api/car';
 import { getAreas, createArea, updateArea, removeArea } from '../api/area';
-import { createPerson } from '../api/person';
+import { createNote } from '../api/note';
 import { carToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
 
 const Mode = styled.div`
@@ -47,7 +47,7 @@ const App = () => {
 
   const [modalAddCar, setModalAddCar] = useState(false);
   const [modalEditCar, setModalEditCar] = useState(false);
-  const [modalAddPerson, setModalAddPerson] = useState(false);
+  const [modalAddNote, setModalAddNote] = useState(false);
   const [modalShowArea, setModalShowArea] = useState(false);
   const [modalEditArea, setModalEditArea] = useState(false);
 
@@ -65,8 +65,8 @@ const App = () => {
   const openEditCarModal = () => setModalEditCar(true);
   const closeEditCarModal = () => setModalEditCar(false);
 
-  const openAddPersonModal = () => setModalAddPerson(true);
-  const closeAddPersonModal = () => setModalAddPerson(false);
+  const openAddNoteModal = () => setModalAddNote(true);
+  const closeAddNoteModal = () => setModalAddNote(false);
 
   const openEditAreaModal = () => setModalEditArea(true);
   const closeEditAreaModal = () => setModalEditArea(false);
@@ -139,12 +139,12 @@ const App = () => {
     closeEditCarModal();
   }
 
-  const addPerson = async (form) => {
+  const addNote = async (form) => {
     const token = document.querySelector('[name=csrf-token]').content;
-    const params = { person: { ...form }};
+    const params = { note: { ...form }};
 
-    await createPerson(params, token);
-    closeAddPersonModal();
+    await createNote(params, token);
+    closeAddNoteModal();
   }
 
   const toogleAreaMode = () => {
@@ -384,11 +384,11 @@ const App = () => {
         onRemove={deleteCar}
         onSubmit={editCar}
       />}
-      <AddPersonModal
-        isOpen={modalAddPerson}
+      <AddNoteModal
+        isOpen={modalAddNote}
         item={selectedArea}
-        onClose={closeAddPersonModal}
-        onSubmit={addPerson}
+        onClose={closeAddNoteModal}
+        onSubmit={addNote}
       />
       {selectedArea && <EditAreaModal
         item={selectedArea}
@@ -433,7 +433,7 @@ const App = () => {
         onClick={toogleAreaMode}
         onSubmit={addArea}
       />
-      <AddPersonButton onClick={openAddPersonModal}/>
+      <AddNoteButton onClick={openAddNoteModal}/>
     </div>
   )
 }

@@ -1,5 +1,5 @@
-ActiveAdmin.register Person do
-  permit_params :notice, :area_id
+ActiveAdmin.register Note do
+  permit_params :text, :area_id
 
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters

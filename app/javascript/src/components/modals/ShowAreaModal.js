@@ -26,8 +26,8 @@ export const ShowAreaModal = (props) => {
     </div>
     <ul>
       {
-        item.people.map((person) => {
-          return <li key={person.id}>{person.attributes.notice}</li>
+        item.notes.map((note) => {
+          return <li key={note.id}>{note.attributes.text}</li>
         })
       }
     </ul>

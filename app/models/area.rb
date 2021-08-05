@@ -1,3 +1,3 @@
 class Area < ApplicationRecord
-  has_many :people
+  has_many :notes
 end
