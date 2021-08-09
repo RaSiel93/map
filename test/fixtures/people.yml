@@ -1,7 +1,17 @@
 # Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
 
 one:
-  notice: MyString
+  first_name: MyString
+  last_name: MyString
+  middle_name: MyString
+  father: one
+  mother: one
+  birth_at: 2021-08-05 23:03:35
 
 two:
-  notice: MyString
+  first_name: MyString
+  last_name: MyString
+  middle_name: MyString
+  father: two
+  mother: two
+  birth_at: 2021-08-05 23:03:35
