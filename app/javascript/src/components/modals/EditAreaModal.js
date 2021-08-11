@@ -36,11 +36,13 @@ export const EditAreaModal = (props) => {
     </div>
     <div>
       <label htmlFor='description'>Апісанне</label>
-      <input
+      <textarea
         id='description'
         value={description}
         onChange={(e) => { setDescription(e.target.value) }}
-      ></input>
+        cols='50'
+        rows='10'
+      ></textarea>
     </div>
     <button onClick={handleRemove}>Выдаліць</button>
     <button onClick={handleSubmit}>Прыняць</button>

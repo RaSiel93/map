@@ -437,7 +437,7 @@ const App = () => {
         zIndex="5"
         controller={{dragPan: true}}
         layers={layers}
-        getTooltip={({object}) => object && `${object.number}\n${object.notice}`}
+        getTooltip={({object}) => object && `${object.number}\n${object.notice?.match(/.{1,50}/g)?.join('\n')}`}
         style={{zIndex: '1'}}
         getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (hoveredArea ? 'pointer' : 'grab'))}
       >
