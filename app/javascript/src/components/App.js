@@ -125,8 +125,15 @@ const App = () => {
     setAreas(deckGlAreas);
   }
   const refreshAreas = () => {
-    setSelectableAreas(areas.filter((area) => area.maxZoom > zoom));
-    setContourAreas(areas.filter((area) => area.maxZoom <= zoom));
+    const selectableAreas = areas.filter((area) => area.maxZoom > zoom);
+    const contourAreas = areas.filter((area) => area.maxZoom <= zoom)
+
+    setSelectableAreas(selectableAreas);
+    setContourAreas(contourAreas);
+
+    if (hoveredArea && contourAreas.includes(hoveredArea)) {
+      setHoveredArea(null);
+    }
   }
 
   useEffect(() => {
