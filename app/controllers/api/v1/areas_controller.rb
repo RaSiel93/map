@@ -8,6 +8,8 @@ module Api
       def create
         area = Area.create(area_params)
 
+        area.update_max_zoom
+
         render json: serialize(area)
       end
 

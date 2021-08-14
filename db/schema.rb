@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_05_200335) do
+ActiveRecord::Schema.define(version: 2021_08_14_080750) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -47,6 +47,7 @@ ActiveRecord::Schema.define(version: 2021_08_05_200335) do
     t.datetime "updated_at", precision: 6, null: false
     t.string "title"
     t.string "description"
+    t.decimal "max_zoom", default: "100.0", null: false
   end
 
   create_table "cars", force: :cascade do |t|

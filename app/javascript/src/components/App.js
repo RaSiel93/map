@@ -2,7 +2,15 @@ import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import ReactModal from 'react-modal';
 import DeckGL from '@deck.gl/react';
-import { PathLayer, ScatterplotLayer, LineLayer, PolygonLayer } from '@deck.gl/layers';
+import {
+  PathLayer,
+  ScatterplotLayer,
+  LineLayer,
+  PolygonLayer,
+} from '@deck.gl/layers';
+
+// import { ContourLayer } from '@deck.gl/aggregation-layers';
+
 import { StaticMap } from 'react-map-gl';
 import { TerrainLayer } from '@deck.gl/geo-layers';
 import axios from 'axios';
@@ -46,6 +54,8 @@ const Mode = styled.div`
 const App = () => {
   const [cars, setCars] = useState([]);
   const [areas, setAreas] = useState([]);
+  const [selectableAreas, setSelectableAreas] = useState([]);
+  const [contourAreas, setContourAreas] = useState([]);
   const [areaData, setAreaData] = useState([]);
 
   const [modalAddCar, setModalAddCar] = useState(false);
@@ -54,6 +64,8 @@ const App = () => {
   const [modalShowArea, setModalShowArea] = useState(false);
   const [modalEditArea, setModalEditArea] = useState(false);
   const [modalAddPerson, setModalAddPerson] = useState(false);
+
+  const [zoom, setZoom] = useState(null);
 
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
@@ -112,11 +124,19 @@ const App = () => {
 
     setAreas(deckGlAreas);
   }
+  const refreshAreas = () => {
+    setSelectableAreas(areas.filter((area) => area.maxZoom > zoom));
+    setContourAreas(areas.filter((area) => area.maxZoom <= zoom));
+  }
 
   useEffect(() => {
     loadCars();
     loadAreas();
   }, [])
+
+  useEffect(() => {
+    refreshAreas();
+  }, [areas])
 
   const addCar = async (form) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -231,65 +251,107 @@ const App = () => {
     closeEditAreaModal();
   }
 
+  // const CONTOURS = [
+  //   {threshold: 1, color: [255, 0, 0, 255], strokeWidth: 1}, // => Isoline for threshold 1
+  //   {threshold: 5, color: [0, 255, 0], strokeWidth: 2}, // => Isoline for threshold 5
+  //   {threshold: [6, 10], color: [0, 0, 255, 128]} // => Isoband for threshold range [6, 10)
+  // ];
+
+  // const contourLayer = new ContourLayer({
+  //   id: 'contourLayer',
+  //   // Three contours are rendered.
+  //   data: cars,
+  //   contours: CONTOURS,
+  //   cellSize: 200,
+  //   getPosition: d => d.coordinates,
+  //   getLineColor: d => [100, 100, 250, 35.5],
+  // });
+
+  const carsLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer1',
+    data: cars,
+    pickable: true,
+    opacity: 0.6,
+    stroked: true,
+    filled: true,
+    radiusScale: 3,
+    radiusMinPixels: 1,
+    radiusMaxPixels: 20,
+    lineWidthMinPixels: 1,
+    getPosition: d => d.coordinates,
+    getRadius: d => Math.sqrt(d.exits),
+    getFillColor: d => [200, 200, 200],
+    getLineColor: d => [0, 0, 0],
+    onClick: (info) => {
+      setSelectedCar(info.object);
+
+      mode === 'edit' && openEditCarModal();
+    }
+  });
+
+  const hoveredAreaLayer = new PolygonLayer({
+    id: 'polygon-layer1',
+    data: hoveredArea && [hoveredArea],
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d.contour,
+    getElevation: d => 10,
+    getFillColor: d => [255, 255, 0, 35.5],
+    getLineColor: [255, 160, 0, 125],
+    getLineWidth: 1,
+  });
+
+  const areasLayer = new PolygonLayer({
+    id: 'polygon-layer2',
+    data: selectableAreas,
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d.contour,
+    getElevation: d => 10,
+    getFillColor: d => [100, 100, 250, 35.5],
+    getLineColor: [80, 80, 80, 65],
+    getLineWidth: 1,
+    onHover: (info) => {
+      setHoveredArea(info.object);
+    },
+    onClick: (info) => {
+      setSelectedArea(info.object);
+
+      mode === 'show' && openShowAreaModal();
+      mode === 'edit' && openEditAreaModal();
+    }
+  });
+
+  const contourAreasLayer = new PolygonLayer({
+    id: 'contourAreasLayer',
+    data: contourAreas,
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d.contour,
+    getElevation: d => 10,
+    getFillColor: d => [0, 0, 0, 0],
+    getLineColor: [255, 0, 0, 205],
+    getLineWidth: 1,
+    onHover: (info) => {
+      // if (zoom > 15) {
+      //   setHoveredArea(null);
+      // }
+    },
+  });
+
   const layers = [
-    new ScatterplotLayer({
-      id: 'scatterplot-layer1',
-      data: cars,
-      pickable: true,
-      opacity: 0.6,
-      stroked: true,
-      filled: true,
-      radiusScale: 3,
-      radiusMinPixels: 1,
-      radiusMaxPixels: 20,
-      lineWidthMinPixels: 1,
-      getPosition: d => d.coordinates,
-      getRadius: d => Math.sqrt(d.exits),
-      getFillColor: d => [200, 200, 200],
-      getLineColor: d => [0, 0, 0],
-      onClick: (info) => {
-        setSelectedCar(info.object);
-
-        mode === 'edit' && openEditCarModal();
-      }
-    }),
-    new PolygonLayer({
-      id: 'polygon-layer1',
-      data: hoveredArea && [hoveredArea],
-      pickable: true,
-      stroked: true,
-      filled: true,
-      wireframe: true,
-      lineWidthMinPixels: 1,
-      getPolygon: d => d.contour,
-      getElevation: d => 10,
-      getFillColor: d => [255, 255, 0, 35.5],
-      getLineColor: [255, 160, 0, 125],
-      getLineWidth: 1,
-    }),
-    new PolygonLayer({
-      id: 'polygon-layer2',
-      data: areas,
-      pickable: true,
-      stroked: true,
-      filled: true,
-      wireframe: true,
-      lineWidthMinPixels: 1,
-      getPolygon: d => d.contour,
-      getElevation: d => 10,
-      getFillColor: d => [100, 100, 250, 25.5],
-      getLineColor: [80, 80, 80, 65],
-      getLineWidth: 1,
-      onHover: (info) => {
-        setHoveredArea(info.object);
-      },
-      onClick: (info) => {
-        setSelectedArea(info.object);
-
-        mode === 'show' && openShowAreaModal();
-        mode === 'edit' && openEditAreaModal();
-      }
-    }),
+    // carsLayer,
+    // hoveredAreaLayer,
+    // areasLayer,
     new PolygonLayer({
       id: 'polygon-layer3',
       data: selectedArea && [selectedArea],
@@ -351,6 +413,15 @@ const App = () => {
     // }),
   ]
 
+  // if (zoom > 15) {
+  layers.push(contourAreasLayer);
+  // } else {
+  layers.push(hoveredAreaLayer);
+  layers.push(areasLayer);
+  // }
+
+  // layers.push(contourLayer);
+
   const onClick = (event) => {
     if (mode === 'area') {
       const [longitude, latitude] = event.coordinate
@@ -384,6 +455,7 @@ const App = () => {
 
   return (
     <div>
+      <div style={{position: 'absolute', top: '30px', zIndex: 10, color: '#fff'}}>zoom: {zoom}</div>
       {
         mode && <Mode>{mode}</Mode>
       }
@@ -428,7 +500,7 @@ const App = () => {
         initialViewState={{
           longitude: 27.478700,
           latitude: 53.868718,
-          zoom: 16.0,
+          zoom: 15.0,
           pitch: 0,
           bearing: 0
         }}
@@ -440,6 +512,10 @@ const App = () => {
         getTooltip={({object}) => object && `${object.number}\n${object.notice?.match(/.{1,50}/g)?.join('\n')}`}
         style={{zIndex: '1'}}
         getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (hoveredArea ? 'pointer' : 'grab'))}
+        onViewStateChange={(viewState) => {
+          setZoom(viewState.viewState.zoom);
+          refreshAreas();
+        }}
       >
         <StaticMap
           mapStyle="mapbox://styles/mapbox/satellite-v9"
