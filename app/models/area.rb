@@ -1,8 +1,8 @@
 class Area < ApplicationRecord
   has_many :notes
 
-  ZOOM_MULTIPLICATOR = 2000000000000
-  ZOOM_LEVEL = 1.0/12
+  ZOOM_MULTIPLICATOR = 5848045528
+  ZOOM_LEVEL = 1.0/10
 
   def update_max_zoom
     update(max_zoom: calculate_max_zoom)
