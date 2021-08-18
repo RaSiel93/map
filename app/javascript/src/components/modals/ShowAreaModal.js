@@ -27,5 +27,14 @@ export const ShowAreaModal = (props) => {
         })
       }
     </ul>
+    <ul>
+      {
+        item.people.map((person) => {
+          return <li key={person.id}>
+            {`${person.attributes.last_name} ${person.attributes.first_name}`}
+          </li>
+        })
+      }
+    </ul>
   </Modal>
 }

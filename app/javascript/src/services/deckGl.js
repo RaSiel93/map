@@ -12,7 +12,9 @@ export function carToScatterplotObject(car) {
 }
 
 export function areaToPolygonObject(area) {
-  const { id, title, description, coordinates, notes, max_zoom, area_id, people_count } = area.attributes;
+  const {
+    id, title, description, coordinates, notes, max_zoom, area_id, people_count, people
+  } = area.attributes;
 
   return {
     id: id,
@@ -24,5 +26,6 @@ export function areaToPolygonObject(area) {
     maxZoom: max_zoom,
     areaId: area_id,
     peopleCount: people_count,
+    people: people,
   }
 }
