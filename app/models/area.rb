@@ -1,5 +1,9 @@
 class Area < ApplicationRecord
   has_many :notes
+  has_many :people
+  has_many :areas
+
+  belongs_to :area, optional: true
 
   ZOOM_MULTIPLICATOR = 23525234
   ZOOM_LEVEL = 1.0/8.00
@@ -7,6 +11,12 @@ class Area < ApplicationRecord
   def update_max_zoom
     update(max_zoom: calculate_max_zoom)
   end
+
+  def people_count
+    @people_count ||= people.size + areas.sum(&:people_count)
+  end
+
+  private
 
   def calculate_max_zoom
     range_longitudes = longitudes.max - longitudes.min

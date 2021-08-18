@@ -22,7 +22,10 @@ module Api
       private
 
       def person_params
-        @person_params ||= params.require(:person).permit(:first_name, :last_name, :middle_name, :birth_at, :notice)
+        @person_params ||= params.require(:person).permit(
+          :first_name, :last_name, :middle_name, :birth_at,
+          :notice, :area_id, :company_id
+        )
       end
 
       def serialize(records, options = {})

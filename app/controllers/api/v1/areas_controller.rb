@@ -2,7 +2,7 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        render json: serialize(Area.includes(:notes).where(hidden: false))
+        render json: serialize(Area.includes(:notes, :people, areas: :people).where(hidden: false))
       end
 
       def create
@@ -32,7 +32,9 @@ module Api
       private
 
       def area_params
-        @area_params ||= params.require(:area).permit(:title, :description, coordinates: [])
+        @area_params ||= params.require(:area).permit(
+          :title, :description, :area_id, coordinates: []
+        )
       end
 
       def serialize(records, options = {})

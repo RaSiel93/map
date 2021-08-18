@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_18_162545) do
+ActiveRecord::Schema.define(version: 2021_08_18_182954) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -49,6 +49,8 @@ ActiveRecord::Schema.define(version: 2021_08_18_162545) do
     t.string "description"
     t.decimal "max_zoom", default: "100.0", null: false
     t.boolean "hidden", default: false, null: false
+    t.bigint "area_id"
+    t.index ["area_id"], name: "index_areas_on_area_id"
   end
 
   create_table "cars", force: :cascade do |t|
@@ -58,6 +60,16 @@ ActiveRecord::Schema.define(version: 2021_08_18_162545) do
     t.string "latitude"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "companies", force: :cascade do |t|
+    t.string "name"
+    t.string "number"
+    t.text "notice"
+    t.bigint "area_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["area_id"], name: "index_companies_on_area_id"
   end
 
   create_table "notes", force: :cascade do |t|
@@ -78,6 +90,10 @@ ActiveRecord::Schema.define(version: 2021_08_18_162545) do
     t.text "notice"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "company_id"
+    t.bigint "area_id"
+    t.index ["area_id"], name: "index_people_on_area_id"
+    t.index ["company_id"], name: "index_people_on_company_id"
     t.index ["father_id"], name: "index_people_on_father_id"
     t.index ["mother_id"], name: "index_people_on_mother_id"
   end

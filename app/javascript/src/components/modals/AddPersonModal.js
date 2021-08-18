@@ -2,13 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 
 export const AddPersonModal = (props) => {
-  const { isOpen, onClose, onSubmit, item } = props;
+  const { isOpen, onClose, onSubmit, item, areas, companies } = props;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [middleName, setMiddleName] = useState('');
   const [birthAt, setBirthAt] = useState('');
   const [notice, setNotice] = useState('');
+  const [areaId, setAreaId] = useState(null);
+  const [companyId, setCompanyId] = useState(null);
 
   const onAfterOpen = () => {
     setFirstName('');
@@ -16,6 +18,8 @@ export const AddPersonModal = (props) => {
     setMiddleName('');
     setBirthAt('');
     setNotice('');
+    setAreaId(null);
+    setCompanyId(null);
   }
 
   const handleSubmit = () => {
@@ -25,6 +29,8 @@ export const AddPersonModal = (props) => {
       middle_name: middleName,
       birth_at: birthAt,
       notice: notice,
+      area_id: areaId,
+      company_id: companyId,
     });
   }
 
@@ -75,6 +81,36 @@ export const AddPersonModal = (props) => {
         cols='50'
         rows='10'
       ></textarea>
+    </div>
+    <div>
+      <label htmlFor='areaId'>Месца жыхарства</label>
+      <select
+        name='areaId'
+        value={areaId || ''}
+        onChange={(e) => { setAreaId(e.target.value) }}
+      >
+        <option value=''></option>
+        {
+          areas.map((area) => {
+            return <option key={area.id} value={area.id}>{area.number}</option>
+          })
+        }
+      </select>
+    </div>
+    <div>
+      <label htmlFor='companyId'>Месца працы</label>
+      <select
+        name='companyId'
+        value={companyId || ''}
+        onChange={(e) => { setCompanyId(e.target.value) }}
+      >
+        <option value=''></option>
+        {
+          companies.map((company) => {
+            return <option key={company.id} value={company.id}>{company.attributes.name}</option>
+          })
+        }
+      </select>
     </div>
     <button onClick={handleSubmit}>Прыняць</button>
   </Modal>

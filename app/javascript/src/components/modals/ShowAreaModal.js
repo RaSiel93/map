@@ -4,25 +4,21 @@ import { Modal } from './Modal';
 export const ShowAreaModal = (props) => {
   const { isOpen, item, onClose } = props;
 
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-
-  const onAfterOpen = () => {
-    setTitle(item.number || '');
-    setDescription(item.notice || '');
-  }
-
   return <Modal
     isOpen={isOpen}
-    onAfterOpen={onAfterOpen}
     onRequestClose={onClose}
-    contentLabel='Рэдагаванне машыны'
+    contentLabel='Прагляд тэрыторыі'
   >
     <div>
-      <h2 htmlFor='title'>{title}</h2>
+      <h2 htmlFor='title'>{item.number}</h2>
     </div>
     <div>
-      <h4 htmlFor='description'>{description}</h4>
+      <h5 htmlFor='peopleCount'>
+        Колькасць жыхароў: {item.peopleCount}
+      </h5>
+    </div>
+    <div>
+      <h4 htmlFor='description'>{item.notice}</h4>
     </div>
     <ul>
       {

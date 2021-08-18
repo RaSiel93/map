@@ -32,6 +32,7 @@ import { ModeEditButton } from './buttons/ModeEditButton';
 
 import { getCars, createCar, updateCar, removeCar } from '../api/car';
 import { getAreas, createArea, updateArea, removeArea } from '../api/area';
+import { getCompanies } from '../api/company';
 import { createNote } from '../api/note';
 import { createPerson } from '../api/person';
 import { carToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
@@ -54,6 +55,7 @@ const Mode = styled.div`
 const App = () => {
   const [cars, setCars] = useState([]);
   const [areas, setAreas] = useState([]);
+  const [companies, setCompanies] = useState([]);
   const [selectableAreas, setSelectableAreas] = useState([]);
   const [contourAreas, setContourAreas] = useState([]);
   const [areaData, setAreaData] = useState([]);
@@ -136,9 +138,16 @@ const App = () => {
     }
   }
 
+  const loadCompanies = async () => {
+    const companies = await getCompanies();
+
+    setCompanies(companies);
+  }
+
   useEffect(() => {
     loadCars();
     loadAreas();
+    loadCompanies();
   }, [])
 
   useEffect(() => {
@@ -462,7 +471,9 @@ const App = () => {
 
   return (
     <div>
-      <div style={{position: 'absolute', top: '30px', zIndex: 10, color: '#fff'}}>zoom: {zoom}</div>
+      <div style={{position: 'absolute', top: '30px', zIndex: 10, color: '#fff'}}>
+        zoom: {zoom}
+      </div>
       {
         mode && <Mode>{mode}</Mode>
       }
@@ -489,6 +500,8 @@ const App = () => {
         item={selectedArea}
         onClose={closeAddPersonModal}
         onSubmit={addPerson}
+        areas={areas}
+        companies={companies}
       />
       {selectedArea && <EditAreaModal
         item={selectedArea}
@@ -496,6 +509,7 @@ const App = () => {
         onClose={closeEditAreaModal}
         onRemove={deleteArea}
         onSubmit={editArea}
+        areas={areas}
       />}
       {selectedArea && <ShowAreaModal
         item={selectedArea}

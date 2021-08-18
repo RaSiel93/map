@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :cars, only: %i[index create update destroy]
       resources :notes, only: %i[index create update destroy]
       resources :people, only: %i[index create update destroy]
+      resources :companies, only: %i[index create update destroy]
     end
   end
 end

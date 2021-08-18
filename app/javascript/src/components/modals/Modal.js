@@ -51,7 +51,7 @@ export const Modal = styled(ReactModalAdapter)`
     display: flex;
     flex-direction: column;
 
-    h2, h4 {
+    h2, h4, h5 {
       text-align: center;
     }
   }

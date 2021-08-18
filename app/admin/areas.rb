@@ -1,5 +1,5 @@
 ActiveAdmin.register Area do
-  permit_params :title, :description, :max_zoom, :hidden
+  permit_params :title, :description, :max_zoom, :hidden, :area_id
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
   #
@@ -21,6 +21,7 @@ ActiveAdmin.register Area do
     column :title
     column :description
     column :max_zoom
+    column :area_id
     column :created_at
     actions
   end
@@ -31,6 +32,7 @@ ActiveAdmin.register Area do
       f.input :description
       f.input :max_zoom
       f.input :hidden, as: :boolean
+      f.input :area_id
     end
     f.actions
   end
@@ -42,6 +44,7 @@ ActiveAdmin.register Area do
       row :max_zoom
       row :hidden
       row :created_at
+      row :area_id
     end
     active_admin_comments
   end
