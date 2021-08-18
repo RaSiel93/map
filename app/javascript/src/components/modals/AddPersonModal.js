@@ -18,7 +18,7 @@ export const AddPersonModal = (props) => {
     setMiddleName('');
     setBirthAt('');
     setNotice('');
-    setAreaId(null);
+    setAreaId(item?.id);
     setCompanyId(null);
   }
 
