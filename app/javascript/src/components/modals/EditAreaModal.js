@@ -61,7 +61,7 @@ export const EditAreaModal = (props) => {
         }
       </select>
     </div>
-    <button onClick={handleRemove}>Выдаліць</button>
+    {/*<button onClick={handleRemove}>Выдаліць</button>*/}
     <button onClick={handleSubmit}>Прыняць</button>
   </Modal>
 }
