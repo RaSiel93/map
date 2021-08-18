@@ -30,7 +30,7 @@ ActiveAdmin.register Area do
       f.input :title
       f.input :description
       f.input :max_zoom
-      f.input :hidden
+      f.input :hidden, as: :boolean
     end
     f.actions
   end
