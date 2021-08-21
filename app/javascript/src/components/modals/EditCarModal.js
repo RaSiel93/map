@@ -27,18 +27,18 @@ export const EditCarModal = (props) => {
     contentLabel='Рэдагаванне машыны'
   >
     <div>
-      <label htmlFor='number'>Нумар</label>
       <input
         id='number'
         value={number}
+        placeholder='Нумар'
         onChange={(e) => { setNumber(e.target.value) }}
       ></input>
     </div>
     <div>
-      <label htmlFor='notice'>Нататка</label>
       <input
         id='notice'
         value={notice}
+        placeholder='Нататка'
         onChange={(e) => { setNotice(e.target.value) }}
       ></input>
     </div>

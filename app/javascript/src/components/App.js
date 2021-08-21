@@ -194,8 +194,15 @@ const App = () => {
     const token = document.querySelector('[name=csrf-token]').content;
     const params = { person: { ...form }};
 
-    await createPerson(params, token);
+    const person = await createPerson(params, token);
     closeAddPersonModal();
+
+    const area = areas.find((area) => area.id === form.area_id);
+
+    if (area) {
+      area.people = [...area.people, person];
+      setAreas([...areas, area]);
+    }
   }
 
   const toogleAreaMode = () => {
@@ -515,6 +522,8 @@ const App = () => {
         item={selectedArea}
         isOpen={modalShowArea}
         onClose={closeShowAreaModal}
+        onSubmit={addPerson}
+        companies={companies}
       />}
       <DeckGL
         onClick={onClick}

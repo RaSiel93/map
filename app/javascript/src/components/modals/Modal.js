@@ -47,7 +47,7 @@ export const Modal = styled(ReactModalAdapter)`
     font-size: 20px;
   }
 
-  div {
+  > div {
     display: flex;
     flex-direction: column;
 

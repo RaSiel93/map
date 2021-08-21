@@ -29,31 +29,30 @@ export const EditAreaModal = (props) => {
     contentLabel='Рэдагаванне машыны'
   >
     <div>
-      <label htmlFor='title'>Назва</label>
       <input
         id='title'
         value={title}
+        placeholder='Назва'
         onChange={(e) => { setTitle(e.target.value) }}
       ></input>
     </div>
     <div>
-      <label htmlFor='description'>Апісанне</label>
       <textarea
         id='description'
         value={description}
         onChange={(e) => { setDescription(e.target.value) }}
+        placeholder='Апісанне'
         cols='50'
         rows='10'
       ></textarea>
     </div>
     <div>
-      <label htmlFor='areaId'>Знаходзіцца ў</label>
       <select
         name='areaId'
         value={areaId || ''}
         onChange={(e) => { setAreaId(e.target.value) }}
       >
-        <option value=''></option>
+        <option value=''>Знаходзіцца ў</option>
         {
           areas.map((area) => {
             return <option key={area.id} value={area.id}>{area.number}</option>

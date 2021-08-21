@@ -41,55 +41,54 @@ export const AddPersonModal = (props) => {
     contentLabel='Дабаўленне чалавека'
   >
     <div>
-      <label htmlFor='lastName'>Прозвішча</label>
       <input
         id='lastName'
         value={lastName}
+        placeholder='Прозвішча'
         onChange={(e) => { setLastName(e.target.value) }}
       ></input>
     </div>
     <div>
-      <label htmlFor='firstName'>Імя</label>
       <input
         id='firstName'
         value={firstName}
+        placeholder='Імя'
         onChange={(e) => { setFirstName(e.target.value) }}
       ></input>
     </div>
     <div>
-      <label htmlFor='middleName'>Імя па бацьку</label>
       <input
         id='middleName'
         value={middleName}
+        placeholder='Імя па бацьку'
         onChange={(e) => { setMiddleName(e.target.value) }}
       ></input>
     </div>
     <div>
-      <label htmlFor='birthAt'>Дата нараджэння</label>
       <input
         id='birthAt'
         value={birthAt}
+        placeholder='Дата нараджэння'
         onChange={(e) => { setBirthAt(e.target.value) }}
       ></input>
     </div>
     <div>
-      <label htmlFor='notice'>Нататка</label>
       <textarea
         id='notice'
         value={notice}
         onChange={(e) => { setNotice(e.target.value) }}
+        placeholder='Нататка'
         cols='50'
         rows='10'
       ></textarea>
     </div>
     <div>
-      <label htmlFor='areaId'>Месца жыхарства</label>
       <select
         name='areaId'
         value={areaId || ''}
         onChange={(e) => { setAreaId(e.target.value) }}
       >
-        <option value=''></option>
+        <option value=''>Месца жыхарства</option>
         {
           areas.map((area) => {
             return <option key={area.id} value={area.id}>{area.number}</option>
@@ -98,13 +97,12 @@ export const AddPersonModal = (props) => {
       </select>
     </div>
     <div>
-      <label htmlFor='companyId'>Месца працы</label>
       <select
         name='companyId'
         value={companyId || ''}
         onChange={(e) => { setCompanyId(e.target.value) }}
       >
-        <option value=''></option>
+        <option value=''>Месца працы</option>
         {
           companies.map((company) => {
             return <option key={company.id} value={company.id}>{company.attributes.name}</option>

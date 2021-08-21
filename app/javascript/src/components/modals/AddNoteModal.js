@@ -21,10 +21,10 @@ export const AddNoteModal = (props) => {
     contentLabel='Дабаўленне нататкі'
   >
     <div>
-      <label htmlFor='text'>Тэкст</label>
       <textarea
         id='text'
         value={text}
+        placeholder='Тэкст'
         onChange={(e) => { setText(e.target.value) }}
         cols='50'
         rows='10'
