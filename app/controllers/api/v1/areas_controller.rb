@@ -2,7 +2,7 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        render json: serialize(Area.includes(:notes, :people, areas: :people).where(hidden: false))
+        render json: serialize(Area.includes(:notes, :people, areas: { people: :company }).where(hidden: false))
       end
 
       def create

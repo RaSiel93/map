@@ -13,11 +13,6 @@ export const ShowAreaModal = (props) => {
       <h2 htmlFor='title'>{item.number}</h2>
     </div>
     <div>
-      <h5 htmlFor='peopleCount'>
-        Колькасць жыхароў: {item.peopleCount}
-      </h5>
-    </div>
-    <div>
       <h4 htmlFor='description'>{item.notice}</h4>
     </div>
     <ul>
@@ -27,14 +22,26 @@ export const ShowAreaModal = (props) => {
         })
       }
     </ul>
-    <ul>
-      {
-        item.people.map((person) => {
-          return <li key={person.id}>
-            {`${person.attributes.last_name} ${person.attributes.first_name}`}
-          </li>
-        })
-      }
-    </ul>
+    <div>
+      <div>
+        <h5 htmlFor='peopleCount'>
+          Колькасць жыхароў: {item.peopleCount}
+        </h5>
+      </div>
+      <ul>
+        {
+          item.people.map((person) => {
+            const { attributes: { id, first_name, last_name, company } } = person;
+            const { attributes: { name } } = company;
+
+            return <li key={id}>
+              {
+                `${last_name} ${first_name} - ${name}`
+              }
+            </li>
+          })
+        }
+      </ul>
+    </div>
   </Modal>
 }
