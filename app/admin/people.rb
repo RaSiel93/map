@@ -14,4 +14,14 @@ ActiveAdmin.register Person do
   #   permitted << :other if params[:action] == 'create' && current_user.admin?
   #   permitted
   # end
+
+  filter :first_name
+  filter :last_name
+  filter :middle_name
+  filter :birth_at
+  filter :notice
+
+  filter :company_name_cont, label: 'Праца'
+  filter :area_title_cont, label: 'Месца жыхарства'
+  filter :area_area_title_cont, label: 'Месца жыхарства (раён)'
 end
