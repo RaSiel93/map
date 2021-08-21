@@ -32,11 +32,10 @@ export const ShowAreaModal = (props) => {
         {
           item.people.map((person) => {
             const { attributes: { id, first_name, last_name, company } } = person;
-            const { attributes: { name } } = company;
 
             return <li key={id}>
               {
-                `${last_name} ${first_name} - ${name}`
+                `${last_name} ${first_name} - ${company?.attributes?.name}`
               }
             </li>
           })
