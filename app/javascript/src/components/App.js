@@ -1,6 +1,9 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
 import ReactModal from 'react-modal';
+import axios from 'axios';
+import styled from 'styled-components';
+import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
 import {
   PathLayer,
@@ -9,32 +12,30 @@ import {
   PolygonLayer,
 } from '@deck.gl/layers';
 
-// import { ContourLayer } from '@deck.gl/aggregation-layers';
+import {
+  AddCarModal,
+  EditCarModal,
+  AddNoteModal,
+  ShowAreaModal,
+  EditAreaModal,
+  AddPersonModal,
+} from './modals';
 
-import { StaticMap } from 'react-map-gl';
-import { TerrainLayer } from '@deck.gl/geo-layers';
-import axios from 'axios';
-import styled from 'styled-components';
-
-import { AddCarModal } from './modals/AddCarModal';
-import { EditCarModal } from './modals/EditCarModal';
-import { AddNoteModal } from './modals/AddNoteModal';
-import { ShowAreaModal } from './modals/ShowAreaModal';
-import { EditAreaModal } from './modals/EditAreaModal';
-import { AddPersonModal } from './modals/AddPersonModal';
-
-import { AddNoteButton } from './buttons/AddNoteButton';
-import { AddAreaButton } from './buttons/AddAreaButton';
-import { AddPersonButton } from './buttons/AddPersonButton';
-import { ModePointButton } from './buttons/ModePointButton';
-import { ModeShowButton } from './buttons/ModeShowButton';
-import { ModeEditButton } from './buttons/ModeEditButton';
+import {
+  AddNoteButton,
+  AddAreaButton,
+  AddPersonButton,
+  ModePointButton,
+  ModeShowButton,
+  ModeEditButton,
+} from './buttons';
 
 import { getCars, createCar, updateCar, removeCar } from '../api/car';
 import { getAreas, createArea, updateArea, removeArea } from '../api/area';
 import { getCompanies } from '../api/company';
 import { createNote } from '../api/note';
 import { createPerson } from '../api/person';
+
 import { carToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
 
 const Mode = styled.div`
@@ -50,7 +51,14 @@ const Mode = styled.div`
   font-size: 20px;
   color: #fff;
   width: 100vw;
-`
+`;
+
+const Information = styled.div`
+  position: absolute;
+  top: 30px;
+  z-index: 10;
+  color: #fff;
+`;
 
 const App = () => {
   const [cars, setCars] = useState([]);
@@ -75,57 +83,43 @@ const App = () => {
   const [hoveredArea, setHoveredArea] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
 
-  const [mode, setMode] = useState(null)
+  const [mode, setMode] = useState(null);
 
   const openAddCarModal = () => setModalAddCar(true);
   const closeAddCarModal = () => setModalAddCar(false);
-
   const openEditCarModal = () => setModalEditCar(true);
   const closeEditCarModal = () => setModalEditCar(false);
-
   const openAddNoteModal = () => setModalAddNote(true);
   const closeAddNoteModal = () => setModalAddNote(false);
-
   const openAddPersonModal = () => setModalAddPerson(true);
   const closeAddPersonModal = () => setModalAddPerson(false);
-
   const openEditAreaModal = () => setModalEditArea(true);
   const closeEditAreaModal = () => setModalEditArea(false);
-
   const openShowAreaModal = () => setModalShowArea(true);
   const closeShowAreaModal = () => setModalShowArea(false);
 
-  const lineCoordinates = () => {
-    let coordinates = []
-
-    for (let i = 0; i < areaData.length - 1; i++) {
-      coordinates.push({
-        from: areaData[i], to: areaData[i + 1]
-      })
-    }
-
-    return coordinates;
-  }
-
-  const lineCountours = () => {
-    return [{ contour:
-      areaData.map(data => data.coordinates)
-    }]
-  }
+  // Loaders
 
   const loadCars = async () => {
     const cars = await getCars();
     const deckGlCars = cars.map(carToScatterplotObject);
 
     setCars(deckGlCars);
-  }
+  };
 
   const loadAreas = async () => {
     const areas = await getAreas();
     const deckGlAreas = areas.map(areaToPolygonObject);
 
     setAreas(deckGlAreas);
-  }
+  };
+
+  const loadCompanies = async () => {
+    const companies = await getCompanies();
+
+    setCompanies(companies);
+  };
+
   const refreshAreas = () => {
     const selectableAreas = areas.filter((area) => area.maxZoom > zoom);
     const contourAreas = areas.filter((area) => area.maxZoom <= zoom)
@@ -136,23 +130,7 @@ const App = () => {
     if (hoveredArea && contourAreas.includes(hoveredArea)) {
       setHoveredArea(null);
     }
-  }
-
-  const loadCompanies = async () => {
-    const companies = await getCompanies();
-
-    setCompanies(companies);
-  }
-
-  useEffect(() => {
-    loadCars();
-    loadAreas();
-    loadCompanies();
-  }, [])
-
-  useEffect(() => {
-    refreshAreas();
-  }, [areas])
+  };
 
   const addCar = async (form) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -162,7 +140,7 @@ const App = () => {
 
     setCars([...cars, deckGlCar]);
     closeAddModal();
-  }
+  };
 
   const editCar = async ({ id, ...form }) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -172,7 +150,7 @@ const App = () => {
 
     setCars([...cars.filter((car) => { return car.id !== id }), deckGlCar]);
     closeEditCarModal();
-  }
+  };
 
   const deleteCar = async ({ id }) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -180,7 +158,7 @@ const App = () => {
 
     setCars(cars.filter((car) => { return car.id !== id }));
     closeEditCarModal();
-  }
+  };
 
   const addNote = async (form) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -188,7 +166,7 @@ const App = () => {
 
     await createNote(params, token);
     closeAddNoteModal();
-  }
+  };
 
   const addPerson = async (form) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -203,48 +181,15 @@ const App = () => {
       area.people = [...area.people, person];
       setAreas([...areas, area]);
     }
-  }
-
-  const toogleAreaMode = () => {
-    setAreaData([]);
-    if (mode === 'area') {
-      setMode(null);
-    } else {
-      setMode('area');
-    }
-  }
-
-  const handlePointMode = () => {
-    if (mode === 'point') {
-      setMode(null);
-    } else {
-      setMode('point');
-    }
-  }
-
-  const handleShowMode = () => {
-    if (mode === 'show') {
-      setMode(null);
-    } else {
-      setMode('show');
-    }
-  }
-
-  const handleEditMode = () => {
-    if (mode === 'edit') {
-      setMode(null);
-    } else {
-      setMode('edit');
-    }
-  }
+  };
 
   const addArea = async (form) => {
-    const token = document.querySelector('[name=csrf-token]').content
+    const token = document.querySelector('[name=csrf-token]').content;
     const params = {
       area: {
         coordinates: areaData.map(data => JSON.stringify(data.coordinates))
       }
-    }
+    };
 
     const area = await createArea(params, token);
     const deckGlArea = areaToPolygonObject(area);
@@ -252,7 +197,7 @@ const App = () => {
     setAreas([...areas, deckGlArea]);
     setAreaData([]);
     setMode(null);
-  }
+  };
 
   const editArea = async ({ id, ...form }) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -263,7 +208,7 @@ const App = () => {
     setAreas([...areas.filter((area) => { return area.id !== id }), deckGlArea]);
     setSelectedArea(null);
     closeEditAreaModal();
-  }
+  };
 
   const deleteArea = async ({ id }) => {
     const token = document.querySelector('[name=csrf-token]').content;
@@ -272,23 +217,44 @@ const App = () => {
     setAreas(areas.filter((area) => { return area.id !== id }));
     setSelectedArea(null);
     closeEditAreaModal();
-  }
+  };
 
-  // const CONTOURS = [
-  //   {threshold: 1, color: [255, 0, 0, 255], strokeWidth: 1}, // => Isoline for threshold 1
-  //   {threshold: 5, color: [0, 255, 0], strokeWidth: 2}, // => Isoline for threshold 5
-  //   {threshold: [6, 10], color: [0, 0, 255, 128]} // => Isoband for threshold range [6, 10)
-  // ];
+  // Modes
 
-  // const contourLayer = new ContourLayer({
-  //   id: 'contourLayer',
-  //   // Three contours are rendered.
-  //   data: cars,
-  //   contours: CONTOURS,
-  //   cellSize: 200,
-  //   getPosition: d => d.coordinates,
-  //   getLineColor: d => [100, 100, 250, 35.5],
-  // });
+  const handleAreaMode = () => {
+    setAreaData([]);
+    if (mode === 'area') {
+      setMode(null);
+    } else {
+      setMode('area');
+    }
+  };
+
+  const handlePointMode = () => {
+    if (mode === 'point') {
+      setMode(null);
+    } else {
+      setMode('point');
+    }
+  };
+
+  const handleShowMode = () => {
+    if (mode === 'show') {
+      setMode(null);
+    } else {
+      setMode('show');
+    }
+  };
+
+  const handleEditMode = () => {
+    if (mode === 'edit') {
+      setMode(null);
+    } else {
+      setMode('edit');
+    }
+  };
+
+  // Layers
 
   const carsLayer = new ScatterplotLayer({
     id: 'scatterplot-layer1',
@@ -337,7 +303,7 @@ const App = () => {
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
-    getFillColor: d => [100, 100, 250, 35.5],
+    getFillColor: d => d.people.length ? [100, 250, 250, 85.5] : [100, 100, 250, 35.5],
     getLineColor: [80, 80, 80, 65],
     getLineWidth: 1,
     onHover: (info) => {
@@ -364,104 +330,82 @@ const App = () => {
     getFillColor: d => [0, 0, 0, 0],
     getLineColor: [255, 0, 0, 205],
     getLineWidth: 1,
-    onHover: (info) => {
-      // if (zoom > 15) {
-      //   setHoveredArea(null);
-      // }
+  });
+
+  const selectedAreaLayer = new PolygonLayer({
+    id: 'polygon-layer3',
+    data: selectedArea && [selectedArea],
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d.contour,
+    getElevation: d => 10,
+    getFillColor: d => [255, 255, 0, 125.5],
+    getLineColor: [255, 160, 0, 125],
+    getLineWidth: 1,
+  });
+
+  const polygonAreaModeLayer = new PolygonLayer({
+    id: 'polygon-layer4',
+    data: [areaData.map(data => data.coordinates)],
+    pickable: true,
+    stroked: true,
+    filled: true,
+    wireframe: true,
+    lineWidthMinPixels: 1,
+    getPolygon: d => d,
+    getElevation: d => 10,
+    getFillColor: d => [250, 250, 0, 25.5],
+    getLineColor: [80, 80, 80, 125],
+    getLineWidth: 1
+  });
+
+  const pointsAreaModeLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer2',
+    data: areaData,
+    pickable: true,
+    opacity: 0.6,
+    stroked: true,
+    filled: true,
+    radiusScale: 2,
+    radiusMinPixels: 1,
+    radiusMaxPixels: 20,
+    lineWidthMinPixels: 1,
+    getPosition: d => d.coordinates,
+    getRadius: d => Math.sqrt(d.exits),
+    getFillColor: d => [250, 250, 100],
+    getLineColor: d => [0, 0, 0],
+    onDragStart: (info, event) => {
+      console.log('onDragStart', info, event)
     },
+    onDragEnd: (info, event) => {
+      console.log('onDragEnd', info, event)
+    }
   });
 
   const layers = [
     // carsLayer,
-    // hoveredAreaLayer,
-    // areasLayer,
-    new PolygonLayer({
-      id: 'polygon-layer3',
-      data: selectedArea && [selectedArea],
-      pickable: true,
-      stroked: true,
-      filled: true,
-      wireframe: true,
-      lineWidthMinPixels: 1,
-      getPolygon: d => d.contour,
-      getElevation: d => 10,
-      getFillColor: d => [255, 255, 0, 125.5],
-      getLineColor: [255, 160, 0, 125],
-      getLineWidth: 1,
-    }),
-    new PolygonLayer({
-      id: 'polygon-layer4',
-      data: lineCountours(),
-      pickable: true,
-      stroked: true,
-      filled: true,
-      wireframe: true,
-      lineWidthMinPixels: 1,
-      getPolygon: d => d.contour,
-      getElevation: d => 10,
-      getFillColor: d => [250, 250, 0, 25.5],
-      getLineColor: [80, 80, 80, 125],
-      getLineWidth: 1
-    }),
-    new ScatterplotLayer({
-      id: 'scatterplot-layer2',
-      data: areaData,
-      pickable: true,
-      opacity: 0.6,
-      stroked: true,
-      filled: true,
-      radiusScale: 2,
-      radiusMinPixels: 1,
-      radiusMaxPixels: 20,
-      lineWidthMinPixels: 1,
-      getPosition: d => d.coordinates,
-      getRadius: d => Math.sqrt(d.exits),
-      getFillColor: d => [250, 250, 100],
-      getLineColor: d => [0, 0, 0],
-      onDragStart: (info, event) => {
-        console.log('onDragStart', info, event)
-      },
-      onDragEnd: (info, event) => {
-        console.log('onDragEnd', info, event)
-      }
-    }),
-    // new LineLayer({
-    //   id: 'line-layer',
-    //   data: lineCoordinates(),
-    //   pickable: true,
-    //   getWidth: 3,
-    //   getSourcePosition: d => d.from.coordinates,
-    //   getTargetPosition: d => d.to.coordinates,
-    //   getColor: d => [250, 250, 100]
-    // }),
-  ]
-
-  // if (zoom > 15) {
-  layers.push(contourAreasLayer);
-  // } else {
-  layers.push(hoveredAreaLayer);
-  layers.push(areasLayer);
-  // }
-
-  // layers.push(contourLayer);
+    selectedAreaLayer,
+    contourAreasLayer,
+    hoveredAreaLayer,
+    areasLayer,
+    polygonAreaModeLayer,
+    pointsAreaModeLayer,
+  ];
 
   const onClick = (event) => {
     if (mode === 'area') {
-      const [longitude, latitude] = event.coordinate
+      const [longitude, latitude] = event.coordinate;
 
-      setLatitude(latitude)
-      setLongitude(longitude)
-
-      setAreaData(areaData => [...areaData, {
-        exits: 1,
-        coordinates: [+longitude, +latitude]
-      }])
+      setLatitude(latitude);
+      setLongitude(longitude);
+      setAreaData(areaData => [...areaData, { exits: 1, coordinates: [+longitude, +latitude] }]);
     } else {
       const picked = event.object;
 
-      if (picked) {
-
-      } else {
+      if (!picked) {
         setSelectedArea(null);
 
         if (mode === 'point') {
@@ -474,13 +418,23 @@ const App = () => {
         }
       }
     }
-  }
+  };
+
+  useEffect(() => {
+    loadCars();
+    loadAreas();
+    loadCompanies();
+  }, []);
+
+  useEffect(() => {
+    refreshAreas();
+  }, [areas]);
 
   return (
     <div>
-      <div style={{position: 'absolute', top: '30px', zIndex: 10, color: '#fff'}}>
+      <Information>
         zoom: {zoom}
-      </div>
+      </Information>
       {
         mode && <Mode>{mode}</Mode>
       }
@@ -534,13 +488,10 @@ const App = () => {
           pitch: 0,
           bearing: 0
         }}
-        height="100%"
-        width="100%"
-        zIndex="5"
         controller={{dragPan: true}}
         layers={layers}
         getTooltip={({object}) => object && `${object.number}\n${object.notice?.match(/.{1,50}/g)?.join('\n')}`}
-        style={{zIndex: '1'}}
+        style={{zIndex: '1', overflow: 'hidden'}}
         getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (hoveredArea ? 'pointer' : 'grab'))}
         onViewStateChange={(viewState) => {
           setZoom(viewState.viewState.zoom);
@@ -557,7 +508,7 @@ const App = () => {
       <ModeEditButton onClick={handleEditMode}></ModeEditButton>
       <AddAreaButton
         mode={mode}
-        onClick={toogleAreaMode}
+        onClick={handleAreaMode}
         onSubmit={addArea}
       />
       <AddNoteButton onClick={openAddNoteModal}/>
