@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_18_182954) do
+ActiveRecord::Schema.define(version: 2021_08_22_133213) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -50,6 +50,7 @@ ActiveRecord::Schema.define(version: 2021_08_18_182954) do
     t.decimal "max_zoom", default: "100.0", null: false
     t.boolean "hidden", default: false, null: false
     t.bigint "area_id"
+    t.integer "people_count"
     t.index ["area_id"], name: "index_areas_on_area_id"
   end
 

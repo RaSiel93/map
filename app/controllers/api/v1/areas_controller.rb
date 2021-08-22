@@ -33,7 +33,7 @@ module Api
 
       def area_params
         @area_params ||= params.require(:area).permit(
-          :title, :description, :area_id, coordinates: []
+          :title, :description, :area_id, :people_count, coordinates: []
         )
       end
 

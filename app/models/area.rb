@@ -12,8 +12,8 @@ class Area < ApplicationRecord
     update(max_zoom: calculate_max_zoom)
   end
 
-  def people_count
-    @people_count ||= people.size + areas.sum(&:people_count)
+  def added_people_count
+    @added_people_count ||= people.size + areas.sum(&:added_people_count)
   end
 
   private

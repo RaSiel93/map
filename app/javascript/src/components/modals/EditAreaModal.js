@@ -7,15 +7,17 @@ export const EditAreaModal = (props) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [areaId, setAreaId] = useState(null);
+  const [peopleCount, setPeopleCount] = useState(null);
 
   const onAfterOpen = () => {
     setTitle(item.number || '');
     setDescription(item.notice || '');
     setAreaId(item.areaId || '');
+    setPeopleCount(item.peopleCount || '');
   }
 
   const handleSubmit = () => {
-    onSubmit({ id: item.id, title, description, area_id: areaId });
+    onSubmit({ id: item.id, title, description, area_id: areaId, people_count: peopleCount });
   }
 
   const handleRemove = () => {
@@ -59,6 +61,16 @@ export const EditAreaModal = (props) => {
           })
         }
       </select>
+    </div>
+    <div>
+      <input
+        id='peopleCount'
+        type='number'
+        min={0}
+        value={peopleCount}
+        placeholder='Колькасць жыхароў'
+        onChange={(e) => { setPeopleCount(e.target.value) }}
+      ></input>
     </div>
     {/*<button onClick={handleRemove}>Выдаліць</button>*/}
     <button onClick={handleSubmit}>Прыняць</button>
