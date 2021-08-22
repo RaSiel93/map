@@ -2,7 +2,7 @@ module Api
   module V1
     class PeopleController < ApplicationController
       def index
-        render json: serialize(Person.all)
+        render json: serialize(Person.includes(:company, :area))
       end
 
       def create

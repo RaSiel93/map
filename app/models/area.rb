@@ -16,6 +16,10 @@ class Area < ApplicationRecord
     @added_people_count ||= people.size + areas.sum(&:added_people_count)
   end
 
+  def estimated_people_count
+    @estimated_people_count ||= areas.sum { |area| area.people_count || 0 }
+  end
+
   private
 
   def calculate_max_zoom

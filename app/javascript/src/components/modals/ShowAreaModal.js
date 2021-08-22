@@ -87,7 +87,7 @@ export const ShowAreaModal = (props) => {
     <div>
       <div>
         <h5 htmlFor='peopleCount'>
-          Колькасць жыхароў: ({item.addedPeopleCount}/{item.peopleCount})
+          Колькасць жыхароў: ({item.addedPeopleCount}/{item.peopleCount}/{item.estimatedPeopleCount})
         </h5>
       </div>
       <ul>
