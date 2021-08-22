@@ -303,7 +303,7 @@ const App = () => {
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
-    getFillColor: d => d.people.length ? [100, 100, 250, 35.5] : [100, 250, 250, 85.5],
+    getFillColor: d => d.people.length ? [100, 100, 250, 35.5] : [100, 250, 250, 65.5],
     getLineColor: [80, 80, 80, 65],
     getLineWidth: 1,
     onHover: (info) => {
