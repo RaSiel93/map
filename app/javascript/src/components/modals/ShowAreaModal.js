@@ -2,6 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import styled from 'styled-components';
 
+
+const Description = styled.div`
+  text {
+    background-color: black;
+    span {
+      display: block;
+    }
+  }
+`;
+
 const AddPersonForm = styled.div`
   display: flex;
   flex-direction: row;
@@ -21,7 +31,7 @@ const AddPersonForm = styled.div`
       width: 100%;
     }
   }
-`
+`;
 
 export const ShowAreaModal = (props) => {
   const { isOpen, onClose, onSubmit, item, companies } = props;
@@ -60,9 +70,13 @@ export const ShowAreaModal = (props) => {
     <div>
       <h2 htmlFor='title'>{item.number}</h2>
     </div>
-    <div>
-      <h4 htmlFor='description'>{item.notice}</h4>
-    </div>
+    <Description>
+      <text>
+        {item.notice?.split(/\n/).map((line) => {
+          return <span>{line}</span>;
+        })}
+      </text>
+    </Description>
     <ul>
       {
         item.notes.map((note) => {
