@@ -87,7 +87,7 @@ export const ShowAreaModal = (props) => {
     <div>
       <div>
         <h5 htmlFor='peopleCount'>
-          Колькасць жыхароў: {item.people.length}
+          Колькасць жыхароў: {item.peopleCount}
         </h5>
       </div>
       <ul>
