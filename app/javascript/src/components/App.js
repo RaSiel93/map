@@ -491,9 +491,9 @@ const App = () => {
       <DeckGL
         onClick={onClick}
         initialViewState={{
-          longitude: 31.782638,
-          latitude: 53.599290,
-          zoom: 14.5,
+          longitude: 27.478700,
+          latitude: 53.868718,
+          zoom: 15.0
           pitch: 0,
           bearing: 0
         }}
