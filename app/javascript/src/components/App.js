@@ -493,7 +493,7 @@ const App = () => {
         initialViewState={{
           longitude: 27.478700,
           latitude: 53.868718,
-          zoom: 15.0
+          zoom: 15.0,
           pitch: 0,
           bearing: 0
         }}
