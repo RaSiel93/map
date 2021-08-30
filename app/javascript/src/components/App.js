@@ -83,7 +83,7 @@ const App = () => {
   const [hoveredArea, setHoveredArea] = useState(null);
   const [selectedArea, setSelectedArea] = useState(null);
 
-  const [mode, setMode] = useState(null);
+  const [selectedMode, setSelectedMode] = useState(null);
 
   const openAddCarModal = () => setModalAddCar(true);
   const closeAddCarModal = () => setModalAddCar(false);
@@ -187,7 +187,8 @@ const App = () => {
     const token = document.querySelector('[name=csrf-token]').content;
     const params = {
       area: {
-        coordinates: areaData.map(data => JSON.stringify(data.coordinates))
+        coordinates: areaData.map(data => JSON.stringify(data.coordinates)),
+        area_id: selectedArea?.id,
       }
     };
 
@@ -196,7 +197,6 @@ const App = () => {
 
     setAreas([...areas, deckGlArea]);
     setAreaData([]);
-    setMode(null);
   };
 
   const editArea = async ({ id, ...form }) => {
@@ -221,36 +221,36 @@ const App = () => {
 
   // Modes
 
+  const toggleMode = (mode) => {
+    if (selectedMode === mode) {
+      setSelectedMode(null);
+    } else {
+      setSelectedMode(mode);
+    }
+  }
+
   const handleAreaMode = () => {
     setAreaData([]);
-    if (mode === 'area') {
-      setMode(null);
-    } else {
-      setMode('area');
-    }
+    toggleMode('area');
   };
 
   const handlePointMode = () => {
-    if (mode === 'point') {
-      setMode(null);
-    } else {
-      setMode('point');
-    }
+    toggleMode('point');
   };
 
   const handleShowMode = () => {
-    if (mode === 'show') {
-      setMode(null);
+    if (selectedArea) {
+      openShowAreaModal();
     } else {
-      setMode('show');
+      toggleMode('show');
     }
   };
 
   const handleEditMode = () => {
-    if (mode === 'edit') {
-      setMode(null);
+    if (selectedArea) {
+      openEditAreaModal();
     } else {
-      setMode('edit');
+      toggleMode('edit');
     }
   };
 
@@ -274,7 +274,7 @@ const App = () => {
     onClick: (info) => {
       setSelectedCar(info.object);
 
-      mode === 'edit' && openEditCarModal();
+      selectedMode === 'edit' && openEditCarModal();
     }
   });
 
@@ -284,7 +284,6 @@ const App = () => {
     pickable: true,
     stroked: true,
     filled: true,
-    wireframe: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
@@ -299,7 +298,6 @@ const App = () => {
     pickable: true,
     stroked: true,
     filled: true,
-    wireframe: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
@@ -321,18 +319,17 @@ const App = () => {
     onClick: (info) => {
       setSelectedArea(info.object);
 
-      mode === 'show' && openShowAreaModal();
-      mode === 'edit' && openEditAreaModal();
+      selectedMode === 'show' && openShowAreaModal();
+      selectedMode === 'edit' && openEditAreaModal();
     }
   });
 
   const contourAreasLayer = new PolygonLayer({
     id: 'contourAreasLayer',
     data: contourAreas,
-    pickable: true,
+    pickable: false,
     stroked: true,
-    filled: true,
-    wireframe: true,
+    filled: false,
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
@@ -344,14 +341,13 @@ const App = () => {
   const selectedAreaLayer = new PolygonLayer({
     id: 'polygon-layer3',
     data: selectedArea && [selectedArea],
-    pickable: true,
+    pickable: (selectedArea?.maxZoom || 0) < zoom,
     stroked: true,
     filled: true,
-    wireframe: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
-    getFillColor: d => [255, 255, 0, 125.5],
+    getFillColor: d => (d.maxZoom < zoom) ? [255, 255, 0, 15.5] : [255, 255, 0, 125.5],
     getLineColor: [255, 160, 0, 125],
     getLineWidth: 1,
   });
@@ -362,7 +358,6 @@ const App = () => {
     pickable: true,
     stroked: true,
     filled: true,
-    wireframe: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d,
     getElevation: d => 10,
@@ -405,7 +400,7 @@ const App = () => {
   ];
 
   const onClick = (event) => {
-    if (mode === 'area') {
+    if (selectedMode === 'area') {
       const [longitude, latitude] = event.coordinate;
 
       setLatitude(latitude);
@@ -417,7 +412,7 @@ const App = () => {
       if (!picked) {
         setSelectedArea(null);
 
-        if (mode === 'point') {
+        if (selectedMode === 'point') {
           const [longitude, latitude] = event.coordinate;
 
           setLatitude(latitude);
@@ -445,7 +440,7 @@ const App = () => {
         zoom: {zoom}
       </Information>
       {
-        mode && <Mode>{mode}</Mode>
+        selectedMode && <Mode>{selectedMode}</Mode>
       }
       <AddCarModal
         isOpen={modalAddCar}
@@ -516,7 +511,7 @@ const App = () => {
       <ModeShowButton onClick={handleShowMode}></ModeShowButton>
       <ModeEditButton onClick={handleEditMode}></ModeEditButton>
       <AddAreaButton
-        mode={mode}
+        active={selectedMode === 'area'}
         onClick={handleAreaMode}
         onSubmit={addArea}
       />

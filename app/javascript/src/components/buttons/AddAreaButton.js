@@ -22,10 +22,10 @@ const SaveButton = styled(Button)`
 `
 
 export const AddAreaButton = (props) => {
-  const { mode, onClick, onSubmit } = props;
+  const { active, onClick, onSubmit } = props;
 
   return <>
     <ModeButton onClick={onClick}/>
-    { mode === 'area' && <SaveButton onClick={onSubmit}/> }
+    { active && <SaveButton onClick={onSubmit}/> }
   </>
 }
