@@ -56,6 +56,10 @@ export const Modal = styled(ReactModalAdapter)`
     }
   }
 
+  textarea {
+    width: -webkit-fill-available;
+  }
+
   .overlay {
     opacity: 0.3;
   }
