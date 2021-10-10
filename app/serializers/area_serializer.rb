@@ -11,4 +11,8 @@ class AreaSerializer
   attribute :people do |area|
     PersonSerializer.new(area.people).as_json["data"]
   end
+
+  attribute :areas do |area|
+    AreaSerializer.new(area.areas).as_json["data"]
+  end
 end

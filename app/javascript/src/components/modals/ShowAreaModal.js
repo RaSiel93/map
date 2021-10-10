@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import styled from 'styled-components';
-
+import { areaToPolygonObject } from '../../services/deckGl';
 
 const Description = styled.div`
   text {
@@ -34,12 +34,15 @@ const AddPersonForm = styled.div`
 `;
 
 export const ShowAreaModal = (props) => {
-  const { isOpen, onClose, onSubmit, item, companies } = props;
+  const { isOpen, onClose, onSubmit, companies } = props;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [areaId, setAreaId] = useState(null);
   const [companyId, setCompanyId] = useState(null);
+  const [item, setItem] = useState(props.item);
+
+  debugger
 
   const onAfterOpen = () => {
     setFirstName('');
@@ -136,6 +139,21 @@ export const ShowAreaModal = (props) => {
         </div>
         <button onClick={handleSubmit}>Дадаць</button>
       </AddPersonForm>
+      <ul>
+        {
+          item.areas.map((area) => {
+            const { attributes: { id, title } } = area;
+
+            return <li key={id}>
+              <a onClick={() => setItem(areaToPolygonObject(area))}>
+                {
+                  `${title}`
+                }
+              </a>
+            </li>
+          })
+        }
+      </ul>
     </div>
   </Modal>
 }
