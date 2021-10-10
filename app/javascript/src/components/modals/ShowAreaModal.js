@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import styled from 'styled-components';
 import { areaToPolygonObject } from '../../services/deckGl';
+import Select from 'react-select';
 
 const Description = styled.div`
   text {
@@ -18,20 +19,35 @@ const AddPersonForm = styled.div`
   justify-content: space-evenly;
   gap: 10px;
 
-  div {
+  .inputs {
+    display: flex;
+    gap: 10px;
     width: 100%;
 
-    input {
-      width: 100%;
-    }
-
-    select {
-      height: 29px;
-      font-size: 20px;
-      width: 100%;
+    input, &>div {
+      width: 200px;
+      flex-grow: 1;
     }
   }
+
+  #react-select-3-listbox {
+    z-index: 5;
+  }
 `;
+
+const Areas = styled.div`
+  a {
+    display: block;
+    border-bottom: 1px solid #555;
+    cursor: pointer;
+    padding: 5px;
+    background-color: #ddd;
+
+    &:hover {
+      background-color: #eee;
+    }
+  }
+`
 
 export const ShowAreaModal = (props) => {
   const { isOpen, onClose, onSubmit, companies } = props;
@@ -42,13 +58,12 @@ export const ShowAreaModal = (props) => {
   const [companyId, setCompanyId] = useState(null);
   const [item, setItem] = useState(props.item);
 
-  debugger
-
   const onAfterOpen = () => {
     setFirstName('');
     setLastName('');
     setAreaId(item?.id);
     setCompanyId(null);
+    setItem(item || props.item);
   }
 
   const handleSubmit = () => {
@@ -63,6 +78,11 @@ export const ShowAreaModal = (props) => {
   useEffect(() => {
     onAfterOpen();
   }, [item.people]);
+
+  const companyOptions = [
+    { value: '', label: 'Месца працы' },
+    ...companies.map(company => ({ value: company.id, label: company.attributes.name }))
+  ];
 
   return <Modal
     isOpen={isOpen}
@@ -107,53 +127,44 @@ export const ShowAreaModal = (props) => {
         }
       </ul>
       <AddPersonForm>
-        <div>
+        <div className="inputs">
           <input
             id='lastName'
             value={lastName}
             placeholder='Прозвішча'
             onChange={(e) => { setLastName(e.target.value) }}
           ></input>
-        </div>
-        <div>
           <input
             id='firstName'
             value={firstName}
             placeholder='Імя'
             onChange={(e) => { setFirstName(e.target.value) }}
           ></input>
-        </div>
-        <div>
-          <select
+          <Select
             name='companyId'
-            value={companyId || ''}
-            onChange={(e) => { setCompanyId(e.target.value) }}
-          >
-            <option value=''>Месца працы</option>
-            {
-              companies.map((company) => {
-                return <option key={company.id} value={company.id}>{company.attributes.name}</option>
-              })
-            }
-          </select>
+            value={companyOptions.find((option) => (option.value === companyId))}
+            onChange={(option) => { setCompanyId(option.value) }}
+            options={companyOptions}
+          />
         </div>
         <button onClick={handleSubmit}>Дадаць</button>
       </AddPersonForm>
-      <ul>
-        {
-          item.areas.map((area) => {
-            const { attributes: { id, title } } = area;
+      {
+        item.areas.length > 0 && <Areas>
+          <h3>Унутранныя аб'екты:</h3>
+          {
+            item.areas.map((area) => {
+              const { attributes: { id, title } } = area;
 
-            return <li key={id}>
-              <a onClick={() => setItem(areaToPolygonObject(area))}>
+              return <a key={id} onClick={() => setItem(areaToPolygonObject(area))}>
                 {
                   `${title}`
                 }
               </a>
-            </li>
-          })
-        }
-      </ul>
+            })
+          }
+        </Areas>
+      }
     </div>
   </Modal>
 }
