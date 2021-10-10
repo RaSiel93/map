@@ -124,11 +124,11 @@ export const ShowAreaModal = (props) => {
     {
       item.notice && <Description>
         <h3>Апісанне:</h3>
-        <p>
+        <text>
           {item.notice.split(/\n/).map((line, index) => {
             return <span key={index}>{line}</span>;
           })}
-        </p>
+        </text>
       </Description>
     }
     {
