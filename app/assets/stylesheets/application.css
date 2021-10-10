@@ -12,3 +12,7 @@
  *
  *= require_self
  */
+
+body {
+  font-family: sans-serif;
+}

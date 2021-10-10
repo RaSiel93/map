@@ -1,5 +1,5 @@
 class NoteSerializer
   include JSONAPI::Serializer
 
-  attributes :text
+  attributes :id, :text
 end

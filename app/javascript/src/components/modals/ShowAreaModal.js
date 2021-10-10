@@ -5,40 +5,70 @@ import { areaToPolygonObject } from '../../services/deckGl';
 import Select from 'react-select';
 
 const Description = styled.div`
-  text {
-    background-color: black;
-    span {
-      display: block;
-    }
+  border: solid 1px #555;
+  padding: 5px;
+
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
+`;
+
+const Notes = styled.div`
+  border: solid 1px #555;
+  padding: 5px;
+
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
+`;
+
+const People = styled.div`
+  border: solid 1px #555;
+  padding: 5px;
+
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
+
+  table {
+    width: 100%;
+    margin-bottom: 10px;
+    border-spacing: 0;
+    padding: 0;
+  }
+
+  tr, td, th {
+    border: 1px solid #555;
+    padding: 5px;
   }
 `;
 
 const AddPersonForm = styled.div`
   display: flex;
-  flex-direction: row;
-  justify-content: space-evenly;
+  flex-wrap: wrap;
   gap: 10px;
+  width: 100%;
 
-  .inputs {
-    display: flex;
-    gap: 10px;
-    width: 100%;
-
-    input, &>div {
-      width: 200px;
-      flex-grow: 1;
-    }
-  }
-
-  #react-select-3-listbox {
-    z-index: 5;
+  input, &>div {
+    width: 200px;
+    flex-grow: 1;
   }
 `;
 
 const Areas = styled.div`
+  border: solid 1px #555;
+
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
+
   a {
     display: block;
-    border-bottom: 1px solid #555;
+    border-top: 1px solid #555;
     cursor: pointer;
     padding: 5px;
     background-color: #ddd;
@@ -47,23 +77,21 @@ const Areas = styled.div`
       background-color: #eee;
     }
   }
-`
+`;
 
 export const ShowAreaModal = (props) => {
-  const { isOpen, onClose, onSubmit, companies } = props;
+  const { isOpen, onClose, onSubmit, companies, item, changeSelectedArea } = props;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [areaId, setAreaId] = useState(null);
   const [companyId, setCompanyId] = useState(null);
-  const [item, setItem] = useState(props.item);
 
   const onAfterOpen = () => {
     setFirstName('');
     setLastName('');
     setAreaId(item?.id);
     setCompanyId(null);
-    setItem(item || props.item);
   }
 
   const handleSubmit = () => {
@@ -93,78 +121,94 @@ export const ShowAreaModal = (props) => {
     <div>
       <h2 htmlFor='title'>{item.number}</h2>
     </div>
-    <Description>
-      <text>
-        {item.notice?.split(/\n/).map((line) => {
-          return <span>{line}</span>;
-        })}
-      </text>
-    </Description>
-    <ul>
-      {
-        item.notes.map((note) => {
-          return <li key={note.id}>{note.attributes.text}</li>
-        })
-      }
-    </ul>
-    <div>
+    {
+      item.notice && <Description>
+        <h3>Апісанне:</h3>
+        <p>
+          {item.notice.split(/\n/).map((line, index) => {
+            return <span key={index}>{line}</span>;
+          })}
+        </p>
+      </Description>
+    }
+    {
+      item.notes.length > 0 && <Notes>
+        <h3>Нататкі:</h3>
+        <ul>
+          {
+            item.notes.map((note) => {
+              const { attributes: { id, text } } = note;
+
+              return <li key={id}>{text}</li>
+            })
+          }
+        </ul>
+      </Notes>
+    }
+    <People>
+      <h3>Насельніцтва:</h3>
       <div>
         <h5 htmlFor='peopleCount'>
           Колькасць жыхароў: ({item.addedPeopleCount}/{item.peopleCount}/{item.estimatedPeopleCount})
         </h5>
       </div>
-      <ul>
-        {
-          item.people.map((person) => {
-            const { attributes: { id, first_name, last_name, company } } = person;
-
-            return <li key={id}>
-              {
-                `${last_name} ${first_name} - ${company?.attributes?.name || ''}`
-              }
-            </li>
-          })
-        }
-      </ul>
-      <AddPersonForm>
-        <div className="inputs">
-          <input
-            id='lastName'
-            value={lastName}
-            placeholder='Прозвішча'
-            onChange={(e) => { setLastName(e.target.value) }}
-          ></input>
-          <input
-            id='firstName'
-            value={firstName}
-            placeholder='Імя'
-            onChange={(e) => { setFirstName(e.target.value) }}
-          ></input>
-          <Select
-            name='companyId'
-            value={companyOptions.find((option) => (option.value === companyId))}
-            onChange={(option) => { setCompanyId(option.value) }}
-            options={companyOptions}
-          />
-        </div>
-        <button onClick={handleSubmit}>Дадаць</button>
-      </AddPersonForm>
       {
-        item.areas.length > 0 && <Areas>
-          <h3>Унутранныя аб'екты:</h3>
+        item.people.length > 0 && <table>
+          <tr>
+            <th>Прозвішча</th>
+            <th>Імя</th>
+            <th>Месца працы</th>
+          </tr>
           {
-            item.areas.map((area) => {
-              const { attributes: { id, title } } = area;
+            item.people.map((person) => {
+              const { attributes: { id, first_name, last_name, company } } = person;
 
-              return <a key={id} onClick={() => setItem(areaToPolygonObject(area))}>
-                {
-                  `${title}`
-                }
-              </a>
+              return <tr key={id}>
+                <td>{last_name}</td>
+                <td>{first_name}</td>
+                <td>{company?.attributes?.name || ''}</td>
+              </tr>
             })
           }
-        </Areas>
+        </table>
       }
-    </div>
+      <AddPersonForm>
+        <input
+          id='lastName'
+          value={lastName}
+          placeholder='Прозвішча'
+          onChange={(e) => { setLastName(e.target.value) }}
+        ></input>
+        <input
+          id='firstName'
+          value={firstName}
+          placeholder='Імя'
+          onChange={(e) => { setFirstName(e.target.value) }}
+        ></input>
+        <Select
+          name='companyId'
+          value={companyOptions.find((option) => (option.value === companyId))}
+          onChange={(option) => { setCompanyId(option.value) }}
+          options={companyOptions}
+        />
+        <button onClick={handleSubmit}>Дадаць</button>
+      </AddPersonForm>
+    </People>
+    {
+      item.areas.length > 0 && <Areas>
+        <h3>Унутранныя аб'екты:</h3>
+        {
+          item.areas.map((area) => {
+            const { attributes: { id, title } } = area;
+
+            return <a key={id} onClick={() => changeSelectedArea(areaToPolygonObject(area))}>
+              {
+                `${title}`
+              }
+            </a>
+          })
+        }
+      </Areas>
+    }
   </Modal>
 }

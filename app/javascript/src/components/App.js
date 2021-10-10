@@ -98,6 +98,10 @@ const App = () => {
   const openShowAreaModal = () => setModalShowArea(true);
   const closeShowAreaModal = () => setModalShowArea(false);
 
+  const changeSelectedArea = (area) => {
+    setSelectedArea(area);
+  }
+
   // Loaders
 
   const loadCars = async () => {
@@ -482,6 +486,7 @@ const App = () => {
         onClose={closeShowAreaModal}
         onSubmit={addPerson}
         companies={companies}
+        changeSelectedArea={changeSelectedArea}
       />}
       <DeckGL
         onClick={onClick}
