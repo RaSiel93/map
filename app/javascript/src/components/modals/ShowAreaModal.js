@@ -12,6 +12,10 @@ const Description = styled.div`
     margin: 0;
     padding: 5px;
   }
+
+  p span {
+    display: block;
+  }
 `;
 
 const Notes = styled.div`
@@ -124,11 +128,11 @@ export const ShowAreaModal = (props) => {
     {
       item.notice && <Description>
         <h3>Апісанне:</h3>
-        <text>
+        <p>
           {item.notice.split(/\n/).map((line, index) => {
             return <span key={index}>{line}</span>;
           })}
-        </text>
+        </p>
       </Description>
     }
     {
