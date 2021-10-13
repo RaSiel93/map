@@ -13,6 +13,12 @@ module Api
         render json: serialize(area)
       end
 
+      def show
+        area = Area.find(params[:id])
+
+        render json: serialize(area)
+      end
+
       def update
         area = Area.find(params[:id])
 

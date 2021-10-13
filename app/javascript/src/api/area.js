@@ -1,5 +1,15 @@
 import axios from 'axios';
 
+export function getArea(id) {
+  return axios.get(`api/v1/areas/${id}.json`)
+    .then(response => response.data.data)
+    .catch((response) => {
+      console.log(response);
+
+      return null;
+    })
+}
+
 export function getAreas() {
   return axios.get('api/v1/areas.json')
     .then(response => response.data.data)

@@ -98,7 +98,9 @@ const App = () => {
   const openShowAreaModal = () => setModalShowArea(true);
   const closeShowAreaModal = () => setModalShowArea(false);
 
-  const changeSelectedArea = (area) => {
+  const changeSelectedArea = (id) => {
+    const area = areas.find((area) => area.id === id);
+
     setSelectedArea(area);
   }
 
@@ -480,8 +482,8 @@ const App = () => {
         onSubmit={editArea}
         areas={areas}
       />}
-      {selectedArea && <ShowAreaModal
-        item={selectedArea}
+      {selectedArea && modalShowArea && <ShowAreaModal
+        id={selectedArea.id}
         isOpen={modalShowArea}
         onClose={closeShowAreaModal}
         onSubmit={addPerson}

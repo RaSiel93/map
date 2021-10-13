@@ -15,4 +15,17 @@ class AreaSerializer
   attribute :areas do |area|
     AreaSerializer.new(area.areas.order('title')).as_json["data"]
   end
+
+  attribute :parent do |area|
+    area = area&.area
+
+    {
+      id: area&.id,
+      type: 'area',
+      attributes: {
+        id: area&.id,
+        title: area&.title
+      }
+    }
+  end
 end

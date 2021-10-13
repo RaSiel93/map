@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 import styled from 'styled-components';
 import { areaToPolygonObject } from '../../services/deckGl';
+import { getArea } from '../../api/area';
 import Select from 'react-select';
+import { SpinnerCircular } from 'spinners-react';
 
 const Description = styled.div`
   border: solid 1px #555;
@@ -84,17 +86,16 @@ const Areas = styled.div`
 `;
 
 export const ShowAreaModal = (props) => {
-  const { isOpen, onClose, onSubmit, companies, item, changeSelectedArea } = props;
+  const { isOpen, onClose, onSubmit, companies, id, changeSelectedArea } = props;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [areaId, setAreaId] = useState(null);
   const [companyId, setCompanyId] = useState(null);
+  const [area, setArea] = useState(null);
 
-  const onAfterOpen = () => {
+  const resetFields = () => {
     setFirstName('');
     setLastName('');
-    setAreaId(item?.id);
     setCompanyId(null);
   }
 
@@ -102,117 +103,165 @@ export const ShowAreaModal = (props) => {
     onSubmit({
       first_name: firstName,
       last_name: lastName,
-      area_id: areaId,
+      area_id: area.id,
       company_id: companyId,
     });
   }
 
+  useEffect(async () => {
+    const area = await getArea(id);
+
+    setArea(area);
+  }, [id]);
+
   useEffect(() => {
-    onAfterOpen();
-  }, [item.people]);
+    resetFields();
+  }, [area?.people]);
 
   const companyOptions = [
     { value: '', label: 'Месца працы' },
     ...companies.map(company => ({ value: company.id, label: company.attributes.name }))
   ];
 
-  return <Modal
-    isOpen={isOpen}
-    onAfterOpen={onAfterOpen}
-    onRequestClose={onClose}
-    contentLabel='Прагляд тэрыторыі'
-  >
-    <div>
-      <h2 htmlFor='title'>{item.number}</h2>
-    </div>
-    {
-      item.notice && <Description>
-        <h3>Апісанне:</h3>
-        <p>
-          {item.notice.split(/\n/).map((line, index) => {
-            return <span key={index}>{line}</span>;
-          })}
-        </p>
-      </Description>
-    }
-    {
-      item.notes.length > 0 && <Notes>
-        <h3>Нататкі:</h3>
-        <ul>
-          {
-            item.notes.map((note) => {
-              const { attributes: { id, text } } = note;
+  if (area) {
+    const {
+      id,
+      attributes: {
+        title,
+        description,
+        notes,
+        addedPeopleCount,
+        peopleCount,
+        estimatedPeopleCount,
+        people,
+        parent,
+        areas,
+      }
+    } = area;
 
-              return <li key={id}>{text}</li>
-            })
-          }
-        </ul>
-      </Notes>
-    }
-    <People>
-      <h3>Насельніцтва:</h3>
+    return <Modal
+      isOpen={isOpen}
+      onAfterOpen={resetFields}
+      onRequestClose={onClose}
+      contentLabel='Прагляд тэрыторыі'
+    >
       <div>
-        <h5 htmlFor='peopleCount'>
-          Колькасць жыхароў: ({item.addedPeopleCount}/{item.peopleCount}/{item.estimatedPeopleCount})
-        </h5>
+        <h2 htmlFor='title'>{title}</h2>
       </div>
       {
-        item.people.length > 0 && <table>
-          <tr>
-            <th>Прозвішча</th>
-            <th>Імя</th>
-            <th>Месца працы</th>
-          </tr>
-          {
-            item.people.map((person) => {
-              const { attributes: { id, first_name, last_name, company } } = person;
+        description && <Description>
+          <h3>Апісанне:</h3>
+          <p>
+            {description.split(/\n/).map((line, index) => {
+              return <span key={index}>{line}</span>;
+            })}
+          </p>
+        </Description>
+      }
+      {
+        notes.length > 0 && <Notes>
+          <h3>Нататкі:</h3>
+          <ul>
+            {
+              notes.map((note) => {
+                const { attributes: { id, text } } = note;
 
-              return <tr key={id}>
-                <td>{last_name}</td>
-                <td>{first_name}</td>
-                <td>{company?.attributes?.name || ''}</td>
-              </tr>
+                return <li key={id}>{text}</li>
+              })
+            }
+          </ul>
+        </Notes>
+      }
+      <People>
+        <h3>Насельніцтва:</h3>
+        <div>
+          <h5 htmlFor='peopleCount'>
+            Колькасць жыхароў: ({addedPeopleCount}/{peopleCount}/{estimatedPeopleCount})
+          </h5>
+        </div>
+        {
+          people.length > 0 && <table>
+            <tr>
+              <th>Прозвішча</th>
+              <th>Імя</th>
+              <th>Месца працы</th>
+            </tr>
+            {
+              people.map((person) => {
+                const { attributes: { id, first_name, last_name, company } } = person;
+
+                return <tr key={id}>
+                  <td>{last_name}</td>
+                  <td>{first_name}</td>
+                  <td>{company?.attributes?.name || ''}</td>
+                </tr>
+              })
+            }
+          </table>
+        }
+        <AddPersonForm>
+          <input
+            id='lastName'
+            value={lastName}
+            placeholder='Прозвішча'
+            onChange={(e) => { setLastName(e.target.value) }}
+          ></input>
+          <input
+            id='firstName'
+            value={firstName}
+            placeholder='Імя'
+            onChange={(e) => { setFirstName(e.target.value) }}
+          ></input>
+          <Select
+            name='companyId'
+            value={companyOptions.find((option) => (option.value === companyId))}
+            onChange={(option) => { setCompanyId(option.value) }}
+            options={companyOptions}
+          />
+          <button onClick={handleSubmit}>Дадаць</button>
+        </AddPersonForm>
+      </People>
+      {
+        parent && <Areas>
+          <h3>Знешні аб'ект:</h3>
+          {
+            [parent].map((area) => {
+              const { attributes: { id, title } } = area;
+
+              return <a key={id} onClick={() => changeSelectedArea(id)}>
+                {
+                  `${title}`
+                }
+              </a>
             })
           }
-        </table>
+        </Areas>
       }
-      <AddPersonForm>
-        <input
-          id='lastName'
-          value={lastName}
-          placeholder='Прозвішча'
-          onChange={(e) => { setLastName(e.target.value) }}
-        ></input>
-        <input
-          id='firstName'
-          value={firstName}
-          placeholder='Імя'
-          onChange={(e) => { setFirstName(e.target.value) }}
-        ></input>
-        <Select
-          name='companyId'
-          value={companyOptions.find((option) => (option.value === companyId))}
-          onChange={(option) => { setCompanyId(option.value) }}
-          options={companyOptions}
-        />
-        <button onClick={handleSubmit}>Дадаць</button>
-      </AddPersonForm>
-    </People>
-    {
-      item.areas.length > 0 && <Areas>
-        <h3>Унутранныя аб'екты:</h3>
-        {
-          item.areas.map((area) => {
-            const { attributes: { id, title } } = area;
+      {
+        areas.length > 0 && <Areas>
+          <h3>Унутранныя аб'екты:</h3>
+          {
+            areas.map((area) => {
+              const { attributes: { id, title } } = area;
 
-            return <a key={id} onClick={() => changeSelectedArea(areaToPolygonObject(area))}>
-              {
-                `${title}`
-              }
-            </a>
-          })
-        }
-      </Areas>
-    }
-  </Modal>
+              return <a key={id} onClick={() => changeSelectedArea(id)}>
+                {
+                  `${title}`
+                }
+              </a>
+            })
+          }
+        </Areas>
+      }
+    </Modal>
+  } else {
+    return <Modal
+      isOpen={isOpen}
+      onAfterOpen={resetFields}
+      onRequestClose={onClose}
+      contentLabel='Прагляд тэрыторыі'
+    >
+      <SpinnerCircular size={50} thickness={180} speed={280} color="rgba(0, 0, 0, 1)" secondaryColor="rgba(255, 255, 255, 1)" />
+    </Modal>
+  }
 }
