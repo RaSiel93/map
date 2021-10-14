@@ -18,4 +18,8 @@ export const Button = styled.button`
     color: #ccc;
     cursor: pointer;
   }
+
+  &.active {
+    background-color: #444;
+  }
 `

@@ -21,11 +21,27 @@ const SaveButton = styled(Button)`
   }
 `
 
+const EditButton = styled(Button)`
+  right: 80px;
+  bottom: 140px;
+
+  &:after {
+    content: 'update';
+  }
+`
+
 export const AddAreaButton = (props) => {
-  const { active, onClick, onSubmit } = props;
+  const { active, onClick, onSubmit, onEdit, id } = props;
 
   return <>
-    <ModeButton onClick={onClick}/>
-    { active && <SaveButton onClick={onSubmit}/> }
+    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
+    {
+      active && <>
+        <SaveButton onClick={() => onSubmit()}/>
+        {
+          id && <EditButton onClick={() => onEdit({ id })}/>
+        }
+      </>
+    }
   </>
 }

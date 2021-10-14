@@ -13,9 +13,9 @@ const ModeButton = styled(Button)`
 `
 
 export const ModeShowButton = (props) => {
-  const { onClick } = props;
+  const { active, onClick } = props;
 
   return <>
-    <ModeButton onClick={onClick}/>
+    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
   </>
 }

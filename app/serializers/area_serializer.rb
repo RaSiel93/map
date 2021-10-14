@@ -19,7 +19,7 @@ class AreaSerializer
   attribute :parent do |area|
     area = area&.area
 
-    {
+    area && {
       id: area&.id,
       type: 'area',
       attributes: {

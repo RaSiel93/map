@@ -181,12 +181,14 @@ const App = () => {
     const person = await createPerson(params, token);
     closeAddPersonModal();
 
-    const area = areas.find((area) => area.id === form.area_id);
+    return person;
 
-    if (area) {
-      area.people = [...area.people, person];
-      setAreas([...areas, area]);
-    }
+    // const area = areas.find((area) => area.id === form.area_id);
+
+    // if (area) {
+    //   area.people = [...area.people, person];
+    //   setAreas([...areas, area]);
+    // }
   };
 
   const addArea = async (form) => {
@@ -195,6 +197,7 @@ const App = () => {
       area: {
         coordinates: areaData.map(data => JSON.stringify(data.coordinates)),
         area_id: selectedArea?.id,
+        ...form
       }
     };
 
@@ -203,26 +206,35 @@ const App = () => {
 
     setAreas([...areas, deckGlArea]);
     setAreaData([]);
+
+    return area;
   };
 
   const editArea = async ({ id, ...form }) => {
     const token = document.querySelector('[name=csrf-token]').content;
+    const coordinates = areaData.map(data => JSON.stringify(data.coordinates));
     const params = { area: { ...form }};
+    if (coordinates.length > 0) {
+      params['area']['coordinates'] = coordinates;
+    }
     const area = await updateArea(id, params, token);
     const deckGlArea = areaToPolygonObject(area);
 
     setAreas([...areas.filter((area) => { return area.id !== id }), deckGlArea]);
     setSelectedArea(null);
     closeEditAreaModal();
+    setAreaData([]);
   };
 
   const deleteArea = async ({ id }) => {
     const token = document.querySelector('[name=csrf-token]').content;
-    await removeArea(id, token);
+    const area = await removeArea(id, token);
 
     setAreas(areas.filter((area) => { return area.id !== id }));
-    setSelectedArea(null);
-    closeEditAreaModal();
+    // setSelectedArea(null);
+    // closeEditAreaModal();
+
+    return area;
   };
 
   // Modes
@@ -446,7 +458,7 @@ const App = () => {
         zoom: {zoom}
       </Information>
       {
-        selectedMode && <Mode>{selectedMode}</Mode>
+        selectedArea && <Mode>{selectedArea?.number}</Mode>
       }
       <AddCarModal
         isOpen={modalAddCar}
@@ -487,6 +499,8 @@ const App = () => {
         isOpen={modalShowArea}
         onClose={closeShowAreaModal}
         onSubmit={addPerson}
+        onAddArea={addArea}
+        onDeleteArea={deleteArea}
         companies={companies}
         changeSelectedArea={changeSelectedArea}
       />}
@@ -514,13 +528,24 @@ const App = () => {
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
-      <ModePointButton onClick={handlePointMode}></ModePointButton>
-      <ModeShowButton onClick={handleShowMode}></ModeShowButton>
-      <ModeEditButton onClick={handleEditMode}></ModeEditButton>
+      <ModePointButton
+        active={selectedMode === 'point'}
+        onClick={handlePointMode}
+      ></ModePointButton>
+      <ModeShowButton
+        active={selectedMode === 'show'}
+        onClick={handleShowMode}
+      ></ModeShowButton>
+      <ModeEditButton
+        active={selectedMode === 'edit'}
+        onClick={handleEditMode}
+      ></ModeEditButton>
       <AddAreaButton
+        id={selectedArea?.id}
         active={selectedMode === 'area'}
         onClick={handleAreaMode}
         onSubmit={addArea}
+        onEdit={editArea}
       />
       <AddNoteButton onClick={openAddNoteModal}/>
       <AddPersonButton onClick={openAddPersonModal}/>

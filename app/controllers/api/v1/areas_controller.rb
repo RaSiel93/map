@@ -24,6 +24,8 @@ module Api
 
         area.update(area_params)
 
+        area.update_max_zoom
+
         render json: serialize(area)
       end
 

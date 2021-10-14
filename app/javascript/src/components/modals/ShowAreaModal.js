@@ -41,7 +41,6 @@ const People = styled.div`
 
   table {
     width: 100%;
-    margin-bottom: 10px;
     border-spacing: 0;
     padding: 0;
   }
@@ -53,6 +52,7 @@ const People = styled.div`
 `;
 
 const AddPersonForm = styled.div`
+  margin-top: 10px;
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
@@ -64,39 +64,76 @@ const AddPersonForm = styled.div`
   }
 `;
 
+const AddAreaForm = styled.div`
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+
+  input, &>div {
+    width: 200px;
+    flex-grow: 1;
+  }
+`;
+
 const Areas = styled.div`
   border: solid 1px #555;
+  padding: 5px;
 
   h3 {
     margin: 0;
     padding: 5px;
   }
 
-  a {
-    display: block;
-    border-top: 1px solid #555;
-    cursor: pointer;
-    padding: 5px;
-    background-color: #ddd;
+  .areas {
+    a {
+      display: block;
+      border: 1px solid #555;
+      cursor: pointer;
+      padding: 5px;
+      background-color: #ddd;
+      position: relative;
+      height: 18px;
 
-    &:hover {
-      background-color: #eee;
+      &:hover {
+        background-color: #eee;
+      }
+
+      .delete {
+        position: absolute;
+        right: 10px;
+
+        &:hover {
+          color: #666;
+        }
+      }
     }
   }
 `;
 
 export const ShowAreaModal = (props) => {
-  const { isOpen, onClose, onSubmit, companies, id, changeSelectedArea } = props;
+  const {
+    id,
+    isOpen,
+    onClose,
+    onAddArea,
+    onSubmit,
+    onDeleteArea,
+    companies,
+    changeSelectedArea
+  } = props;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [companyId, setCompanyId] = useState(null);
+  const [companyId, setCompanyId] = useState('');
   const [area, setArea] = useState(null);
+  const [childTitle, setChildTitle] = useState('');
 
   const resetFields = () => {
     setFirstName('');
     setLastName('');
-    setCompanyId(null);
+    setCompanyId('');
+    setChildTitle('');
   }
 
   const handleSubmit = () => {
@@ -105,7 +142,45 @@ export const ShowAreaModal = (props) => {
       last_name: lastName,
       area_id: area.id,
       company_id: companyId,
+    }).then((person) => {
+      setArea({
+        ...area,
+        attributes: {
+          ...area.attributes,
+          people: [...area.attributes.people, person],
+          added_people_count: area.attributes.added_people_count + 1,
+        }
+      });
     });
+  }
+
+  const handleAddArea = () => {
+    onAddArea({
+      title: childTitle,
+      area_id: area.id,
+    }).then((child) => {
+      setArea({
+        ...area,
+        attributes: {
+          ...area.attributes,
+          areas: [...area.attributes.areas, child],
+        }
+      });
+    })
+  }
+
+  const handleDeleteArea = (id) => {
+    if (confirm("Вы ўпэўнены, што жадаеце выдаліць аб'ект?")) {
+      onDeleteArea({ id }).then((child) => {
+        setArea({
+          ...area,
+          attributes: {
+            ...area.attributes,
+            areas: area.attributes.areas.filter(area => area.id !== child.id),
+          }
+        });
+      });
+    }
   }
 
   useEffect(async () => {
@@ -116,12 +191,17 @@ export const ShowAreaModal = (props) => {
 
   useEffect(() => {
     resetFields();
-  }, [area?.people]);
+  }, [area?.attributes?.people, area?.attributes?.areas]);
 
   const companyOptions = [
     { value: '', label: 'Месца працы' },
     ...companies.map(company => ({ value: company.id, label: company.attributes.name }))
   ];
+
+  const changeArea = (id) => {
+    setArea(null);
+    changeSelectedArea(id);
+  }
 
   if (area) {
     const {
@@ -130,9 +210,9 @@ export const ShowAreaModal = (props) => {
         title,
         description,
         notes,
-        addedPeopleCount,
-        peopleCount,
-        estimatedPeopleCount,
+        added_people_count,
+        people_count,
+        estimated_people_count,
         people,
         parent,
         areas,
@@ -176,7 +256,7 @@ export const ShowAreaModal = (props) => {
         <h3>Насельніцтва:</h3>
         <div>
           <h5 htmlFor='peopleCount'>
-            Колькасць жыхароў: ({addedPeopleCount}/{peopleCount}/{estimatedPeopleCount})
+            Колькасць жыхароў: ({added_people_count}/{people_count}/{estimated_people_count})
           </h5>
         </div>
         {
@@ -224,35 +304,54 @@ export const ShowAreaModal = (props) => {
       {
         parent && <Areas>
           <h3>Знешні аб'ект:</h3>
-          {
-            [parent].map((area) => {
-              const { attributes: { id, title } } = area;
+          <div className='areas'>
+            {
+              [parent].map((area) => {
+                const { attributes: { id, title } } = area;
 
-              return <a key={id} onClick={() => changeSelectedArea(id)}>
-                {
-                  `${title}`
-                }
-              </a>
-            })
-          }
+                return <a key={id} onClick={() => changeArea(id)}>
+                  {
+                    `${title}`
+                  }
+                </a>
+              })
+            }
+          </div>
         </Areas>
       }
-      {
-        areas.length > 0 && <Areas>
-          <h3>Унутранныя аб'екты:</h3>
-          {
-            areas.map((area) => {
-              const { attributes: { id, title } } = area;
+      <Areas>
+        <h3>Унутранныя аб'екты:</h3>
+        {
+          areas.length > 0 && <div className='areas'>
+            {
+              areas.map((area) => {
+                const { attributes: { id, title } } = area;
 
-              return <a key={id} onClick={() => changeSelectedArea(id)}>
-                {
-                  `${title}`
-                }
-              </a>
-            })
-          }
-        </Areas>
-      }
+                return <a key={id} onClick={() => changeArea(id)}>
+                  {
+                    `${title}`
+                  }
+                  <span className='delete' onClick={(e) => {
+                    e.stopPropagation();
+
+                    handleDeleteArea(id);
+                  }}
+                  >x</span>
+                </a>
+              })
+            }
+          </div>
+        }
+        <AddAreaForm>
+          <input
+            id='title'
+            value={childTitle}
+            placeholder='Назва'
+            onChange={(e) => { setChildTitle(e.target.value) }}
+          ></input>
+          <button onClick={handleAddArea}>Дадаць</button>
+        </AddAreaForm>
+      </Areas>
     </Modal>
   } else {
     return <Modal

@@ -23,6 +23,8 @@ class Area < ApplicationRecord
   private
 
   def calculate_max_zoom
+    return 0 if longitudes.blank? || latitudes.blank?
+
     range_longitudes = longitudes.max - longitudes.min
     range_latitudes = latitudes.max - latitudes.min
 
