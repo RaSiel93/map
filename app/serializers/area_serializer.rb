@@ -13,7 +13,7 @@ class AreaSerializer
   end
 
   attribute :areas do |area|
-    AreaSerializer.new(area.areas.order('title')).as_json["data"]
+    AreasSerializer.new(area.areas.order('title')).as_json["data"]
   end
 
   attribute :parent do |area|

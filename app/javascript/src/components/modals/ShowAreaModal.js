@@ -193,17 +193,17 @@ export const ShowAreaModal = (props) => {
     resetFields();
   }, [area?.attributes?.people, area?.attributes?.areas]);
 
-  const companyOptions = [
-    { value: '', label: 'Месца працы' },
-    ...companies.map(company => ({ value: company.id, label: company.attributes.name }))
-  ];
-
   const changeArea = (id) => {
     setArea(null);
     changeSelectedArea(id);
   }
 
   if (area) {
+    const companyOptions = [
+      { value: '', label: 'Месца працы' },
+      ...companies.map(company => ({ value: company.id, label: company.attributes.name }))
+    ];
+
     const {
       id,
       attributes: {
@@ -294,8 +294,8 @@ export const ShowAreaModal = (props) => {
           ></input>
           <Select
             name='companyId'
-            value={companyOptions.find((option) => (option.value === companyId))}
-            onChange={(option) => { setCompanyId(option.value) }}
+            value={companyOptions.find(option => (option.value === companyId))}
+            onChange={option => setCompanyId(option.value)}
             options={companyOptions}
           />
           <button onClick={handleSubmit}>Дадаць</button>

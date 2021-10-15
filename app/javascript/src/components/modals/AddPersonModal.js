@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Modal } from './Modal';
 
 export const AddPersonModal = (props) => {
-  const { isOpen, onClose, onSubmit, item, areas, companies } = props;
+  const { isOpen, onClose, onSubmit, defaultAreaId, areas, companies } = props;
 
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
@@ -18,7 +18,7 @@ export const AddPersonModal = (props) => {
     setMiddleName('');
     setBirthAt('');
     setNotice('');
-    setAreaId(item?.id);
+    setAreaId(defaultAreaId);
     setCompanyId(null);
   }
 

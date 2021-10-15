@@ -460,50 +460,62 @@ const App = () => {
       {
         selectedArea && <Mode>{selectedArea?.number}</Mode>
       }
-      <AddCarModal
-        isOpen={modalAddCar}
-        onClose={closeAddCarModal}
-        onSubmit={addCar}
-      />
-      {selectedCar && <EditCarModal
-        item={selectedCar}
-        isOpen={modalEditCar}
-        onClose={closeEditCarModal}
-        onRemove={deleteCar}
-        onSubmit={editCar}
-      />}
-      <AddNoteModal
-        isOpen={modalAddNote}
-        item={selectedArea}
-        onClose={closeAddNoteModal}
-        onSubmit={addNote}
-      />
-      <AddPersonModal
-        isOpen={modalAddPerson}
-        item={selectedArea}
-        onClose={closeAddPersonModal}
-        onSubmit={addPerson}
-        areas={areas}
-        companies={companies}
-      />
-      {selectedArea && <EditAreaModal
-        item={selectedArea}
-        isOpen={modalEditArea}
-        onClose={closeEditAreaModal}
-        onRemove={deleteArea}
-        onSubmit={editArea}
-        areas={areas}
-      />}
-      {selectedArea && modalShowArea && <ShowAreaModal
-        id={selectedArea.id}
-        isOpen={modalShowArea}
-        onClose={closeShowAreaModal}
-        onSubmit={addPerson}
-        onAddArea={addArea}
-        onDeleteArea={deleteArea}
-        companies={companies}
-        changeSelectedArea={changeSelectedArea}
-      />}
+      {
+        modalAddCar && <AddCarModal
+          isOpen={modalAddCar}
+          onClose={closeAddCarModal}
+          onSubmit={addCar}
+        />
+      }
+      {
+        selectedCar && modalEditCar && <EditCarModal
+          item={selectedCar}
+          isOpen={modalEditCar}
+          onClose={closeEditCarModal}
+          onRemove={deleteCar}
+          onSubmit={editCar}
+        />
+      }
+      {
+        modalAddNote && <AddNoteModal
+          isOpen={modalAddNote}
+          item={selectedArea}
+          onClose={closeAddNoteModal}
+          onSubmit={addNote}
+        />
+      }
+      {
+        modalAddPerson && <AddPersonModal
+          isOpen={modalAddPerson}
+          defaultAreaId={selectedArea?.id}
+          onClose={closeAddPersonModal}
+          onSubmit={addPerson}
+          areas={areas}
+          companies={companies}
+        />
+      }
+      {
+        selectedArea && modalEditArea && <EditAreaModal
+          id={selectedArea.id}
+          isOpen={modalEditArea}
+          onClose={closeEditAreaModal}
+          onRemove={deleteArea}
+          onSubmit={editArea}
+          areas={areas}
+        />
+      }
+      {
+        selectedArea && modalShowArea && <ShowAreaModal
+          id={selectedArea.id}
+          isOpen={modalShowArea}
+          onClose={closeShowAreaModal}
+          onSubmit={addPerson}
+          onAddArea={addArea}
+          onDeleteArea={deleteArea}
+          companies={companies}
+          changeSelectedArea={changeSelectedArea}
+        />
+      }
       <DeckGL
         onClick={onClick}
         initialViewState={{
