@@ -111,6 +111,8 @@ const Areas = styled.div`
   }
 `;
 
+const ENTER_KEY = 'Enter';
+
 export const ShowAreaModal = (props) => {
   const {
     id,
@@ -285,12 +287,14 @@ export const ShowAreaModal = (props) => {
             value={lastName}
             placeholder='Прозвішча'
             onChange={(e) => { setLastName(e.target.value) }}
+            onKeyDown={({ key }) => (key === ENTER_KEY) && handleSubmit()}
           ></input>
           <input
             id='firstName'
             value={firstName}
             placeholder='Імя'
             onChange={(e) => { setFirstName(e.target.value) }}
+            onKeyDown={({ key }) => (key === ENTER_KEY) && handleSubmit()}
           ></input>
           <Select
             name='companyId'
@@ -348,6 +352,7 @@ export const ShowAreaModal = (props) => {
             value={childTitle}
             placeholder='Назва'
             onChange={(e) => { setChildTitle(e.target.value) }}
+            onKeyDown={({ key }) => (key === ENTER_KEY) && handleAddArea()}
           ></input>
           <button onClick={handleAddArea}>Дадаць</button>
         </AddAreaForm>
