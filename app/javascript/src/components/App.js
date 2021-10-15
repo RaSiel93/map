@@ -323,7 +323,7 @@ const App = () => {
       if (!d.areaId) {
         return [250, 100, 100, 65.5];
       }
-      if (d.peopleCount != d.addedPeopleCount) {
+      if (d.peopleCount !== d.addedPeopleCount) {
         return [100, 250, 250, 65.5];
       }
 
