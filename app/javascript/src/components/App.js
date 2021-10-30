@@ -1,10 +1,29 @@
 import React, { useRef, useState, useEffect, useCallback } from 'react';
 import ReactDOM from 'react-dom';
+import { connect } from 'react-redux';
 import ReactModal from 'react-modal';
-import axios from 'axios';
 import styled from 'styled-components';
 import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
+
+import { modes } from '../constants';
+
+import {
+  setZoom,
+  setSelectedAreaData,
+  setHoveredAreaId,
+  addNewAreaPoint,
+  // setSelectedAreaId,
+  // fetchPoints,
+  // resetArea,
+  // setSelectedArea,
+} from '../store/actions';
+
+import {
+  loadAreasData,
+  // setSelectedAreaById,
+} from 'src/store/thunks';
+
 import {
   PathLayer,
   ScatterplotLayer,
@@ -12,31 +31,16 @@ import {
   PolygonLayer,
 } from '@deck.gl/layers';
 
-import {
-  AddCarModal,
-  EditCarModal,
-  AddNoteModal,
-  ShowAreaModal,
-  EditAreaModal,
-  AddPersonModal,
-} from './modals';
+// import { AreaModeButton } from './modes/area';
+import { AreaMode, EditMode, NoteMode } from './modes';
 
-import {
-  AddNoteButton,
-  AddAreaButton,
-  AddPersonButton,
-  ModePointButton,
-  ModeShowButton,
-  ModeEditButton,
-} from './buttons';
+// import { getCars, createCar, updateCar, removeCar } from '../api/car';
+// import { getAreas, createArea, updateArea, removeArea } from '../api/area';
+// import { getCompanies } from '../api/company';
+// import { createNote } from '../api/note';
+// import { createPerson } from '../api/person';
 
-import { getCars, createCar, updateCar, removeCar } from '../api/car';
-import { getAreas, createArea, updateArea, removeArea } from '../api/area';
-import { getCompanies } from '../api/company';
-import { createNote } from '../api/note';
-import { createPerson } from '../api/person';
-
-import { carToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
+// import { pointToScatterplotObject, areaToPolygonObject } from '../services/deckGl';
 
 const Mode = styled.div`
   align-items: center;
@@ -60,319 +64,380 @@ const Information = styled.div`
   color: #fff;
 `;
 
-const App = () => {
-  const [cars, setCars] = useState([]);
-  const [areas, setAreas] = useState([]);
-  const [companies, setCompanies] = useState([]);
-  const [selectableAreas, setSelectableAreas] = useState([]);
-  const [contourAreas, setContourAreas] = useState([]);
-  const [areaData, setAreaData] = useState([]);
+const App = (props) => {
+  const {
+    mode,
+    zoom,
+    areasData,
+    selectedAreaData,
+    hoveredAreaId,
+    newAreaPoints,
+    // selectedAreaId,
+    // areasStatus,
+    // fetchAreas,
+    // areaNew,
+    // points,
+    // pointsStatus,
+    // fetchPoints,
+    // selectedAreaId,
+    // setSelectedArea,
+    // setSelectedAreaById,
+    // setSelectedAreaId,
+    addNewAreaPoint,
+    areaNew,
+    setZoom,
+    loadAreasData,
+    setSelectedAreaData,
+    setHoveredAreaId,
+  } = props;
 
-  const [modalAddCar, setModalAddCar] = useState(false);
-  const [modalEditCar, setModalEditCar] = useState(false);
-  const [modalAddNote, setModalAddNote] = useState(false);
-  const [modalShowArea, setModalShowArea] = useState(false);
-  const [modalEditArea, setModalEditArea] = useState(false);
-  const [modalAddPerson, setModalAddPerson] = useState(false);
+  // const [deckAreas, setDeckAreas] = useState([]);
+  // const [deckPoints, setDeckPoints] = useState([]);
 
-  const [zoom, setZoom] = useState(null);
+  // const [selectableAreas, setSelectableAreas] = useState([]);
+  // const [contourAreas, setContourAreas] = useState([]);
+  // const [areaData, setAreaData] = useState([]);
 
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
-  const [selectedCar, setSelectedCar] = useState(null);
-  const [hoveredArea, setHoveredArea] = useState(null);
-  const [selectedArea, setSelectedArea] = useState(null);
+  // const [modalAddCar, setModalAddCar] = useState(false);
+  // const [modalEditCar, setModalEditCar] = useState(false);
+  // const [modalAddNote, setModalAddNote] = useState(false);
+  // const [modalShowArea, setModalShowArea] = useState(false);
+  // const [modalEditArea, setModalEditArea] = useState(false);
+  // const [modalAddPerson, setModalAddPerson] = useState(false);
 
-  const [selectedMode, setSelectedMode] = useState(null);
+  // const [zoom, setZoom] = useState(null);
 
-  const openAddCarModal = () => setModalAddCar(true);
-  const closeAddCarModal = () => setModalAddCar(false);
-  const openEditCarModal = () => setModalEditCar(true);
-  const closeEditCarModal = () => setModalEditCar(false);
-  const openAddNoteModal = () => setModalAddNote(true);
-  const closeAddNoteModal = () => setModalAddNote(false);
-  const openAddPersonModal = () => setModalAddPerson(true);
-  const closeAddPersonModal = () => setModalAddPerson(false);
-  const openEditAreaModal = () => setModalEditArea(true);
-  const closeEditAreaModal = () => setModalEditArea(false);
-  const openShowAreaModal = () => setModalShowArea(true);
-  const closeShowAreaModal = () => setModalShowArea(false);
+  // const [selectedCar, setSelectedCar] = useState(null);
+  // const [hoveredArea, setHoveredArea] = useState(null);
+  // const [selectedArea, setSelectedArea] = useState(null);
 
-  const changeSelectedArea = (id) => {
-    const area = areas.find((area) => area.id === id);
+  // const [selectedMode, setSelectedMode] = useState(null);
 
-    setSelectedArea(area);
-  }
+  // const openAddCarModal = () => setModalAddCar(true);
+  // const closeAddCarModal = () => setModalAddCar(false);
+  // const openEditCarModal = () => setModalEditCar(true);
+  // const closeEditCarModal = () => setModalEditCar(false);
+  // const openAddNoteModal = () => setModalAddNote(true);
+  // const closeAddNoteModal = () => setModalAddNote(false);
+  // const openAddPersonModal = () => setModalAddPerson(true);
+  // const closeAddPersonModal = () => setModalAddPerson(false);
+  // const openEditAreaModal = () => setModalEditArea(true);
+  // const closeEditAreaModal = () => setModalEditArea(false);
+  // const openShowAreaModal = () => setModalShowArea(true);
+  // const closeShowAreaModal = () => setModalShowArea(false);
 
-  // Loaders
+  // const selectedArea = areas.find((area) => (+area.id === selectedAreaId));
 
-  const loadCars = async () => {
-    const cars = await getCars();
-    const deckGlCars = cars.map(carToScatterplotObject);
+  useEffect(() => {
+    loadAreasData();
+  }, []);
 
-    setCars(deckGlCars);
-  };
+  // useEffect(() => {
+  //   switch (pointsStatus) {
+  //     case requestStatuses.IDLE: {
+  //       fetchPoints();
+  //       break;
+  //     }
+  //     case requestStatuses.SECCEEDED: {
+  //       setDeckPoints(points.map(pointToScatterplotObject));
+  //       break;
+  //     }
+  //   }
+  // }, [pointsStatus]);
 
-  const loadAreas = async () => {
-    const areas = await getAreas();
-    const deckGlAreas = areas.map(areaToPolygonObject);
+  // const changeSelectedArea = (id) => {
+  //   const area = areas.find((area) => area.id === id);
 
-    setAreas(deckGlAreas);
-  };
+  //   setSelectedArea(area);
+  // }
 
-  const loadCompanies = async () => {
-    const companies = await getCompanies();
+  // // Loaders
 
-    setCompanies(companies);
-  };
+  // const loadCars = async () => {
+  //   const cars = await getCars();
+  //   const deckGlCars = cars.map(carToScatterplotObject);
 
-  const refreshAreas = () => {
-    const selectableAreas = areas.filter((area) => area.maxZoom > zoom);
-    const contourAreas = areas.filter((area) => area.maxZoom <= zoom)
+  //   setCars(deckGlCars);
+  // };
 
-    setSelectableAreas(selectableAreas);
-    setContourAreas(contourAreas);
+  // const loadAreas = async () => {
+  //   const areas = await getAreas();
+  //   const deckGlAreas = areas.map(areaToPolygonObject);
 
-    if (hoveredArea && contourAreas.includes(hoveredArea)) {
-      setHoveredArea(null);
-    }
-  };
+  //   setAreas(deckGlAreas);
+  // };
 
-  const addCar = async (form) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const params = { car: { latitude, longitude, ...form }};
-    const car = await createCar(params, token);
-    const deckGlCar = carToScatterplotObject(car);
+  // const loadCompanies = async () => {
+  //   const companies = await getCompanies();
 
-    setCars([...cars, deckGlCar]);
-    closeAddModal();
-  };
+  //   setCompanies(companies);
+  // };
 
-  const editCar = async ({ id, ...form }) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const params = { car: { ...form }};
-    const car = await updateCar(id, params, token);
-    const deckGlCar = carToScatterplotObject(car);
+  // const refreshAreas = () => {
+  //   const selectableAreas = areas.filter((area) => area.maxZoom > zoom);
+  //   const contourAreas = areas.filter((area) => area.maxZoom <= zoom)
 
-    setCars([...cars.filter((car) => { return car.id !== id }), deckGlCar]);
-    closeEditCarModal();
-  };
+  //   setSelectableAreas(selectableAreas);
+  //   setContourAreas(contourAreas);
 
-  const deleteCar = async ({ id }) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    await removeCar(id, token);
+  //   if (hoveredArea && contourAreas.includes(hoveredArea)) {
+  //     setHoveredArea(null);
+  //   }
+  // };
 
-    setCars(cars.filter((car) => { return car.id !== id }));
-    closeEditCarModal();
-  };
+  // const addCar = async (form) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const params = { car: { latitude, longitude, ...form }};
+  //   const car = await createCar(params, token);
+  //   const deckGlCar = carToScatterplotObject(car);
 
-  const addNote = async (form) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const params = { note: { ...form }};
+  //   setCars([...cars, deckGlCar]);
+  //   closeAddModal();
+  // };
 
-    await createNote(params, token);
-    closeAddNoteModal();
-  };
+  // const editCar = async ({ id, ...form }) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const params = { car: { ...form }};
+  //   const car = await updateCar(id, params, token);
+  //   const deckGlCar = carToScatterplotObject(car);
 
-  const addPerson = async (form) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const params = { person: { ...form }};
+  //   setCars([...cars.filter((car) => { return car.id !== id }), deckGlCar]);
+  //   closeEditCarModal();
+  // };
 
-    const person = await createPerson(params, token);
-    closeAddPersonModal();
+  // const deleteCar = async ({ id }) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   await removeCar(id, token);
 
-    return person;
+  //   setCars(cars.filter((car) => { return car.id !== id }));
+  //   closeEditCarModal();
+  // };
 
-    // const area = areas.find((area) => area.id === form.area_id);
+  // const addNote = async (form) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const params = { note: { ...form }};
 
-    // if (area) {
-    //   area.people = [...area.people, person];
-    //   setAreas([...areas, area]);
-    // }
-  };
+  //   await createNote(params, token);
+  //   closeAddNoteModal();
+  // };
 
-  const addArea = async (form) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const params = {
-      area: {
-        coordinates: areaData.map(data => JSON.stringify(data.coordinates)),
-        area_id: selectedArea?.id,
-        ...form
-      }
-    };
+  // const addPerson = async (form) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const params = { person: { ...form }};
 
-    const area = await createArea(params, token);
-    const deckGlArea = areaToPolygonObject(area);
+  //   const person = await createPerson(params, token);
+  //   closeAddPersonModal();
 
-    setAreas([...areas, deckGlArea]);
-    setAreaData([]);
+  //   return person;
 
-    return area;
-  };
+  //   // const area = areas.find((area) => area.id === form.area_id);
 
-  const editArea = async ({ id, ...form }) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const coordinates = areaData.map(data => JSON.stringify(data.coordinates));
-    const params = { area: { ...form }};
-    if (coordinates.length > 0) {
-      params['area']['coordinates'] = coordinates;
-    }
-    const area = await updateArea(id, params, token);
-    const deckGlArea = areaToPolygonObject(area);
+  //   // if (area) {
+  //   //   area.people = [...area.people, person];
+  //   //   setAreas([...areas, area]);
+  //   // }
+  // };
 
-    setAreas([...areas.filter((area) => { return area.id !== id }), deckGlArea]);
-    setSelectedArea(null);
-    closeEditAreaModal();
-    setAreaData([]);
-  };
+  // const addArea = async (form) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const params = {
+  //     area: {
+  //       coordinates: areaData.map(data => JSON.stringify(data.coordinates)),
+  //       area_id: selectedArea?.id,
+  //       ...form
+  //     }
+  //   };
 
-  const deleteArea = async ({ id }) => {
-    const token = document.querySelector('[name=csrf-token]').content;
-    const area = await removeArea(id, token);
+  //   const area = await createArea(params, token);
+  //   const deckGlArea = areaToPolygonObject(area);
 
-    setAreas(areas.filter((area) => { return area.id !== id }));
-    // setSelectedArea(null);
-    // closeEditAreaModal();
+  //   setAreas([...areas, deckGlArea]);
+  //   setAreaData([]);
 
-    return area;
-  };
+  //   return area;
+  // };
+
+  // const editArea = async ({ id, ...form }) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const coordinates = areaData.map(data => JSON.stringify(data.coordinates));
+  //   const params = { area: { ...form }};
+  //   if (coordinates.length > 0) {
+  //     params['area']['coordinates'] = coordinates;
+  //   }
+  //   const area = await updateArea(id, params, token);
+  //   const deckGlArea = areaToPolygonObject(area);
+
+  //   setAreas([...areas.filter((area) => { return area.id !== id }), deckGlArea]);
+  //   setSelectedArea(null);
+  //   closeEditAreaModal();
+  //   setAreaData([]);
+  // };
+
+  // const deleteArea = async ({ id }) => {
+  //   const token = document.querySelector('[name=csrf-token]').content;
+  //   const area = await removeArea(id, token);
+
+  //   setAreas(areas.filter((area) => { return area.id !== id }));
+  //   // setSelectedArea(null);
+  //   // closeEditAreaModal();
+
+  //   return area;
+  // };
 
   // Modes
 
-  const toggleMode = (mode) => {
-    if (selectedMode === mode) {
-      setSelectedMode(null);
-    } else {
-      setSelectedMode(mode);
-    }
-  }
+  // const toggleMode = (mode) => {
+  //   if (selectedMode === mode) {
+  //     setSelectedMode(null);
+  //   } else {
+  //     setSelectedMode(mode);
+  //   }
+  // }
 
-  const handleAreaMode = () => {
-    setAreaData([]);
-    toggleMode('area');
-  };
+  // const handleAreaMode = () => {
+  //   // setAreaData([]);
+  //   toggleMode('area');
+  // };
 
-  const handlePointMode = () => {
-    toggleMode('point');
-  };
+  // const handlePointMode = () => {
+  //   toggleMode('point');
+  // };
 
-  const handleShowMode = () => {
-    if (selectedArea) {
-      openShowAreaModal();
-    } else {
-      toggleMode('show');
-    }
-  };
+  // const handleShowMode = () => {
+  //   if (selectedArea) {
+  //     openShowAreaModal();
+  //   } else {
+  //     toggleMode('show');
+  //   }
+  // };
 
-  const handleEditMode = () => {
-    if (selectedArea) {
-      openEditAreaModal();
-    } else {
-      toggleMode('edit');
-    }
-  };
+  // const handleEditMode = () => {
+  //   if (selectedArea) {
+  //     openEditAreaModal();
+  //   } else {
+  //     toggleMode('edit');
+  //   }
+  // };
 
-  // Layers
+  // // Layers
 
-  const carsLayer = new ScatterplotLayer({
-    id: 'scatterplot-layer1',
-    data: cars,
-    pickable: true,
-    opacity: 0.6,
-    stroked: true,
-    filled: true,
-    radiusScale: 3,
-    radiusMinPixels: 1,
-    radiusMaxPixels: 20,
-    lineWidthMinPixels: 1,
-    getPosition: d => d.coordinates,
-    getRadius: d => Math.sqrt(d.exits),
-    getFillColor: d => [200, 200, 200],
-    getLineColor: d => [0, 0, 0],
-    onClick: (info) => {
-      setSelectedCar(info.object);
+  // const pointsLayer = new ScatterplotLayer({
+  //   id: 'scatterplot-layer1',
+  //   data: deckPoints,
+  //   pickable: true,
+  //   opacity: 0.6,
+  //   stroked: true,
+  //   filled: true,
+  //   radiusScale: 3,
+  //   radiusMinPixels: 1,
+  //   radiusMaxPixels: 20,
+  //   lineWidthMinPixels: 1,
+  //   getPosition: d => d.coordinates,
+  //   getRadius: d => Math.sqrt(d.exits),
+  //   getFillColor: d => [200, 200, 200],
+  //   getLineColor: d => [0, 0, 0],
+  //   onClick: (info) => {
+  //     setSelectedCar(info.object);
 
-      selectedMode === 'edit' && openEditCarModal();
-    }
-  });
+  //     // selectedMode === 'edit' && openEditCarModal();
+  //   }
+  // });
 
-  const hoveredAreaLayer = new PolygonLayer({
-    id: 'polygon-layer1',
-    data: hoveredArea && [hoveredArea],
-    pickable: true,
-    stroked: true,
-    filled: true,
-    lineWidthMinPixels: 1,
-    getPolygon: d => d.contour,
-    getElevation: d => 10,
-    getFillColor: d => [255, 255, 0, 35.5],
-    getLineColor: [255, 160, 0, 125],
-    getLineWidth: 1,
-  });
+  // const hoveredAreaLayer = new PolygonLayer({
+  //   id: 'polygon-layer1',
+  //   data: hoveredArea && [hoveredArea],
+  //   pickable: true,
+  //   stroked: true,
+  //   filled: true,
+  //   lineWidthMinPixels: 1,
+  //   getPolygon: d => d.contour,
+  //   getElevation: d => 10,
+  //   getFillColor: d => [255, 255, 0, 35.5],
+  //   getLineColor: [255, 160, 0, 125],
+  //   getLineWidth: 1,
+  // });
 
   const areasLayer = new PolygonLayer({
     id: 'polygon-layer2',
-    data: selectableAreas,
+    data: areasData.filter((area) => area.maxZoom > zoom),
     pickable: true,
     stroked: true,
     filled: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
     getElevation: d => 10,
-    getFillColor: d => {
-      if (!d.areaId) {
-        return [250, 100, 100, 65.5];
-      }
-      if (d.peopleCount !== d.addedPeopleCount) {
-        return [100, 250, 250, 65.5];
+    getFillColor: ({ id, areaId, peopleCount, addedPeopleCount }) => {
+      let color = null;
+
+      if (selectedAreaData?.id === id) {
+        color = [255, 204, 0, 105];
+      } else if (!areaId) {
+        color = [250, 100, 100, 65.5];
+      } else if (peopleCount !== addedPeopleCount) {
+        color = [100, 250, 250, 65.5];
+      } else {
+        color = [100, 250, 100, 65.5];
       }
 
-      return [100, 250, 100, 65.5];
+      if (hoveredAreaId === id) {
+        color[3] += 30;
+      }
+
+      return color;
     },
     getLineColor: [80, 80, 80, 65],
     getLineWidth: 1,
-    onHover: (info) => {
-      setHoveredArea(info.object);
+    onHover: ({ object }) => {
+      if (mode !== modes.AREA) {
+        setHoveredAreaId(object?.id);
+      }
     },
-    onClick: (info) => {
-      setSelectedArea(info.object);
+    onClick: ({ object }) => {
+      if (mode !== modes.AREA) {
+        if (selectedAreaData?.id !== object.id) {
+          setSelectedAreaData(object);
+        } else {
+          setSelectedAreaData(null);
+        }
+      }
 
-      selectedMode === 'show' && openShowAreaModal();
-      selectedMode === 'edit' && openEditAreaModal();
+      // selectedMode === 'show' && openShowAreaModal();
+      // selectedMode === 'edit' && openEditAreaModal();
     }
   });
 
-  const contourAreasLayer = new PolygonLayer({
-    id: 'contourAreasLayer',
-    data: contourAreas,
-    pickable: false,
-    stroked: true,
-    filled: false,
-    lineWidthMinPixels: 1,
-    getPolygon: d => d.contour,
-    getElevation: d => 10,
-    getFillColor: d => [0, 0, 0, 0],
-    getLineColor: [255, 0, 0, 205],
-    getLineWidth: 1,
-  });
+  // const contourAreasLayer = new PolygonLayer({
+  //   id: 'contourAreasLayer',
+  //   data: areasData.filter((area) => area.maxZoom <= zoom),
+  //   pickable: false,
+  //   stroked: true,
+  //   filled: false,
+  //   lineWidthMinPixels: 1,
+  //   getPolygon: d => d.contour,
+  //   getElevation: d => 10,
+  //   getFillColor: d => [0, 0, 0, 0],
+  //   getLineColor: [255, 0, 0, 205],
+  //   getLineWidth: 1,
+  // });
 
-  const selectedAreaLayer = new PolygonLayer({
-    id: 'polygon-layer3',
-    data: selectedArea && [selectedArea],
-    pickable: (selectedArea?.maxZoom || 0) < zoom,
-    stroked: true,
-    filled: true,
-    lineWidthMinPixels: 1,
-    getPolygon: d => d.contour,
-    getElevation: d => 10,
-    getFillColor: d => (d.maxZoom < zoom) ? [255, 255, 0, 15.5] : [255, 255, 0, 125.5],
-    getLineColor: [255, 160, 0, 125],
-    getLineWidth: 1,
-  });
 
-  const polygonAreaModeLayer = new PolygonLayer({
+  // const selectedAreaLayer = new PolygonLayer({
+  //   id: 'polygon-layer3',
+  //   data: selectedArea && [selectedArea],
+  //   pickable: (selectedArea?.maxZoom || 0) < zoom,
+  //   stroked: true,
+  //   filled: true,
+  //   lineWidthMinPixels: 1,
+  //   getPolygon: d => d.contour,
+  //   getElevation: d => 10,
+  //   getFillColor: d => (d.maxZoom < zoom) ? [255, 255, 0, 15.5] : [255, 255, 0, 125.5],
+  //   getLineColor: [255, 160, 0, 125],
+  //   getLineWidth: 1,
+  // });
+
+  const polygonNewAreaPointsLayer = new PolygonLayer({
     id: 'polygon-layer4',
-    data: [areaData.map(data => data.coordinates)],
+    data: [newAreaPoints],
     pickable: true,
     stroked: true,
     filled: true,
@@ -384,9 +449,9 @@ const App = () => {
     getLineWidth: 1
   });
 
-  const pointsAreaModeLayer = new ScatterplotLayer({
+  const scatterplotNewAreaPointsLayer = new ScatterplotLayer({
     id: 'scatterplot-layer2',
-    data: areaData,
+    data: newAreaPoints,
     pickable: true,
     opacity: 0.6,
     stroked: true,
@@ -395,8 +460,8 @@ const App = () => {
     radiusMinPixels: 1,
     radiusMaxPixels: 20,
     lineWidthMinPixels: 1,
-    getPosition: d => d.coordinates,
-    getRadius: d => Math.sqrt(d.exits),
+    getPosition: d => d,
+    getRadius: d => Math.sqrt(1),
     getFillColor: d => [250, 250, 100],
     getLineColor: d => [0, 0, 0],
     onDragStart: (info, event) => {
@@ -408,49 +473,63 @@ const App = () => {
   });
 
   const layers = [
-    // carsLayer,
-    selectedAreaLayer,
-    contourAreasLayer,
-    hoveredAreaLayer,
+    // pointsLayer,
+    // selectedAreaLayer,
+    // contourAreasLayer,
+    // hoveredAreaLayer,
     areasLayer,
-    polygonAreaModeLayer,
-    pointsAreaModeLayer,
+    polygonNewAreaPointsLayer,
+    scatterplotNewAreaPointsLayer,
   ];
 
   const onClick = (event) => {
-    if (selectedMode === 'area') {
+    console.log('mode', mode)
+    if (mode === modes.AREA) {
       const [longitude, latitude] = event.coordinate;
 
-      setLatitude(latitude);
-      setLongitude(longitude);
-      setAreaData(areaData => [...areaData, { exits: 1, coordinates: [+longitude, +latitude] }]);
+      console.log('event.coordinate', event.coordinate)
+
+      addNewAreaPoint(event.coordinate);
+
+      // setLatitude(latitude);
+      // setLongitude(longitude);
+      // setAreaData(areaData => [...areaData, { exits: 1, coordinates: [+longitude, +latitude] }]);
     } else {
       const picked = event.object;
 
       if (!picked) {
-        setSelectedArea(null);
+        // console.log("!!setSelectedArea", setSelectedArea)
+        setSelectedAreaData(null);
 
-        if (selectedMode === 'point') {
-          const [longitude, latitude] = event.coordinate;
+        // if (mode === 'point') {
+        //   const [longitude, latitude] = event.coordinate;
 
-          setLatitude(latitude);
-          setLongitude(longitude);
+        //   setLatitude(latitude);
+        //   setLongitude(longitude);
 
-          openAddCarModal();
-        }
+        //   openAddCarModal();
+        // }
       }
     }
   };
 
-  useEffect(() => {
-    loadCars();
-    loadAreas();
-    loadCompanies();
-  }, []);
+  // useEffect(() => {
+  //   loadCars();
+  //   loadAreas();
+  //   loadCompanies();
+  // }, []);
 
-  useEffect(() => {
-    refreshAreas();
-  }, [areas]);
+  // useEffect(() => {
+  //   refreshAreas();
+  // }, [areas]);
+
+  const initialViewState = {
+    longitude: 27.478700,
+    latitude: 53.868718,
+    zoom: 13,
+    pitch: 0,
+    bearing: 0
+  };
 
   return (
     <div>
@@ -458,115 +537,102 @@ const App = () => {
         zoom: {zoom}
       </Information>
       {
-        selectedArea && <Mode>{selectedArea?.number}</Mode>
-      }
-      {
-        modalAddCar && <AddCarModal
-          isOpen={modalAddCar}
-          onClose={closeAddCarModal}
-          onSubmit={addCar}
-        />
-      }
-      {
-        selectedCar && modalEditCar && <EditCarModal
-          item={selectedCar}
-          isOpen={modalEditCar}
-          onClose={closeEditCarModal}
-          onRemove={deleteCar}
-          onSubmit={editCar}
-        />
-      }
-      {
-        modalAddNote && <AddNoteModal
-          isOpen={modalAddNote}
-          item={selectedArea}
-          onClose={closeAddNoteModal}
-          onSubmit={addNote}
-        />
-      }
-      {
-        modalAddPerson && <AddPersonModal
-          isOpen={modalAddPerson}
-          defaultAreaId={selectedArea?.id}
-          onClose={closeAddPersonModal}
-          onSubmit={addPerson}
-          areas={areas}
-          companies={companies}
-        />
-      }
-      {
-        selectedArea && modalEditArea && <EditAreaModal
-          id={selectedArea.id}
-          isOpen={modalEditArea}
-          onClose={closeEditAreaModal}
-          onRemove={deleteArea}
-          onSubmit={editArea}
-          areas={areas}
-        />
-      }
-      {
-        selectedArea && modalShowArea && <ShowAreaModal
-          id={selectedArea.id}
-          isOpen={modalShowArea}
-          onClose={closeShowAreaModal}
-          onSubmit={addPerson}
-          onAddArea={addArea}
-          onDeleteArea={deleteArea}
-          companies={companies}
-          changeSelectedArea={changeSelectedArea}
-        />
+        selectedAreaData && <Mode>{selectedAreaData.number}</Mode>
       }
       <DeckGL
         onClick={onClick}
-        initialViewState={{
-          longitude: 26.802506,
-          latitude: 55.1139014,
-          zoom: 12.0,
-          pitch: 0,
-          bearing: 0
-        }}
-        controller={{dragPan: true}}
+        initialViewState={initialViewState}
         layers={layers}
+        controller={{ dragPan: true }}
         getTooltip={({object}) => object && `${object.number}\n${object.notice?.match(/.{1,50}/g)?.join('\n')}`}
-        style={{zIndex: '1', overflow: 'hidden'}}
-        getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (hoveredArea ? 'pointer' : 'grab'))}
-        onViewStateChange={(viewState) => {
-          setZoom(viewState.viewState.zoom);
-          refreshAreas();
+        style={{ zIndex: '1', overflow: 'hidden' }}
+        onViewStateChange={({ viewState: { zoom } }) => {
+          setZoom(zoom);
+          {/*setHoveredAreaId(null);*/}
+          {/*refreshAreas();*/}
         }}
+        getCursor={({ isDragging }) => (isDragging ? 'grabbing' : (hoveredAreaId ? 'pointer' : 'grab'))}
       >
+        {/*{onAddArea={addArea}}*/}
         <StaticMap
           mapStyle="mapbox://styles/mapbox/satellite-v9"
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
-      <ModePointButton
+{/*      {
+        modalAddCar && <AddCarModal
+          isOpen={modalAddCar}
+          onClose={closeAddCarModal}
+        />
+      }*/}
+          {/*onSubmit={addCar}*/}
+{/*      {
+        selectedCar && modalEditCar && <EditCarModal
+          item={selectedCar}
+          isOpen={modalEditCar}
+          onClose={closeEditCarModal}
+        />
+      }*/}
+{/*          onRemove={deleteCar}
+          onSubmit={editCar}*/}
+          {/*onSubmit={addNote}*/}
+{/*      {
+        modalAddPerson && <AddPersonModal
+          isOpen={modalAddPerson}
+          defaultAreaId={selectedArea?.id}
+          onClose={closeAddPersonModal}
+        />
+      }*/}
+ {/*     {
+        mode === modes.SHOW && selectedAreaId && <ShowModeModal
+          isOpen={mode === modes.SHOW}
+        />
+      }
+      {
+        mode === modes.EDIT && selectedAreaId && <EditModeModal
+          isOpen={mode === modes.EDIT}
+        />
+      }
+      {/*<ModePointButton
         active={selectedMode === 'point'}
         onClick={handlePointMode}
       ></ModePointButton>
       <ModeShowButton
         active={selectedMode === 'show'}
         onClick={handleShowMode}
-      ></ModeShowButton>
-      <ModeEditButton
-        active={selectedMode === 'edit'}
-        onClick={handleEditMode}
-      ></ModeEditButton>
-      <AddAreaButton
-        id={selectedArea?.id}
-        active={selectedMode === 'area'}
-        onClick={handleAreaMode}
-        onSubmit={addArea}
-        onEdit={editArea}
-      />
-      <AddNoteButton onClick={openAddNoteModal}/>
-      <AddPersonButton onClick={openAddPersonModal}/>
+      ></ModeShowButton>*/}
+      {/*<EditModeButton/>*/}
+      <EditMode/>
+      <AreaMode/>
+      <NoteMode/>
+      {/*<AddPersonButton onClick={openAddPersonModal}/>*/}
     </div>
-  )
+  );
 }
 
-export default App;
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
+export default connect(
+  (state) => ({
+    mode: state.main.mode,
+    zoom: state.main.zoom,
+    areasData: state.main.areasData,
+    // selectedAreaId: state.main.selectedAreaId,
+    selectedAreaData: state.main.selectedAreaData,
+    hoveredAreaId: state.main.hoveredAreaId,
+    // areasStatus: state.areas.status,
+    // points: state.points.points,
+    // pointsStatus: state.points.status,
+    // selectedAreaId: state.modes.selectedAreaId,
+    newAreaPoints: state.modes.area.newAreaPoints,
+  }),
+  (dispatch) => ({
+    setZoom: (zoom) => dispatch(setZoom(zoom)),
+    loadAreasData: () => dispatch(loadAreasData()),
+    setSelectedAreaData: (data) => dispatch(setSelectedAreaData(data)),
+    setHoveredAreaId: (id) => dispatch(setHoveredAreaId(id)),
+    addNewAreaPoint: (coordinates) => dispatch(addNewAreaPoint(coordinates)),
+    // setSelectedAreaId: (id) => dispatch(setSelectedAreaId(id)),
+    // fetchPoints: () => dispatch(fetchPoints()),
+    // setSelectedAreaById: (id) => dispatch(setSelectedAreaById(id)),
+    // setSelectedAreaId: (id) => dispatch(setSelectedAreaId(id)),
+  })
+)(App);
