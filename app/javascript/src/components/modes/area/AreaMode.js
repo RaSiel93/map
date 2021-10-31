@@ -6,7 +6,7 @@ import { modes } from 'src/constants';
 
 import {
   toggleMode,
-  resetNewAreaPoints,
+  resetNewAreaPointsForAreaMode,
 } from 'src/store/actions';
 
 import {
@@ -51,7 +51,7 @@ const AreaMode = (props) => {
     newAreaPoints,
     // createArea,
     // update,
-    resetNewAreaPoints,
+    resetNewAreaPointsForAreaMode,
     toggleMode,
     createAreaForAreaMode,
     updateAreaForAreaMode,
@@ -75,7 +75,7 @@ const AreaMode = (props) => {
 
   const onClick = () => {
     toggleMode(modes.AREA);
-    resetNewAreaPoints();
+    resetNewAreaPointsForAreaMode();
   };
 
   const onCreate = () => {
@@ -123,7 +123,7 @@ export default connect(
   }),
   {
     toggleMode,
-    resetNewAreaPoints,
+    resetNewAreaPointsForAreaMode,
     // createArea,
     createAreaForAreaMode,
     updateAreaForAreaMode,

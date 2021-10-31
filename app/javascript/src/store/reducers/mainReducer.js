@@ -1,8 +1,14 @@
 import {
   SET_ZOOM,
   ADD_AREA_DATA,
+  ADD_POINT,
+  RESET_POINT,
+  ADD_POINT_DATA,
+  REMOVE_AREA_DATA,
   UPDATE_AREA_DATA,
   SET_AREAS_DATA,
+  SET_COMPANIES,
+  SET_POINTS_DATA,
   SET_SELECTED_AREA_ID,
   SET_SELECTED_AREA_DATA,
   SET_HOVERED_AREA_ID,
@@ -23,6 +29,12 @@ export const mainReducer = (state = {}, action) => {
         areasData: [...state.areasData, action.payload],
       }
     }
+    case REMOVE_AREA_DATA: {
+      return {
+        ...state,
+        areasData: state.areasData.filter(({ id }) => (id !== action.payload)),
+      }
+    }
     case UPDATE_AREA_DATA: {
       return {
         ...state,
@@ -36,6 +48,36 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         areasData: action.payload,
+      }
+    }
+    case SET_COMPANIES: {
+      return {
+        ...state,
+        companies: action.payload,
+      }
+    }
+    case SET_POINTS_DATA: {
+      return {
+        ...state,
+        pointsData: action.payload,
+      }
+    }
+    case ADD_POINT: {
+      return {
+        ...state,
+        pointCoordinates: action.payload,
+      }
+    }
+    case ADD_POINT_DATA: {
+      return {
+        ...state,
+        pointsData: [...state.pointsData, action.payload],
+      }
+    }
+    case RESET_POINT: {
+      return {
+        ...state,
+        pointCoordinates: null,
       }
     }
     case SET_SELECTED_AREA_ID: {

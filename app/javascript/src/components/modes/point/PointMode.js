@@ -4,36 +4,38 @@ import { connect } from 'react-redux';
 
 import { Button } from 'src/components/common/Button';
 import { modes } from 'src/constants';
-import { toggleMode } from 'src/store/actions';
-import EditModeModal from './EditModeModal';
+import { toggleMode, resetPoint } from 'src/store/actions';
+import PointModeModal from './PointModeModal';
 
 const ModeButton = styled(Button)`
-  right: 140px;
+  right: 260px;
   bottom: 20px;
 
   &:after {
     font-size: 30px;
-    content: '/';
+    content: '!';
   }
-`
+`;
 
-const EditMode = (props) => {
+const PointMode = (props) => {
   const {
     mode,
     toggleMode,
-    selectedAreaData,
+    pointCoordinates,
+    resetPointCoordinates,
   } = props;
 
-  const active = mode === modes.EDIT;
+  const active = mode === modes.POINT;
 
   const onClick = () => {
-    toggleMode(modes.EDIT);
+    toggleMode(modes.POINT);
+    resetPoint();
   };
 
   return <>
     <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
     {
-      active && selectedAreaData && <EditModeModal
+      active && pointCoordinates && <PointModeModal
         isOpen={active}
       />
     }
@@ -43,8 +45,9 @@ const EditMode = (props) => {
 export default connect(
   (state) => ({
     mode: state.main.mode,
-    selectedAreaData: state.main.selectedAreaData,
+    pointCoordinates: state.main.pointCoordinates,
   }), {
     toggleMode,
+    resetPoint,
   }
-)(EditMode);
+)(PointMode);

@@ -1,371 +1,418 @@
-// import React, { useState, useEffect } from 'react';
-// import { Modal } from './Modal';
-// import styled from 'styled-components';
-// import { areaToPolygonObject } from '../../services/deckGl';
-// import { getArea } from '../../api/area';
-// import Select from 'react-select';
-// import { SpinnerCircular } from 'spinners-react';
+import React, { useState, useEffect } from 'react';
+import styled from 'styled-components';
+import Select from 'react-select';
+import { SpinnerCircular } from 'spinners-react';
+import { connect } from 'react-redux';
 
-// const Description = styled.div`
-//   border: solid 1px #555;
-//   padding: 5px;
+import { Modal } from 'src/components/common/Modal';
+import { modes } from 'src/constants';
+import { getArea, createArea, removeArea, createPerson } from 'src/api';
+import { toggleMode, addAreaData, removeAreaData, setSelectedAreaData } from 'src/store/actions';
+import { areaToPolygonObject } from 'src/services/deckGl';
 
-//   h3 {
-//     margin: 0;
-//     padding: 5px;
-//   }
+const Description = styled.div`
+  border: solid 1px #555;
+  padding: 5px;
 
-//   p span {
-//     display: block;
-//   }
-// `;
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
 
-// const Notes = styled.div`
-//   border: solid 1px #555;
-//   padding: 5px;
+  p span {
+    display: block;
+  }
+`;
 
-//   h3 {
-//     margin: 0;
-//     padding: 5px;
-//   }
-// `;
+const Notes = styled.div`
+  border: solid 1px #555;
+  padding: 5px;
 
-// const People = styled.div`
-//   border: solid 1px #555;
-//   padding: 5px;
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
+`;
 
-//   h3 {
-//     margin: 0;
-//     padding: 5px;
-//   }
+const People = styled.div`
+  border: solid 1px #555;
+  padding: 5px;
 
-//   table {
-//     width: 100%;
-//     border-spacing: 0;
-//     padding: 0;
-//   }
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
 
-//   tr, td, th {
-//     border: 1px solid #555;
-//     padding: 5px;
-//   }
-// `;
+  table {
+    width: 100%;
+    border-spacing: 0;
+    padding: 0;
+  }
 
-// const AddPersonForm = styled.div`
-//   margin-top: 10px;
-//   display: flex;
-//   flex-wrap: wrap;
-//   gap: 10px;
-//   width: 100%;
+  tr, td, th {
+    border: 1px solid #555;
+    padding: 5px;
+  }
+`;
 
-//   input, &>div {
-//     width: 200px;
-//     flex-grow: 1;
-//   }
-// `;
+const AddPersonForm = styled.div`
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  width: 100%;
 
-// const AddAreaForm = styled.div`
-//   margin-top: 10px;
-//   display: flex;
-//   flex-wrap: wrap;
-//   gap: 10px;
+  input, &>div {
+    width: 200px;
+    flex-grow: 1;
+  }
+`;
 
-//   input, &>div {
-//     width: 200px;
-//     flex-grow: 1;
-//   }
-// `;
+const AddAreaForm = styled.div`
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
 
-// const Areas = styled.div`
-//   border: solid 1px #555;
-//   padding: 5px;
+  input, &>div {
+    width: 200px;
+    flex-grow: 1;
+  }
+`;
 
-//   h3 {
-//     margin: 0;
-//     padding: 5px;
-//   }
+const Areas = styled.div`
+  border: solid 1px #555;
+  padding: 5px;
 
-//   .areas {
-//     a {
-//       display: block;
-//       border: 1px solid #555;
-//       cursor: pointer;
-//       padding: 5px;
-//       background-color: #ddd;
-//       position: relative;
-//       height: 18px;
+  h3 {
+    margin: 0;
+    padding: 5px;
+  }
 
-//       &:hover {
-//         background-color: #eee;
-//       }
+  .areas {
+    a {
+      display: block;
+      border: 1px solid #555;
+      cursor: pointer;
+      padding: 5px;
+      background-color: #ddd;
+      position: relative;
+      height: 18px;
 
-//       .delete {
-//         position: absolute;
-//         right: 10px;
+      &:hover {
+        background-color: #eee;
+      }
 
-//         &:hover {
-//           color: #666;
-//         }
-//       }
-//     }
-//   }
-// `;
+      .delete {
+        position: absolute;
+        right: 10px;
 
-// const ENTER_KEY = 'Enter';
+        &:hover {
+          color: #666;
+        }
+      }
+    }
+  }
+`;
 
-// export const ShowModeModal = (props) => {
-//   const {
-//     id,
-//     isOpen,
-//     onClose,
-//     onAddArea,
-//     onSubmit,
-//     onDeleteArea,
-//     companies,
-//     changeSelectedArea
-//   } = props;
+const ENTER_KEY = 'Enter';
 
-//   const [firstName, setFirstName] = useState('');
-//   const [lastName, setLastName] = useState('');
-//   const [companyId, setCompanyId] = useState('');
-//   const [area, setArea] = useState(null);
-//   const [childTitle, setChildTitle] = useState('');
+export const ShowModeModal = (props) => {
+  const {
+    id,
+    mode,
+    companies,
+    addAreaData,
+    removeAreaData,
+    toggleMode,
+    setSelectedAreaData,
+    areasData,
+  } = props;
 
-//   const resetFields = () => {
-//     setFirstName('');
-//     setLastName('');
-//     setCompanyId('');
-//     setChildTitle('');
-//   }
+  const [area, setArea] = useState(null);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [companyId, setCompanyId] = useState('');
+  const [childAreaTitle, setChildAreaTitle] = useState('');
+  const [companyOptions, setCompanyOptions] = useState([]);
 
-//   const handleSubmit = () => {
-//     onSubmit({
-//       first_name: firstName,
-//       last_name: lastName,
-//       area_id: area.id,
-//       company_id: companyId,
-//     }).then((person) => {
-//       setArea({
-//         ...area,
-//         attributes: {
-//           ...area.attributes,
-//           people: [...area.attributes.people, person],
-//           added_people_count: area.attributes.added_people_count + 1,
-//         }
-//       });
-//     });
-//   }
+  const resetPersonFields = () => {
+    setFirstName('');
+    setLastName('');
+    setCompanyId('');
+  }
 
-//   const handleAddArea = () => {
-//     onAddArea({
-//       title: childTitle,
-//       area_id: area.id,
-//     }).then((child) => {
-//       setArea({
-//         ...area,
-//         attributes: {
-//           ...area.attributes,
-//           areas: [...area.attributes.areas, child],
-//         }
-//       });
-//     })
-//   }
+  const resetFields = () => {
+    resetPersonFields();
+    setChildAreaTitle('');
+  };
 
-//   const handleDeleteArea = (id) => {
-//     if (confirm("Вы ўпэўнены, што жадаеце выдаліць аб'ект?")) {
-//       onDeleteArea({ id }).then((child) => {
-//         setArea({
-//           ...area,
-//           attributes: {
-//             ...area.attributes,
-//             areas: area.attributes.areas.filter(area => area.id !== child.id),
-//           }
-//         });
-//       });
-//     }
-//   }
+  useEffect(() => {
+    resetFields();
 
-//   useEffect(async () => {
-//     const area = await getArea(id);
+    setCompanyOptions([
+      { value: '', label: 'Месца працы' },
+      ...companies.map(company => (
+        { value: company.id, label: company.attributes.name }
+      ))
+    ]);
+  }, []);
 
-//     setArea(area);
-//   }, [id]);
+  const handleCreatePerson = async () => {
+    const params = {
+      person: {
+        first_name: firstName,
+        last_name: lastName,
+        area_id: area.id,
+        company_id: companyId,
+      }
+    };
+    const token = document.querySelector('[name=csrf-token]').content;
 
-//   useEffect(() => {
-//     resetFields();
-//   }, [area?.attributes?.people, area?.attributes?.areas]);
+    const person = await createPerson(params, token);
 
-//   const changeArea = (id) => {
-//     setArea(null);
-//     changeSelectedArea(id);
-//   }
+    setArea({
+      ...area,
+      attributes: {
+        ...area.attributes,
+        people: [...area.attributes.people, person],
+        added_people_count: area.attributes.added_people_count + 1,
+      }
+    });
 
-//   if (area) {
-//     const companyOptions = [
-//       { value: '', label: 'Месца працы' },
-//       ...companies.map(company => ({ value: company.id, label: company.attributes.name }))
-//     ];
+    resetFields();
+  }
 
-//     const {
-//       id,
-//       attributes: {
-//         title,
-//         description,
-//         notes,
-//         added_people_count,
-//         people_count,
-//         estimated_people_count,
-//         people,
-//         parent,
-//         areas,
-//       }
-//     } = area;
+  const handleCreateArea = async () => {
+    const params = {
+      title: childAreaTitle,
+      area_id: id,
+    };
+    const token = document.querySelector('[name=csrf-token]').content;
 
-//     return <Modal
-//       isOpen={isOpen}
-//       onAfterOpen={resetFields}
-//       onRequestClose={onClose}
-//       contentLabel='Прагляд тэрыторыі'
-//     >
-//       <div>
-//         <h2 htmlFor='title'>{title}</h2>
-//       </div>
-//       {
-//         description && <Description>
-//           <h3>Апісанне:</h3>
-//           <p>
-//             {description.split(/\n/).map((line, index) => {
-//               return <span key={index}>{line}</span>;
-//             })}
-//           </p>
-//         </Description>
-//       }
-//       {
-//         notes.length > 0 && <Notes>
-//           <h3>Нататкі:</h3>
-//           <ul>
-//             {
-//               notes.map((note) => {
-//                 const { attributes: { id, text } } = note;
+    const child = await createArea(params, token);
 
-//                 return <li key={id}>{text}</li>
-//               })
-//             }
-//           </ul>
-//         </Notes>
-//       }
-//       <People>
-//         <h3>Насельніцтва:</h3>
-//         <div>
-//           <h5 htmlFor='peopleCount'>
-//             Колькасць жыхароў: ({added_people_count}/{people_count}/{estimated_people_count})
-//           </h5>
-//         </div>
-//         {
-//           people.length > 0 && <table>
-//             <tr>
-//               <th>Прозвішча</th>
-//               <th>Імя</th>
-//               <th>Месца працы</th>
-//             </tr>
-//             {
-//               people.map((person) => {
-//                 const { attributes: { id, first_name, last_name, company } } = person;
+    addAreaData(areaToPolygonObject(child));
 
-//                 return <tr key={id}>
-//                   <td>{last_name}</td>
-//                   <td>{first_name}</td>
-//                   <td>{company?.attributes?.name || ''}</td>
-//                 </tr>
-//               })
-//             }
-//           </table>
-//         }
-//         <AddPersonForm>
-//           <input
-//             id='lastName'
-//             value={lastName}
-//             placeholder='Прозвішча'
-//             onChange={(e) => { setLastName(e.target.value) }}
-//             onKeyDown={({ key }) => (key === ENTER_KEY) && handleSubmit()}
-//           ></input>
-//           <input
-//             id='firstName'
-//             value={firstName}
-//             placeholder='Імя'
-//             onChange={(e) => { setFirstName(e.target.value) }}
-//             onKeyDown={({ key }) => (key === ENTER_KEY) && handleSubmit()}
-//           ></input>
-//           <Select
-//             name='companyId'
-//             value={companyOptions.find(option => (option.value === companyId))}
-//             onChange={option => setCompanyId(option.value)}
-//             options={companyOptions}
-//           />
-//           <button onClick={handleSubmit}>Дадаць</button>
-//         </AddPersonForm>
-//       </People>
-//       {
-//         parent && <Areas>
-//           <h3>Знешні аб'ект:</h3>
-//           <div className='areas'>
-//             {
-//               [parent].map((area) => {
-//                 const { attributes: { id, title } } = area;
+    setArea({
+      ...area,
+      attributes: {
+        ...area.attributes,
+        areas: [...area.attributes.areas, child],
+      }
+    });
+    setChildAreaTitle('');
+  }
 
-//                 return <a key={id} onClick={() => changeArea(id)}>
-//                   {
-//                     `${title}`
-//                   }
-//                 </a>
-//               })
-//             }
-//           </div>
-//         </Areas>
-//       }
-//       <Areas>
-//         <h3>Унутранныя аб'екты:</h3>
-//         {
-//           areas.length > 0 && <div className='areas'>
-//             {
-//               areas.map((area) => {
-//                 const { attributes: { id, title } } = area;
+  const handleRemoveArea = async (id) => {
+    if (confirm("Вы ўпэўнены, што жадаеце выдаліць аб'ект?")) {
+      const token = document.querySelector('[name=csrf-token]').content;
 
-//                 return <a key={id} onClick={() => changeArea(id)}>
-//                   {
-//                     `${title}`
-//                   }
-//                   <span className='delete' onClick={(e) => {
-//                     e.stopPropagation();
+      const child = await removeArea(id, token);
 
-//                     handleDeleteArea(id);
-//                   }}
-//                   >x</span>
-//                 </a>
-//               })
-//             }
-//           </div>
-//         }
-//         <AddAreaForm>
-//           <input
-//             id='title'
-//             value={childTitle}
-//             placeholder='Назва'
-//             onChange={(e) => { setChildTitle(e.target.value) }}
-//             onKeyDown={({ key }) => (key === ENTER_KEY) && handleAddArea()}
-//           ></input>
-//           <button onClick={handleAddArea}>Дадаць</button>
-//         </AddAreaForm>
-//       </Areas>
-//     </Modal>
-//   } else {
-//     return <Modal
-//       isOpen={isOpen}
-//       onAfterOpen={resetFields}
-//       onRequestClose={onClose}
-//       contentLabel='Прагляд тэрыторыі'
-//     >
-//       <SpinnerCircular size={50} thickness={180} speed={280} color="rgba(0, 0, 0, 1)" secondaryColor="rgba(255, 255, 255, 1)" />
-//     </Modal>
-//   }
-// }
+      setArea({
+        ...area,
+        attributes: {
+          ...area.attributes,
+          areas: area.attributes.areas.filter(({ id }) => id !== child.id),
+        }
+      });
+      removeAreaData(child.id);
+    }
+  }
+
+  const onRequestClose = () => {
+    toggleMode(modes.SHOW);
+  }
+
+  useEffect(async () => {
+    const area = await getArea(id);
+
+    setArea(area);
+  }, [id]);
+
+  const changeArea = (id) => {
+    setArea(null);
+    resetFields();
+    setSelectedAreaData(areasData.find((areaData) => (areaData.id === id)));
+  }
+
+  if (area) {
+    const {
+      id,
+      attributes: {
+        title,
+        description,
+        notes,
+        added_people_count,
+        people_count,
+        estimated_people_count,
+        people,
+        parent,
+        areas,
+      }
+    } = area;
+
+    return <Modal
+      isOpen={mode === modes.SHOW}
+      onRequestClose={onRequestClose}
+      contentLabel='Прагляд тэрыторыі'
+    >
+      <div>
+        <h2 htmlFor='title'>{title}</h2>
+      </div>
+      {
+        description && <Description>
+          <h3>Апісанне:</h3>
+          <p>
+            {description.split(/\n/).map((line, index) => {
+              return <span key={index}>{line}</span>;
+            })}
+          </p>
+        </Description>
+      }
+      {
+        notes.length > 0 && <Notes>
+          <h3>Нататкі:</h3>
+          <ul>
+            {
+              notes.map((note) => {
+                const { attributes: { id, text } } = note;
+
+                return <li key={id}>{text}</li>
+              })
+            }
+          </ul>
+        </Notes>
+      }
+      <People>
+        <h3>Насельніцтва:</h3>
+        <div>
+          <h5 htmlFor='peopleCount'>
+            Колькасць жыхароў: ({added_people_count}/{people_count}/{estimated_people_count})
+          </h5>
+        </div>
+        {
+          people.length > 0 && <table>
+            <tbody>
+              <tr>
+                <th>Прозвішча</th>
+                <th>Імя</th>
+                <th>Месца працы</th>
+              </tr>
+              {
+                people.map((person) => {
+                  const { attributes: { id, first_name, last_name, company } } = person;
+
+                  return <tr key={id}>
+                    <td>{last_name}</td>
+                    <td>{first_name}</td>
+                    <td>{company?.attributes?.name || ''}</td>
+                  </tr>
+                })
+              }
+            </tbody>
+          </table>
+        }
+        <AddPersonForm>
+          <input
+            id='lastName'
+            value={lastName}
+            placeholder='Прозвішча'
+            onChange={(e) => { setLastName(e.target.value) }}
+            onKeyDown={({ key }) => (key === ENTER_KEY) && handleCreatePerson()}
+          ></input>
+          <input
+            id='firstName'
+            value={firstName}
+            placeholder='Імя'
+            onChange={(e) => { setFirstName(e.target.value) }}
+            onKeyDown={({ key }) => (key === ENTER_KEY) && handleCreatePerson()}
+          ></input>
+          <Select
+            name='companyId'
+            value={companyOptions.find(option => (option.value === companyId))}
+            onChange={option => setCompanyId(option.value)}
+            options={companyOptions}
+          />
+          <button onClick={handleCreatePerson}>Дадаць</button>
+        </AddPersonForm>
+      </People>
+      {
+        parent && <Areas>
+          <h3>Знешні аб'ект:</h3>
+          <div className='areas'>
+            {
+              [parent].map((area) => {
+                const { attributes: { id, title } } = area;
+
+                return <a key={id} onClick={() => changeArea(id)}>
+                  {
+                    `${title}`
+                  }
+                </a>
+              })
+            }
+          </div>
+        </Areas>
+      }
+      <Areas>
+        <h3>Унутранныя аб'екты:</h3>
+        {
+          areas.length > 0 && <div className='areas'>
+            {
+              areas.map((area) => {
+                const { attributes: { id, title } } = area;
+
+                return <a key={id} onClick={() => changeArea(id)}>
+                  {
+                    `${title}`
+                  }
+                  <span className='delete' onClick={(e) => {
+                    e.stopPropagation();
+
+                    handleRemoveArea(id);
+                  }}
+                  >x</span>
+                </a>
+              })
+            }
+          </div>
+        }
+        <AddAreaForm>
+          <input
+            id='title'
+            value={childAreaTitle}
+            placeholder='Назва'
+            onChange={(e) => { setChildAreaTitle(e.target.value) }}
+            onKeyDown={({ key }) => (key === ENTER_KEY) && handleCreateArea()}
+          ></input>
+          <button onClick={handleCreateArea}>Дадаць</button>
+        </AddAreaForm>
+      </Areas>
+    </Modal>
+  } else {
+    return <Modal
+      isOpen={mode === modes.SHOW}
+      onRequestClose={onRequestClose}
+      contentLabel='Прагляд тэрыторыі'
+    >
+      <SpinnerCircular size={50} thickness={180} speed={280} color="rgba(0, 0, 0, 1)" secondaryColor="rgba(255, 255, 255, 1)" />
+    </Modal>
+  }
+}
+
+export default connect(
+  (state) => ({
+    mode: state.main.mode,
+    id: state.main.selectedAreaData.id,
+    companies: state.main.companies,
+    areasData: state.main.areasData,
+  }),
+  {
+    toggleMode,
+    addAreaData,
+    removeAreaData,
+    setSelectedAreaData,
+  }
+)(ShowModeModal);

@@ -5,35 +5,35 @@ import { connect } from 'react-redux';
 import { Button } from 'src/components/common/Button';
 import { modes } from 'src/constants';
 import { toggleMode } from 'src/store/actions';
-import EditModeModal from './EditModeModal';
+import ShowModeModal from './ShowModeModal';
 
 const ModeButton = styled(Button)`
-  right: 140px;
+  right: 200px;
   bottom: 20px;
 
   &:after {
     font-size: 30px;
-    content: '/';
+    content: '@';
   }
-`
+`;
 
-const EditMode = (props) => {
+const ShowMode = (props) => {
   const {
     mode,
     toggleMode,
     selectedAreaData,
   } = props;
 
-  const active = mode === modes.EDIT;
+  const active = mode === modes.SHOW;
 
   const onClick = () => {
-    toggleMode(modes.EDIT);
+    toggleMode(modes.SHOW);
   };
 
   return <>
     <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
     {
-      active && selectedAreaData && <EditModeModal
+      active && selectedAreaData && <ShowModeModal
         isOpen={active}
       />
     }
@@ -47,4 +47,4 @@ export default connect(
   }), {
     toggleMode,
   }
-)(EditMode);
+)(ShowMode);

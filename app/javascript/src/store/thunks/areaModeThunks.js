@@ -1,6 +1,6 @@
 import { client } from 'src/api/client';
 import {
-  resetNewAreaPoints,
+  resetNewAreaPointsForAreaMode,
   toggleMode,
   addAreaData,
   updateAreaData,
@@ -12,7 +12,7 @@ export const createAreaForAreaMode = (params, token) => (dispatch) => {
   client.post('/api/v1/areas.json', params, { headers: { 'X-CSRF-TOKEN': token }})
     .then((response) => {
       dispatch(toggleMode(modes.AREA));
-      dispatch(resetNewAreaPoints());
+      dispatch(resetNewAreaPointsForAreaMode());
       dispatch(addAreaData(areaToPolygonObject(response.data.data)));
     })
     .catch((error) => {
@@ -24,7 +24,7 @@ export const updateAreaForAreaMode = (id, params, token) => (dispatch) => {
   client.put(`/api/v1/areas/${id}.json`, params, { headers: { 'X-CSRF-TOKEN': token }})
     .then((response) => {
       dispatch(toggleMode(modes.AREA));
-      dispatch(resetNewAreaPoints());
+      dispatch(resetNewAreaPointsForAreaMode());
       dispatch(updateAreaData(areaToPolygonObject(response.data.data)));
     })
     .catch((error) => {

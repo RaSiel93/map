@@ -4,35 +4,35 @@ import { Modal } from 'src/components/common/Modal';
 import { modes } from 'src/constants';
 
 import { toggleMode } from 'src/store/actions';
-import { createNoteForNoteMode } from 'src/store/thunks';
+import { createNote } from 'src/api';
 
 const NoteModeModal = (props) => {
   const {
     mode,
     selectedAreaData,
-    // createNote,
     toggleMode,
-    createNoteForNoteMode,
   } = props;
 
   const [text, setText] = useState('');
 
   const onAfterOpen = () => {
     setText('');
-  }
+  };
 
   const onRequestClose = () => {
     toggleMode(modes.NOTE);
-  }
+  };
 
-  const onCreate = () => {
+  const onCreate = async () => {
     const params = {
-      note: { text, area_id: selectedAreaData.id }
+      note: { text, area_id: selectedAreaData?.id }
     };
     const token = document.querySelector('[name=csrf-token]').content;
 
-    createNoteForNoteMode(params, token);
-  }
+    await createNote(params, token);
+
+    toggleMode(modes.NOTE);
+  };
 
   return <Modal
     isOpen={mode === modes.NOTE}
@@ -60,6 +60,5 @@ export default connect(
     selectedAreaData: state.main.selectedAreaData,
   }), {
     toggleMode,
-    createNoteForNoteMode,
   }
 )(NoteModeModal);

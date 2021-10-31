@@ -1,6 +1,12 @@
 export const SET_ZOOM = 'main/setZoom';
 export const SET_AREAS_DATA = 'main/setAreasData';
+export const SET_COMPANIES = 'main/setCompanies';
+export const ADD_POINT = 'main/addPoint';
+export const RESET_POINT = 'main/resetPoint';
+export const ADD_POINT_DATA = 'main/addPointData';
+export const SET_POINTS_DATA = 'main/setPointsData';
 export const ADD_AREA_DATA = 'main/addAreaData';
+export const REMOVE_AREA_DATA = 'main/removeAreaData';
 export const UPDATE_AREA_DATA = 'main/updateAreaData';
 export const SET_SELECTED_AREA_ID = 'main/setSelectedAreaId';
 export const SET_SELECTED_AREA_DATA = 'main/setSelectedAreaData';
@@ -9,7 +15,8 @@ export const TOGGLE_MODE = 'main/toggleMode';
 
 export const ADD_NEW_AREA_POINT_FOR_AREA_MODE = 'modes/addNewAreaPoint';
 export const RESET_NEW_AREA_POINTS_FOR_AREA_MODE = 'modes/resetNewAreaPoints';
-export const SET_AREA_FOR_EDIT_MODE = 'modes/setAreaForEditMode';
+// export const SET_AREA_FOR_EDIT_MODE = 'modes/setAreaForEditMode';
+// export const SET_LOAD_AREA_STATUS_FOR_EDIT_MODE = 'modes/setLoadAreaStatusForEditMode';
 
 export const modes = {
   AREA: 'area',
@@ -17,6 +24,17 @@ export const modes = {
   NOTE: 'note',
   SHOW: 'point',
   SHOW: 'show',
+};
+
+export const requestStatuses = {
+  IDLE: 'idle',
+  LOADED: 'succeeded',
+  // FAILED: 'failed',
+  // LOADING: 'loading',
+  // CREATING: 'creating',
+  // CREATED: 'created',
+  // UPDATING: 'updating',
+  // UPDATED: 'updated',
 };
 
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
@@ -56,15 +74,3 @@ export const modes = {
 // export const SET_AREA_MODE_CREATE_REQUEST_STATUS = 'set/area/mode/create/request/status';
 // export const SET_AREA_MODE_CREATE_SUCCESS_STATUS = 'set/area/mode/create/success/status';
 // export const SET_AREA_MODE_CREATE_FAILURE_STATUS = 'set/area/mode/create/failure/status';
-
-// export const requestStatuses = {
-//   IDLE: 'idle',
-//   LOADING: 'loading',
-//   SECCEEDED: 'succeeded',
-//   FAILED: 'failed',
-//   CREATING: 'creating',
-//   CREATED: 'created',
-//   UPDATING: 'updating',
-//   UPDATED: 'updated',
-// };
-
