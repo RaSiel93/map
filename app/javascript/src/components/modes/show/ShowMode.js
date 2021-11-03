@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 
@@ -38,6 +39,12 @@ const ShowMode = (props) => {
       />
     }
   </>
+}
+
+ShowMode.propTypes = {
+  mode: PropTypes.string,
+  toggleMode: PropTypes.func,
+  selectedAreaData: PropTypes.object,
 }
 
 export default connect(

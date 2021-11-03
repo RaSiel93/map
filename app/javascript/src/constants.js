@@ -22,7 +22,7 @@ export const modes = {
   AREA: 'area',
   EDIT: 'edit',
   NOTE: 'note',
-  SHOW: 'point',
+  POINT: 'point',
   SHOW: 'show',
 };
 

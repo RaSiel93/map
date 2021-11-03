@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { SpinnerCircular } from 'spinners-react';
 import { connect } from 'react-redux';
@@ -85,7 +86,7 @@ const EditModeModal = (props) => {
       removeAreaData(id);
       setSelectedAreaData(null);
       toggleMode(modes.EDIT);
-    };
+    }
   };
 
   if (area) {
@@ -146,6 +147,16 @@ const EditModeModal = (props) => {
       <SpinnerCircular size={50} thickness={180} speed={280} color="rgba(0, 0, 0, 1)" secondaryColor="rgba(255, 255, 255, 1)" />
     </Modal>
   }
+}
+
+EditModeModal.propTypes = {
+  id: PropTypes.number,
+  mode: PropTypes.string,
+  areasData: PropTypes.array,
+  setSelectedAreaData: PropTypes.array,
+  toggleMode: PropTypes.func,
+  updateAreaData: PropTypes.func,
+  removeAreaData: PropTypes.func,
 }
 
 export default connect(

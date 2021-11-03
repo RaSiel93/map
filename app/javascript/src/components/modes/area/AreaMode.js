@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 import { Button } from 'src/components/common/Button';
@@ -111,6 +112,16 @@ const AreaMode = (props) => {
       </>
     }
   </>
+}
+
+AreaMode.propTypes = {
+  mode: PropTypes.string,
+  selectedAreaData: PropTypes.object,
+  newAreaPoints: PropTypes.array,
+  resetNewAreaPointsForAreaMode: PropTypes.func,
+  toggleMode: PropTypes.func,
+  createAreaForAreaMode: PropTypes.func,
+  updateAreaForAreaMode: PropTypes.func,
 }
 
 export default connect(

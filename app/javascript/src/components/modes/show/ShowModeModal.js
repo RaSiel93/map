@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
+import { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import Select from 'react-select';
 import { SpinnerCircular } from 'spinners-react';
@@ -239,7 +241,6 @@ export const ShowModeModal = (props) => {
 
   if (area) {
     const {
-      id,
       attributes: {
         title,
         description,
@@ -340,7 +341,7 @@ export const ShowModeModal = (props) => {
       </People>
       {
         parent && <Areas>
-          <h3>Знешні аб'ект:</h3>
+          <h3>Знешні аб&apos;ект:</h3>
           <div className='areas'>
             {
               [parent].map((area) => {
@@ -357,7 +358,7 @@ export const ShowModeModal = (props) => {
         </Areas>
       }
       <Areas>
-        <h3>Унутранныя аб'екты:</h3>
+        <h3>Унутранныя аб&apos;екты:</h3>
         {
           areas.length > 0 && <div className='areas'>
             {
@@ -400,6 +401,17 @@ export const ShowModeModal = (props) => {
       <SpinnerCircular size={50} thickness={180} speed={280} color="rgba(0, 0, 0, 1)" secondaryColor="rgba(255, 255, 255, 1)" />
     </Modal>
   }
+}
+
+ShowModeModal.propTypes = {
+  id: PropTypes.number,
+  mode: PropTypes.string,
+  companies: PropTypes.array,
+  areasData: PropTypes.array,
+  addAreaData: PropTypes.func,
+  removeAreaData: PropTypes.func,
+  toggleMode: PropTypes.func,
+  setSelectedAreaData: PropTypes.func,
 }
 
 export default connect(

@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 
 import { Modal } from 'src/components/common/Modal';
-import { modes } from 'src/constants';
 import { createPoint } from 'src/api';
 import { resetPoint, addPointData } from 'src/store/actions';
 import { pointToScatterplotObject } from 'src/services/deckGl';
@@ -64,6 +64,12 @@ const PointModeModal = (props) => {
     </div>
     <button onClick={handleCreatePoint}>Прыняць</button>
   </Modal>
+}
+
+PointModeModal.propTypes = {
+  pointCoordinates: PropTypes.array,
+  resetPoint: PropTypes.func,
+  addPointData: PropTypes.func,
 }
 
 export default connect(

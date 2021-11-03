@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { Button } from 'src/components/common/Button';
@@ -37,6 +38,11 @@ const NoteMode = (props) => {
       />
     }
   </>
+}
+
+NoteMode.propTypes = {
+  mode: PropTypes.string,
+  toggleMode: PropTypes.func,
 }
 
 export default connect(

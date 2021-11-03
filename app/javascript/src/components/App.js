@@ -1,7 +1,6 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
-import ReactDOM from 'react-dom';
+import React, { useEffect } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import ReactModal from 'react-modal';
 import styled from 'styled-components';
 import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
@@ -23,9 +22,9 @@ import {
 } from 'src/store/thunks';
 
 import {
-  PathLayer,
+  // PathLayer,
   ScatterplotLayer,
-  LineLayer,
+  // LineLayer,
   PolygonLayer,
 } from '@deck.gl/layers';
 
@@ -63,7 +62,6 @@ const App = (props) => {
     hoveredAreaId,
     newAreaPoints,
     addNewAreaPointForAreaMode,
-    areaNew,
     setZoom,
     loadAreasData,
     loadPointsData,
@@ -124,7 +122,8 @@ const App = (props) => {
     lineWidthMinPixels: 1,
     getPosition: d => d.coordinates,
     getRadius: d => Math.sqrt(d.exits),
-    getFillColor: ({ id }) => {
+    getFillColor: () => {
+      // getFillColor: ({ id }) => {
       let color = null;
 
       // if (selectedAreaData?.id === id) {
@@ -139,13 +138,13 @@ const App = (props) => {
 
       return color;
     },
-    getLineColor: d => [0, 0, 0],
-    onHover: ({ object }) => {
+    getLineColor: () => [0, 0, 0],
+    onHover: () => {
       // if (mode !== modes.AREA) {
       //   setHoveredAreaId(object?.id);
       // }
     },
-    onClick: (info) => {
+    onClick: () => {
       // setSelectedAreaData(info.object);
     }
   });
@@ -158,7 +157,7 @@ const App = (props) => {
     filled: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
-    getElevation: d => 10,
+    getElevation: () => 10,
     getFillColor: ({ id, areaId, peopleCount, addedPeopleCount }) => {
       let color = null;
 
@@ -218,8 +217,8 @@ const App = (props) => {
     filled: true,
     lineWidthMinPixels: 1,
     getPolygon: d => d,
-    getElevation: d => 10,
-    getFillColor: d => [250, 250, 0, 25.5],
+    getElevation: () => 10,
+    getFillColor: () => [250, 250, 0, 25.5],
     getLineColor: [80, 80, 80, 125],
     getLineWidth: 1
   });
@@ -236,9 +235,9 @@ const App = (props) => {
     radiusMaxPixels: 20,
     lineWidthMinPixels: 1,
     getPosition: d => d,
-    getRadius: d => Math.sqrt(1),
-    getFillColor: d => [250, 250, 100],
-    getLineColor: d => [0, 0, 0],
+    getRadius: () => 1,
+    getFillColor: () => [250, 250, 100],
+    getLineColor: () => [0, 0, 0],
     onDragStart: (info, event) => {
       console.log('onDragStart', info, event)
     },
@@ -318,6 +317,25 @@ const App = (props) => {
       {/*<PersonMode*/}
     </div>
   );
+}
+
+App.propTypes = {
+  mode: PropTypes.string,
+  zoom: PropTypes.number,
+  areasData: PropTypes.array,
+  pointsData: PropTypes.array,
+  selectedAreaData: PropTypes.object,
+  hoveredAreaId: PropTypes.number,
+  newAreaPoints: PropTypes.array,
+  addNewAreaPointForAreaMode: PropTypes.func,
+  areaNew: PropTypes.func,
+  setZoom: PropTypes.func,
+  loadAreasData: PropTypes.func,
+  loadPointsData: PropTypes.func,
+  loadCompanies: PropTypes.func,
+  setSelectedAreaData: PropTypes.func,
+  setHoveredAreaId: PropTypes.func,
+  addPoint: PropTypes.func,
 }
 
 export default connect(

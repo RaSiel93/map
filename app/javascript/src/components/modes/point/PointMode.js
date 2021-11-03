@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
 
@@ -22,7 +23,6 @@ const PointMode = (props) => {
     mode,
     toggleMode,
     pointCoordinates,
-    resetPointCoordinates,
   } = props;
 
   const active = mode === modes.POINT;
@@ -40,6 +40,12 @@ const PointMode = (props) => {
       />
     }
   </>
+}
+
+PointMode.propTypes = {
+  mode: PropTypes.string,
+  toggleMode: PropTypes.func,
+  pointCoordinates: PropTypes.array,
 }
 
 export default connect(

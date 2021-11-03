@@ -1,4 +1,5 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Modal } from 'src/components/common/Modal';
 import { modes } from 'src/constants';
@@ -9,8 +10,8 @@ import { createNote } from 'src/api';
 const NoteModeModal = (props) => {
   const {
     mode,
-    selectedAreaData,
     toggleMode,
+    selectedAreaData,
   } = props;
 
   const [text, setText] = useState('');
@@ -52,6 +53,12 @@ const NoteModeModal = (props) => {
     </div>
     <button onClick={onCreate}>Прыняць</button>
   </Modal>
+}
+
+NoteModeModal.propTypes = {
+  mode: PropTypes.string,
+  toggleMode: PropTypes.func,
+  selectedAreaData: PropTypes.array,
 }
 
 export default connect(

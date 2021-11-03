@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from "prop-types";
 import ReactModal from 'react-modal';
 import styled from 'styled-components';
 
@@ -36,6 +37,12 @@ const ReactModalAdapter = ({ className, modalClassName, ...props }) => {
       {...props}
     />
   );
+}
+
+ReactModalAdapter.propTypes = {
+  className: PropTypes.string,
+  modalClassName: PropTypes.string,
+  style: PropTypes.object,
 }
 
 export const Modal = styled(ReactModalAdapter)`
