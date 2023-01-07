@@ -4,6 +4,9 @@ class Area < ApplicationRecord
   has_many :areas
 
   belongs_to :area, optional: true
+  belongs_to :company
+
+  delegate :logo, to: :company, allow_nil: true
 
   ZOOM_MULTIPLICATOR = 23525234
   ZOOM_LEVEL = 1.0/8.00
@@ -18,6 +21,10 @@ class Area < ApplicationRecord
 
   def estimated_people_count
     @estimated_people_count ||= areas.sum { |area| area.people_count || 0 }
+  end
+
+  def logo_url
+    logo&.url
   end
 
   private

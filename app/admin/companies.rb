@@ -1,18 +1,26 @@
 ActiveAdmin.register Company do
-  permit_params :name, :number, :notice, :area_id
+  permit_params :name, :number, :notice, :area_id, :logo
 
-  # See permitted parameters documentation:
-  # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
-  #
-  # Uncomment all parameters which should be permitted for assignment
-  #
-  #
-  # or
-  #
-  # permit_params do
-  #   permitted = [:notice]
-  #   permitted << :other if params[:action] == 'create' && current_user.admin?
-  #   permitted
-  # end
-  
+  index do
+    id_column
+    column :name
+    column :number
+    column :notice
+    column :area
+    column :created_at
+    column :updated_at
+    actions
+  end
+
+  form do |f|
+    f.inputs "Trip" do
+      f.input :name
+      f.input :number
+      f.input :notice
+      f.input :area_id
+      f.input :logo, as: :file
+    end
+
+    f.actions
+  end
 end

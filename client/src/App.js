@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
 
-import { MAPBOX_ACCESS_TOKEN, modes } from 'constants';
+import { MAPBOX_ACCESS_TOKEN, API_URL, modes } from 'constants';
 
 import {
   setZoom,
@@ -26,6 +26,7 @@ import {
   ScatterplotLayer,
   // LineLayer,
   PolygonLayer,
+  IconLayer,
 } from '@deck.gl/layers';
 
 import { AreaMode, EditMode, PointMode, ShowMode, NoteMode } from 'components/modes';
@@ -244,12 +245,28 @@ const App = (props) => {
     }
   });
 
+  const iconLayer = new IconLayer({
+    id: 'icon-layer',
+    data: areasData.filter((area) => area.logoUrl),
+    // pickable: true,
+    sizeScale: 10,
+    getPosition: d => d.contour[0],
+    getSize: d => 5,
+    getIcon: d => ({
+      url: `${API_URL}${d.logoUrl}`,
+      width: 128,
+      height: 128,
+      anchorY: 128
+    }),
+  })
+
   const layers = [
     pointsLayer,
     // contourAreasLayer,
     areasLayer,
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
+    iconLayer,
   ];
 
   const onClick = (event) => {

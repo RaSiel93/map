@@ -7,6 +7,7 @@ const initialState = {
     mode: null,
     zoom: null,
     areasData: [],
+    companiesData: [],
     pointsData: [],
     selectedAreaData: null,
     hoveredAreaId: null,

@@ -22,6 +22,7 @@ const EditModeModal = (props) => {
     id,
     mode,
     areasData,
+    companies,
     toggleMode,
     updateAreaData,
     removeAreaData,
@@ -32,14 +33,22 @@ const EditModeModal = (props) => {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [areaId, setAreaId] = useState(null);
+  const [companyId, setCompanyId] = useState(null);
   const [peopleCount, setPeopleCount] = useState(null);
   const [areaOptions, setAreaOptions] = useState([]);
+  const [companyOptions, setCompanyOptions] = useState([]);
 
   useEffect(() => {
     setAreaOptions([
       { value: '', label: 'Знаходзіцца ў' },
       ...areasData.map(areaData => (
         { value: areaData.id, label: areaData.number }
+      ))
+    ]);
+    setCompanyOptions([
+      { value: '', label: 'Знаходзіцца кампанія' },
+      ...companies.map(company => (
+        { value: +company.id, label: company.attributes.name }
       ))
     ]);
   }, []);
@@ -50,13 +59,14 @@ const EditModeModal = (props) => {
 
   useEffect(async () => {
     const area = await getArea(id);
-    const { attributes: { title, description, area_id, people_count }} = area;
+    const { attributes: { title, description, area_id, people_count, company_id }} = area;
 
     setArea(area);
 
     setTitle(title);
     setDescription(description);
     setAreaId(area_id);
+    setCompanyId(company_id);
     setPeopleCount(people_count);
   }, [id]);
 
@@ -66,6 +76,7 @@ const EditModeModal = (props) => {
         title,
         description,
         area_id: areaId,
+        company_id: companyId,
         people_count: peopleCount,
       }
     };
@@ -119,6 +130,14 @@ const EditModeModal = (props) => {
         />
       </div>
       <div>
+        <Select
+          name='companyId'
+          value={companyOptions.find(option => (option.value === companyId))}
+          onChange={option => setCompanyId(option.value)}
+          options={companyOptions}
+        />
+      </div>
+      <div>
         <input
           id='peopleCount'
           type='number'
@@ -149,6 +168,7 @@ EditModeModal.propTypes = {
   id: PropTypes.number,
   mode: PropTypes.string,
   areasData: PropTypes.array,
+  companies: PropTypes.array,
   setSelectedAreaData: PropTypes.array,
   toggleMode: PropTypes.func,
   updateAreaData: PropTypes.func,
@@ -160,6 +180,7 @@ export default connect(
     mode: state.main.mode,
     id: state.main.selectedAreaData.id,
     areasData: state.main.areasData,
+    companies: state.main.companies,
   }),
   {
     toggleMode,

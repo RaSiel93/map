@@ -15,7 +15,7 @@ export function areaToPolygonObject(area) {
   const {
     attributes: {
       id, title, description, coordinates, notes, max_zoom, area_id, people,
-      people_count, added_people_count, estimated_people_count, areas,
+      people_count, added_people_count, estimated_people_count, areas, logo_url
     }
   } = area;
 
@@ -33,5 +33,6 @@ export function areaToPolygonObject(area) {
     peopleCount: people_count,
     addedPeopleCount: added_people_count,
     estimatedPeopleCount: estimated_people_count,
+    logoUrl: logo_url,
   }
 }

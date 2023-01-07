@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2021_08_22_133213) do
+ActiveRecord::Schema.define(version: 2023_01_07_215740) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -51,7 +51,9 @@ ActiveRecord::Schema.define(version: 2021_08_22_133213) do
     t.boolean "hidden", default: false, null: false
     t.bigint "area_id"
     t.integer "people_count"
+    t.bigint "company_id"
     t.index ["area_id"], name: "index_areas_on_area_id"
+    t.index ["company_id"], name: "index_areas_on_company_id"
   end
 
   create_table "cars", force: :cascade do |t|
@@ -70,6 +72,8 @@ ActiveRecord::Schema.define(version: 2021_08_22_133213) do
     t.bigint "area_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.string "logo_uid"
+    t.string "logo_name"
     t.index ["area_id"], name: "index_companies_on_area_id"
   end
 
@@ -99,5 +103,6 @@ ActiveRecord::Schema.define(version: 2021_08_22_133213) do
     t.index ["mother_id"], name: "index_people_on_mother_id"
   end
 
+  add_foreign_key "areas", "companies"
   add_foreign_key "notes", "areas"
 end

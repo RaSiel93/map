@@ -5,6 +5,7 @@ gem 'activeadmin'
 gem 'bootsnap', '>= 1.4.4', require: false
 gem 'devise', "~> 4.8"
 gem 'dotenv-rails'
+gem 'dragonfly', '~> 1.4.0'
 gem 'jsonapi-serializer'
 gem 'pg', '~> 1.1'
 gem 'puma', '~> 5.0'
