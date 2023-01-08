@@ -1,5 +1,5 @@
 ActiveAdmin.register Area do
-  permit_params :title, :description, :max_zoom, :hidden, :area_id, :people_count
+  permit_params :title, :description, :max_zoom, :hidden, :area_id, :people_count, :longitude, :latitude
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
   #
@@ -33,6 +33,8 @@ ActiveAdmin.register Area do
       f.input :max_zoom
       f.input :hidden, as: :boolean
       f.input :area_id
+      f.input :longitude
+      f.input :latitude
     end
     f.actions
   end

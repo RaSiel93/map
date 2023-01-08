@@ -9,6 +9,7 @@ module Api
         area = Area.create(area_params)
 
         area.update_max_zoom
+        area.update_coordinate
 
         render json: serialize(area)
       end
@@ -25,6 +26,7 @@ module Api
         area.update(area_params)
 
         area.update_max_zoom
+        area.update_coordinate
 
         render json: serialize(area)
       end

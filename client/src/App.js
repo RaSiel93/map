@@ -245,12 +245,14 @@ const App = (props) => {
     }
   });
 
+  console.log('areasData.filter((area) => area.logoUrl)', areasData.filter((area) => area.logoUrl))
+
   const iconLayer = new IconLayer({
     id: 'icon-layer',
     data: areasData.filter((area) => area.logoUrl),
     // pickable: true,
     sizeScale: 10,
-    getPosition: d => d.contour[0],
+    getPosition: d => d.longitude && d.latitude ? [+d.longitude, +d.latitude] : d.contour[0],
     getSize: d => 5,
     getIcon: d => ({
       url: `${API_URL}${d.logoUrl}`,

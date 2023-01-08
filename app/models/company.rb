@@ -1,5 +1,6 @@
 class Company < ApplicationRecord
   extend Dragonfly::Model
+  # belongs_to :area
 
   dragonfly_accessor :logo do
     after_assign :resize_logo

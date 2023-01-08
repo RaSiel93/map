@@ -4,7 +4,7 @@ class Area < ApplicationRecord
   has_many :areas
 
   belongs_to :area, optional: true
-  belongs_to :company
+  belongs_to :company, optional: true
 
   delegate :logo, to: :company, allow_nil: true
 
@@ -13,6 +13,12 @@ class Area < ApplicationRecord
 
   def update_max_zoom
     update(max_zoom: calculate_max_zoom)
+  end
+
+  def update_coordinate
+    longitude, latitude = calculate_coordinate
+
+    update(longitude: longitude, latitude: latitude)
   end
 
   def added_people_count
@@ -50,5 +56,14 @@ class Area < ApplicationRecord
 
   def latitudes
     @latitudes ||= decimal_coordinates.map(&:last)
+  end
+
+  def calculate_coordinate
+    return [nil, nil] if longitudes.blank? || latitudes.blank?
+
+    return [
+      longitudes.min + (longitudes.max - longitudes.min) / 2,
+      latitudes.min + (latitudes.max - latitudes.min) / 2
+    ]
   end
 end
