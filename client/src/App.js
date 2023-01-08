@@ -245,8 +245,6 @@ const App = (props) => {
     }
   });
 
-  console.log('areasData.filter((area) => area.logoUrl)', areasData.filter((area) => area.logoUrl))
-
   const iconLayer = new IconLayer({
     id: 'icon-layer',
     data: areasData.filter((area) => area.logoUrl),
