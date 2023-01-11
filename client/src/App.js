@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
@@ -29,7 +29,7 @@ import {
   IconLayer,
 } from '@deck.gl/layers';
 
-import { AreaMode, EditMode, PointMode, ShowMode, NoteMode } from 'components/modes';
+import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, NavigateMode } from 'components/modes';
 
 const Mode = styled.div`
   align-items: center;
@@ -77,6 +77,9 @@ const App = (props) => {
     loadPointsData();
     loadCompanies();
   }, []);
+
+  const [latitude, setLatitude] = useState()
+  const [longitude, setLongitude] = useState()
 
   // const refreshAreas = () => {
   //   const selectableAreas = areas.filter((area) => area.maxZoom > zoom);
@@ -248,15 +251,16 @@ const App = (props) => {
   const iconLayer = new IconLayer({
     id: 'icon-layer',
     data: areasData.filter((area) => area.logoUrl),
-    // pickable: true,
-    sizeScale: 10,
+    pickable: true,
+    sizeScale: 1,
+    sizeMinPixels: 20,
+    sizeMaxPixels: 100,
     getPosition: d => d.longitude && d.latitude ? [+d.longitude, +d.latitude] : d.contour[0],
-    getSize: d => 5,
+    getSize: d => (zoom - 10) * 10,
     getIcon: d => ({
       url: `${API_URL}${d.logoUrl}`,
       width: 128,
       height: 128,
-      anchorY: 128
     }),
   })
 
@@ -290,9 +294,9 @@ const App = (props) => {
   };
 
   const initialViewState = {
-    longitude: 27.478700,
-    latitude: 53.868718,
-    zoom: 13,
+    longitude: +localStorage.getItem('longitude') ?? 53.868718,
+    latitude: +localStorage.getItem('latitude') ?? 27.878700,
+    zoom: +localStorage.getItem('zoom') ?? 6.4,
     pitch: 0,
     bearing: 0
   };
@@ -312,8 +316,10 @@ const App = (props) => {
         controller={{ dragPan: true }}
         getTooltip={({object}) => object && `${object.number}\n${object.notice?.match(/.{1,50}/g)?.join('\n')}`}
         style={{ zIndex: '1', overflow: 'hidden' }}
-        onViewStateChange={({ viewState: { zoom } }) => {
-          setZoom(zoom);
+        onViewStateChange={({ viewState: { zoom, longitude, latitude } }) => {
+          setZoom(zoom)
+          setLongitude(longitude)
+          setLatitude(latitude)
           {/*setHoveredAreaId(null);*/}
           {/*refreshAreas();*/}
         }}
@@ -329,6 +335,7 @@ const App = (props) => {
       <EditMode/>
       <AreaMode/>
       <NoteMode/>
+      <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
       {/*<PersonMode*/}
     </div>
   );

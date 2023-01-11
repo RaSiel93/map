@@ -2,7 +2,7 @@ class AreaSerializer
   include JSONAPI::Serializer
 
   attributes :id, :title, :description, :coordinates, :max_zoom, :area_id,
-    :people_count, :added_people_count, :estimated_people_count, :company_id
+    :people_count, :added_people_count, :estimated_people_count, :company_id, :logo_url, :longitude, :latitude
 
   attribute :notes do |area|
     NoteSerializer.new(area.notes).as_json["data"]
