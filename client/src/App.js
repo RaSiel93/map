@@ -254,9 +254,9 @@ const App = (props) => {
     pickable: true,
     sizeScale: 1,
     sizeMinPixels: 20,
-    sizeMaxPixels: 100,
+    sizeMaxPixels: 140,
     getPosition: d => d.longitude && d.latitude ? [+d.longitude, +d.latitude] : d.contour[0],
-    getSize: d => (zoom - 10) * 10,
+    getSize: d => (zoom - 10) * 14,
     getIcon: d => ({
       url: `${API_URL}${d.logoUrl}`,
       width: 128,
