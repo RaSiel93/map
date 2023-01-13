@@ -31,6 +31,17 @@ import {
 
 import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, NavigateMode } from 'components/modes';
 
+const Container = styled.div`
+  .Navigation {
+    padding: 8px;
+    gap: 8px;
+    display: flex;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+  }
+`
+
 const Mode = styled.div`
   align-items: center;
   justify-content: center;
@@ -72,14 +83,15 @@ const App = (props) => {
     addPoint,
   } = props;
 
+  const [latitude, setLatitude] = useState()
+  const [longitude, setLongitude] = useState()
+  const [date, setDate] = useState(localStorage.getItem('date'))
+
   useEffect(() => {
     loadAreasData();
     loadPointsData();
     loadCompanies();
-  }, []);
-
-  const [latitude, setLatitude] = useState()
-  const [longitude, setLongitude] = useState()
+  }, [date]);
 
   // const refreshAreas = () => {
   //   const selectableAreas = areas.filter((area) => area.maxZoom > zoom);
@@ -262,6 +274,15 @@ const App = (props) => {
       width: 128,
       height: 128,
     }),
+    onClick: ({ object }) => {
+      if (mode !== modes.AREA) {
+        if (selectedAreaData?.id !== object.id) {
+          setSelectedAreaData(object);
+        } else {
+          setSelectedAreaData(null);
+        }
+      }
+    }
   })
 
   const layers = [
@@ -294,15 +315,15 @@ const App = (props) => {
   };
 
   const initialViewState = {
-    longitude: +localStorage.getItem('longitude') ?? 53.868718,
-    latitude: +localStorage.getItem('latitude') ?? 27.878700,
-    zoom: +localStorage.getItem('zoom') ?? 6.4,
+    longitude: +localStorage.getItem('longitude') || 27.878700,
+    latitude: +localStorage.getItem('latitude') || 53.868718,
+    zoom: +localStorage.getItem('zoom') || 6.4,
     pitch: 0,
     bearing: 0
   };
 
   return (
-    <div>
+    <Container>
       <Information>
         zoom: {zoom}
       </Information>
@@ -330,14 +351,27 @@ const App = (props) => {
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
-      <PointMode/>
-      <ShowMode/>
-      <EditMode/>
-      <AreaMode/>
-      <NoteMode/>
-      <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
+      <div className="Navigation">
+        <input
+          type="text"
+          style={{ backgroundColor: '#000a', zIndex: 10, color: '#fff', fontSize: '20px', width: '50px' }}
+          value={date}
+          onChange={
+            (e) => {
+              setDate(e.target.value)
+              localStorage.setItem('date', e.target.value)
+            }
+          }
+        />
+        <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
+        <PointMode/>
+        <ShowMode/>
+        <EditMode/>
+        <AreaMode/>
+        <NoteMode/>
+      </div>
       {/*<PersonMode*/}
-    </div>
+    </Container>
   );
 }
 

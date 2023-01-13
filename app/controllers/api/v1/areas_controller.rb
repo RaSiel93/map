@@ -2,7 +2,14 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        render json: AreasSerializer.new(Area.where(hidden: false).includes(:company)).serializable_hash.to_json
+        date = params[:date] ? Time.new(params[:date]) : Time.zone.now
+
+        areas = Area.where(hidden: false)
+          .where("start_at is null OR start_at < ?", date)
+          .where("end_at is null OR end_at > ?", date)
+          .includes(:company)
+
+        render json: AreasSerializer.new(areas).serializable_hash.to_json
       end
 
       def create

@@ -6,7 +6,7 @@ import Cookies from 'js-cookie';
 import { API_URL } from 'constants'
 
 export const loadAreasData = () => (dispatch) => {
-  client.get(`${API_URL}/api/v1/areas.json`, { withCredentials: true })
+  client.get(`${API_URL}/api/v1/areas.json`, { params: { date: localStorage.getItem('date') }, withCredentials: true })
     .then((response) => {
       dispatch(setAreasData(response.data.data.map(areaToPolygonObject)));
     })

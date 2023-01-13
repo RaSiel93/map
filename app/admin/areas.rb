@@ -1,5 +1,5 @@
 ActiveAdmin.register Area do
-  permit_params :title, :description, :max_zoom, :hidden, :area_id, :people_count, :longitude, :latitude
+  permit_params :title, :description, :max_zoom, :hidden, :area_id, :people_count, :longitude, :latitude, :start_at, :end_at
   # See permitted parameters documentation:
   # https://github.com/activeadmin/activeadmin/blob/master/docs/2-resource-customization.md#setting-up-strong-parameters
   #
@@ -22,6 +22,8 @@ ActiveAdmin.register Area do
     column :description
     column :max_zoom
     column :area_id
+    column :start_at
+    column :end_at
     column :created_at
     actions
   end
@@ -35,6 +37,8 @@ ActiveAdmin.register Area do
       f.input :area_id
       f.input :longitude
       f.input :latitude
+      f.input :start_at, as: :string, as: :string, input_html: { value: f.object.start_at&.strftime('%Y.%m.%d') }
+      f.input :end_at, as: :string, as: :string, input_html: { value: f.object.end_at&.strftime('%Y.%m.%d') }
     end
     f.actions
   end
@@ -47,6 +51,8 @@ ActiveAdmin.register Area do
       row :hidden
       row :created_at
       row :area_id
+      row :start_at
+      row :end_at
     end
     active_admin_comments
   end

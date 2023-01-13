@@ -1,7 +1,7 @@
 import styled from 'styled-components';
 
 export const Button = styled.button`
-  position: absolute;
+  // position: absolute;
   width: 50px;
   height: 50px;
   background-color: #222;
