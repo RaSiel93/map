@@ -37,8 +37,8 @@ ActiveAdmin.register Area do
       f.input :area_id
       f.input :longitude
       f.input :latitude
-      f.input :start_at, as: :string, as: :string, input_html: { value: f.object.start_at&.strftime('%Y.%m.%d') }
-      f.input :end_at, as: :string, as: :string, input_html: { value: f.object.end_at&.strftime('%Y.%m.%d') }
+      f.input :start_at, as: :string, input_html: { value: f.object.start_at&.strftime('%Y.%m.%d') }
+      f.input :end_at, as: :string, input_html: { value: f.object.end_at&.strftime('%Y.%m.%d') }
     end
     f.actions
   end

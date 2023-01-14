@@ -37,6 +37,8 @@ const EditModeModal = (props) => {
   const [peopleCount, setPeopleCount] = useState(null);
   const [areaOptions, setAreaOptions] = useState([]);
   const [companyOptions, setCompanyOptions] = useState([]);
+  const [startAt, setStartAt] = useState(null);
+  const [endAt, setEndAt] = useState(null);
 
   useEffect(() => {
     setAreaOptions([
@@ -59,7 +61,7 @@ const EditModeModal = (props) => {
 
   useEffect(async () => {
     const area = await getArea(id);
-    const { attributes: { title, description, area_id, people_count, company_id }} = area;
+    const { attributes: { title, description, area_id, people_count, company_id, start_at, end_at }} = area;
 
     setArea(area);
 
@@ -68,6 +70,8 @@ const EditModeModal = (props) => {
     setAreaId(area_id);
     setCompanyId(company_id);
     setPeopleCount(people_count);
+    setStartAt(start_at);
+    setEndAt(end_at);
   }, [id]);
 
   const handleUpdateArea = async () => {
@@ -78,6 +82,8 @@ const EditModeModal = (props) => {
         area_id: areaId,
         company_id: companyId,
         people_count: peopleCount,
+        start_at: startAt,
+        end_at: endAt,
       }
     };
     const area = await updateArea(id, params);
@@ -145,6 +151,26 @@ const EditModeModal = (props) => {
           value={peopleCount || ''}
           placeholder='Колькасць жыхароў'
           onChange={(e) => { setPeopleCount(e.target.value) }}
+          onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
+        ></input>
+      </div>
+      <div>
+        <input
+          id='startAt'
+          type='date'
+          value={startAt ? (new Date(startAt)).toISOString().split('T')[0] : ''}
+          placeholder='Дата пачатку'
+          onChange={(e) => { setStartAt(e.target.value) }}
+          onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
+        ></input>
+      </div>
+      <div>
+        <input
+          id='endAt'
+          type='date'
+          value={endAt ? (new Date(endAt)).toISOString().split('T')[0] : ''}
+          placeholder='Дата сканчэньня'
+          onChange={(e) => { setEndAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
         ></input>
       </div>
