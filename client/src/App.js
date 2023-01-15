@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import styled from 'styled-components';
@@ -6,6 +6,7 @@ import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
 import axios from 'axios';
 import Cookies from 'js-cookie';
+import debounce from 'lodash.debounce';
 
 import { MAPBOX_ACCESS_TOKEN, API_URL, modes } from 'constants';
 
@@ -65,6 +66,19 @@ const Information = styled.div`
   z-index: 10;
   color: #fff;
 `;
+
+const Year = styled.div`
+  position: fixed;
+  top: 0px;
+  right: 10px;
+  z-index: 1;
+  color: #fff8;
+  font-size: 64px;
+  line-height: 0;
+  pointer-events: none;
+`
+
+const DEBOUNCE_TIME = 300
 
 const App = (props) => {
   const {
@@ -133,10 +147,21 @@ const App = (props) => {
     }
   }, [])
 
-  useEffect(() => {
+
+  // const debouncedChangeHandler = useCallback(
+  // , []);
+
+  const reloadData = useCallback(() => {
     loadAreasData();
     loadPointsData();
     loadCompanies();
+  }, [])
+
+  useEffect(() => {
+    // console.log('effect')
+    reloadData()
+
+    // debounce(reloadData, 300)
   }, [date]);
 
   // const refreshAreas = () => {
@@ -397,10 +422,13 @@ const App = (props) => {
           mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
         />
       </DeckGL>
+      <Year>
+        <h1>{date}</h1>
+      </Year>
       <div className="Navigation">
         <input
-          type="text"
-          style={{ backgroundColor: '#000a', zIndex: 10, color: '#fff', fontSize: '20px', width: '50px' }}
+          type="number"
+          style={{ backgroundColor: '#000a', zIndex: 10, color: '#fff', fontSize: '20px' }}
           value={date}
           onChange={
             (e) => {
