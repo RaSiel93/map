@@ -73,7 +73,7 @@ const Year = styled.div`
   right: 10px;
   z-index: 1;
   color: #fff8;
-  font-size: 64px;
+  font-size: 24px;
   line-height: 0;
   pointer-events: none;
 `
@@ -428,7 +428,7 @@ const App = (props) => {
       <div className="Navigation">
         <input
           type="number"
-          style={{ backgroundColor: '#000a', zIndex: 10, color: '#fff', fontSize: '20px' }}
+          style={{ backgroundColor: '#000a', zIndex: 10, color: '#fff', fontSize: '20px', width: '58px' }}
           value={date}
           onChange={
             (e) => {
