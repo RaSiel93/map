@@ -99,7 +99,7 @@ const Areas = styled.div`
       padding: 5px;
       background-color: #ddd;
       position: relative;
-      height: 18px;
+      min-height: 18px;
 
       &:hover {
         background-color: #eee;

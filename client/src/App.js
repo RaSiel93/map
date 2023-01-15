@@ -4,6 +4,8 @@ import { connect } from 'react-redux';
 import styled from 'styled-components';
 import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 import { MAPBOX_ACCESS_TOKEN, API_URL, modes } from 'constants';
 
@@ -86,6 +88,50 @@ const App = (props) => {
   const [latitude, setLatitude] = useState()
   const [longitude, setLongitude] = useState()
   const [date, setDate] = useState(localStorage.getItem('date'))
+
+  const handleDragOver = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+  }
+
+  const handleDrop = (event) => {
+    event.preventDefault()
+    event.stopPropagation()
+
+    const files = event.dataTransfer.files
+
+    for (let i = 0; i < files.length; i++) {
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const token = Cookies.get('csrf_token');
+
+        // console.log(event.target.result)
+
+        axios.post(
+          `${API_URL}/api/v1/load.json`,
+          { file: event.target.result },
+          { headers: { 'X-CSRF-TOKEN': token, withCredentials: true }}
+        )
+          .then((response) => loadAreasData())
+          .catch((response) => {
+            console.log(response);
+          })
+      };
+      // console.log('files[i]', files[i])
+
+      reader.readAsText(files[i]);
+    }
+  }
+
+  useEffect(() => {
+    document.addEventListener('dragover', handleDragOver)
+    document.addEventListener('drop', handleDrop)
+
+    return () => {
+      document.removeEventListener('dragover', handleDragOver)
+      document.removeEventListener('drop', handleDrop)
+    }
+  }, [])
 
   useEffect(() => {
     loadAreasData();

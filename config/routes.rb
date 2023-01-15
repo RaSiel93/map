@@ -11,6 +11,7 @@ Rails.application.routes.draw do
       resources :notes, only: %i[index create update destroy]
       resources :people, only: %i[index create update destroy]
       resources :companies, only: %i[index create update destroy]
+      resources :load, only: %i[index create update destroy]
     end
   end
 
