@@ -2,8 +2,8 @@ import styled from 'styled-components';
 
 export const Button = styled.button`
   // position: absolute;
-  width: 50px;
-  height: 50px;
+  width: 36px;
+  height: 36px;
   background-color: #222;
   border: none;
   border-radius: 50%;

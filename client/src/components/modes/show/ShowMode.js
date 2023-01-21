@@ -9,11 +9,11 @@ import { toggleMode } from 'store/actions';
 import ShowModeModal from './ShowModeModal';
 
 const ModeButton = styled(Button)`
-  right: 200px;
-  bottom: 20px;
+  // right: 200px;
+  // bottom: 20px;
 
   &:after {
-    font-size: 30px;
+    // font-size: 30px;
     content: '@';
   }
 `;

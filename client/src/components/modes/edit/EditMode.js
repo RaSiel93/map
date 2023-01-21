@@ -9,11 +9,11 @@ import { toggleMode } from 'store/actions';
 import EditModeModal from './EditModeModal';
 
 const ModeButton = styled(Button)`
-  right: 140px;
-  bottom: 20px;
+  // right: 140px;
+  // bottom: 20px;
 
   &:after {
-    font-size: 30px;
+    // font-size: 30px;
     content: '/';
   }
 `

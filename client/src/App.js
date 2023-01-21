@@ -32,7 +32,7 @@ import {
   IconLayer,
 } from '@deck.gl/layers';
 
-import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, NavigateMode } from 'components/modes';
+import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, ImportMode, NavigateMode } from 'components/modes';
 
 const Container = styled.div`
   .Navigation {
@@ -112,28 +112,24 @@ const App = (props) => {
     event.preventDefault()
     event.stopPropagation()
 
+    const token = Cookies.get('csrf_token');
     const files = event.dataTransfer.files
 
     for (let i = 0; i < files.length; i++) {
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const token = Cookies.get('csrf_token');
+      let formData = new FormData();
+      formData.append('file', files[i]);
 
-        // console.log(event.target.result)
-
-        axios.post(
-          `${API_URL}/api/v1/load.json`,
-          { file: event.target.result },
-          { headers: { 'X-CSRF-TOKEN': token, withCredentials: true }}
-        )
-          .then((response) => loadAreasData())
-          .catch((response) => {
-            console.log(response);
-          })
-      };
-      // console.log('files[i]', files[i])
-
-      reader.readAsText(files[i]);
+      axios.post(
+        `${API_URL}/api/v1/load.json`,
+        formData,
+        {
+          headers: {
+            'Content-Type': `multipart/form-data`,
+            'X-CSRF-TOKEN': token,
+            'withCredentials': true,
+          },
+        }
+      )
     }
   }
 
@@ -437,6 +433,7 @@ const App = (props) => {
             }
           }
         />
+        <ImportMode/>
         <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
         <PointMode/>
         <ShowMode/>

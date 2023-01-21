@@ -9,11 +9,11 @@ import { toggleMode, resetPoint } from 'store/actions';
 import PointModeModal from './PointModeModal';
 
 const ModeButton = styled(Button)`
-  right: 260px;
-  bottom: 20px;
+  // right: 260px;
+  // bottom: 20px;
 
   &:after {
-    font-size: 30px;
+    // font-size: 30px;
     content: '!';
   }
 `;

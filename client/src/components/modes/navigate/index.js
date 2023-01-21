@@ -2,11 +2,11 @@ import styled from 'styled-components';
 import { Button } from 'components/common/Button';
 
 const ModeButton = styled(Button)`
-  right: 320px;
-  bottom: 20px;
+  // right: 320px;
+  // bottom: 20px;
 
   &:after {
-    font-size: 30px;
+    // font-size: 30px;
     content: '[-]';
   }
 `;

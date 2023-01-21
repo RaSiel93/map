@@ -18,11 +18,11 @@ import {
 } from 'store/thunks';
 
 const ModeButton = styled(Button)`
-  right: 80px;
-  bottom: 20px;
+  // right: 80px;
+  // bottom: 20px;
 
   &:after {
-    font-size: 30px;
+    // font-size: 30px;
     content: '#';
   }
 `;

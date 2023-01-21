@@ -9,11 +9,11 @@ import NoteModeModal from './NoteModeModal';
 import { toggleMode } from 'store/actions';
 
 const ModeButton = styled(Button)`
-  bottom: 20px;
-  right: 20px;
+  // bottom: 20px;
+  // right: 20px;
 
   &:after {
-    font-size: 30px;
+    // font-size: 30px;
     content: '+';
   }
 `
