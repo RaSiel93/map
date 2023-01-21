@@ -41,6 +41,8 @@ export const requestStatuses = {
   // UPDATED: 'updated',
 };
 
+export const DEBOUNCE_TIME = 300
+
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
 
 // export const MODES_TOGGLE = 'modes/toggle';

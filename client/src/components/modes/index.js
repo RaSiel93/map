@@ -5,3 +5,4 @@ export { PointMode } from './point';
 export { ShowMode } from './show';
 export { default as NavigateMode } from './navigate';
 export { default as ImportMode } from './import';
+export { default as DateMode } from './date';
