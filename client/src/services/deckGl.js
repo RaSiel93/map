@@ -16,7 +16,7 @@ export function areaToPolygonObject(area) {
     attributes: {
       id, title, description, coordinates, notes, max_zoom, area_id, people,
       people_count, added_people_count, estimated_people_count, areas, logo_url,
-      longitude, latitude, start_at, end_at
+      longitude, latitude, start_at, end_at, color, tags
     }
   } = area;
 
@@ -39,5 +39,7 @@ export function areaToPolygonObject(area) {
     latitude: latitude,
     startAt: start_at,
     endAt: end_at,
+    color: color,
+    tags: tags
   }
 }

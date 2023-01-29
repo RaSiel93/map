@@ -19,6 +19,25 @@ import {
   IconLayer,
 } from '@deck.gl/layers';
 
+const convertHexToRGBA = (hexCode, opacity = 1) => {
+  let hex = hexCode.replace('#', '');
+
+  if (hex.length === 3) {
+    hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
+  }
+
+  const r = parseInt(hex.substring(0, 2), 16);
+  const g = parseInt(hex.substring(2, 4), 16);
+  const b = parseInt(hex.substring(4, 6), 16);
+
+  /* Backward compatibility for whole number based opacity values. */
+  if (opacity > 0.01 && opacity <= 1) {
+    opacity = opacity * 255;
+  }
+
+  return [r, g , b, opacity];
+};
+
 const Map = (props) => {
   const {
     mode,
@@ -77,36 +96,98 @@ const Map = (props) => {
     }
   });
 
+  const data = areasData.filter(({ maxZoom, tags }) => {
+    const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+
+    if (adminLevelTag) {
+      if (adminLevelTag.attributes.value === "2") {
+        return zoom < 6.0
+      } else if (adminLevelTag.attributes.value === "4") {
+        return zoom < 7.0
+      } else if (adminLevelTag.attributes.value === "6") {
+        return zoom < 10
+      } else if (adminLevelTag.attributes.value === "8") {
+        return zoom < 11
+      } else if (adminLevelTag.attributes.value === "9") {
+        return zoom < 14
+      } else if (adminLevelTag.attributes.value === "10") {
+        return zoom < 14
+      } else {
+        return maxZoom > zoom
+      }
+    }
+
+    return maxZoom > zoom
+  })
+
   const areasLayer = new PolygonLayer({
-    id: 'polygon-layer2',
-    data: areasData.filter((area) => area.maxZoom > zoom),
+    id: 'polygon-layer',
+    data,
     pickable: true,
-    stroked: true,
+    extruded: true,
     filled: true,
-    lineWidthMinPixels: 1,
     getPolygon: d => d.contour,
-    getElevation: () => 10,
-    getFillColor: ({ id, areaId, peopleCount, addedPeopleCount }) => {
-      let color = null;
+    wireframe: true,
+    getElevation: ({ id, tags }) => {
+      let resultElevation = 0
+      let hoverMultiplier = 1
+
+      const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+
+      if (adminLevelTag) {
+        if (adminLevelTag.attributes.value === "2") {
+          resultElevation = 5000
+          hoverMultiplier = 5
+        } else if (adminLevelTag.attributes.value === "4") {
+          resultElevation = 1600
+          hoverMultiplier = 4
+        } else if (adminLevelTag.attributes.value === "6") {
+          resultElevation = 500
+          hoverMultiplier = 3
+        } else if (adminLevelTag.attributes.value === "8") {
+          resultElevation = 200
+          hoverMultiplier = 2
+        } else if (adminLevelTag.attributes.value === "9") {
+          resultElevation = 100
+          hoverMultiplier = 1.5
+        } else if (adminLevelTag.attributes.value === "10") {
+          resultElevation = 100
+          hoverMultiplier = 1.5
+        } else {
+          resultElevation = 10
+          hoverMultiplier = 3
+        }
+      }
+
+      if (hoveredAreaId === id || selectedAreaData?.id === id) {
+        resultElevation *= hoverMultiplier
+      }
+
+      return resultElevation
+    },
+    getFillColor: ({ id, areaId, peopleCount, addedPeopleCount, color }) => {
+      let fillColor = null;
 
       if (selectedAreaData?.id === id) {
-        color = [255, 204, 0, 105];
-      } else if (!areaId) {
-        color = [250, 100, 100, 65.5];
-      } else if (peopleCount !== addedPeopleCount) {
-        color = [100, 250, 250, 65.5];
-      } else {
-        color = [100, 250, 100, 65.5];
+        fillColor = [255, 204, 0, 205];
+      } else {//if (!areaId) {
+      //   color = [250, 100, 100, 65.5];
+      // } else if (peopleCount !== addedPeopleCount) {
+      //   color = [100, 250, 250, 65.5];
+      // } else {
+        // [100, 250, 100, 65.5]
+        fillColor = color ? convertHexToRGBA(color, 0.9) : [200, 250, 200, 65.5];
       }
 
       if (hoveredAreaId === id) {
-        color[3] += 30;
+        fillColor[3] -= 30;
       }
 
-      return color;
+      return fillColor;
     },
-    getLineColor: [80, 80, 80, 65],
+    getLineColor: [255, 255, 255],
     getLineWidth: 1,
+    lineJointRounded: true,
     onHover: ({ object }) => {
       if (mode !== modes.AREA) {
         setHoveredAreaId(object?.id);
@@ -138,7 +219,7 @@ const Map = (props) => {
   // });
 
   const polygonNewAreaPointsLayer = new PolygonLayer({
-    id: 'polygon-layer4',
+    id: 'polygon-layer-new',
     data: [newAreaPoints],
     pickable: true,
     stroked: true,

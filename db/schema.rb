@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_13_161456) do
+ActiveRecord::Schema.define(version: 2023_01_29_153622) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -56,6 +56,7 @@ ActiveRecord::Schema.define(version: 2023_01_13_161456) do
     t.decimal "latitude"
     t.datetime "start_at"
     t.datetime "end_at"
+    t.string "color"
     t.index ["area_id"], name: "index_areas_on_area_id"
     t.index ["company_id"], name: "index_areas_on_company_id"
   end
@@ -105,6 +106,15 @@ ActiveRecord::Schema.define(version: 2023_01_13_161456) do
     t.index ["company_id"], name: "index_people_on_company_id"
     t.index ["father_id"], name: "index_people_on_father_id"
     t.index ["mother_id"], name: "index_people_on_mother_id"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.string "key"
+    t.string "value"
+    t.bigint "area_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["area_id"], name: "index_tags_on_area_id"
   end
 
   add_foreign_key "areas", "companies"

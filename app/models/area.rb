@@ -2,6 +2,7 @@ class Area < ApplicationRecord
   has_many :notes
   has_many :people
   has_many :areas
+  has_many :tags
 
   belongs_to :area, optional: true
   belongs_to :company, optional: true
@@ -31,6 +32,10 @@ class Area < ApplicationRecord
 
   def logo_url
     logo&.url
+  end
+
+  def regenerate_color
+    update(color: "#" + ["%x" % (100 + rand(155)), "%x" % (100 + rand(155)), "%x" % (100 + rand(155))].join)
   end
 
   private

@@ -3,7 +3,7 @@ class AreaSerializer
 
   attributes :id, :title, :description, :coordinates, :max_zoom, :area_id,
     :people_count, :added_people_count, :estimated_people_count, :company_id,
-    :logo_url, :longitude, :latitude, :start_at, :end_at
+    :logo_url, :longitude, :latitude, :start_at, :end_at, :color
 
   attribute :notes do |area|
     NoteSerializer.new(area.notes).as_json["data"]

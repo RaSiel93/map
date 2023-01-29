@@ -7,7 +7,7 @@ module Api
         areas = Area.where(hidden: false)
           .where("start_at is null OR start_at < ?", date)
           .where("end_at is null OR end_at > ?", date)
-          .includes(:company)
+          .includes(:company).includes(:tags)
 
         render json: AreasSerializer.new(areas).serializable_hash.to_json
       end
