@@ -17,6 +17,10 @@ class AreaSerializer
     AreasSerializer.new(area.areas.order('title')).as_json["data"]
   end
 
+  attribute :tags do |area|
+    TagSerializer.new(area.tags).as_json["data"]
+  end
+
   attribute :parent do |area|
     area = area&.area
 
