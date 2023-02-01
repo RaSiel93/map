@@ -279,6 +279,77 @@ const Map = (props) => {
     background: true,
   });
 
+  const cities = data.filter(({ tags }) => tags.find(({ attributes: { key, value }}) => key === 'place' && value === 'city'));
+
+  const cityTitleLayer = new TextLayer({
+    id: 'city-title-layer',
+    data: cities,
+    pickable: true,
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    getText: d => d.number,
+    characterSet: 'auto',
+    fontFamily: 'sans-serif',
+    backgroundPadding: [6, 6, 6, 6],
+    maxWidth: 500,
+    getSize: 14,
+    background: true,
+    getPixelOffset: [0, 0]
+  });
+
+
+  const cityPointLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer22',
+    data: cities,
+    // pickable: true,
+    // opacity: 0.6,
+    // stroked: true,
+    // filled: true,
+    radiusScale: 10,
+    // radiusMinPixels: 1,
+    // radiusMaxPixels: 120,
+    // lineWidthMinPixels: 1,
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    pickable: true,
+    // opacity: 0.8,
+    stroked: true,
+    filled: true,
+    // radiusScale: 6000,
+    // radiusMinPixels: 1,
+    // radiusMaxPixels: 100,
+    // lineWidthMinPixels: 1,
+    // getPosition: d => d.coordinates,
+    getRadius: d => 500,
+    getFillColor: d => [255, 140, 0],
+    getLineColor: d => [0, 0, 0],
+    lineWidthScale: 2000,
+    // getRadius: d => Math.sqrt(d.exits),
+    // getFillColor: () => {
+    //   // getFillColor: ({ id }) => {
+    //   let color = null;
+
+    //   // if (selectedAreaData?.id === id) {
+    //   //   color = [255, 204, 0, 105];
+    //   // } else {
+    //   color = [200, 200, 200, 255];
+    //   // }
+
+    //   // if (hoveredAreaId === id) {
+    //   //   color[3] += 30;
+    //   // }
+
+    //   return color;
+    // },
+    // getLineColor: () => [0, 0, 0],
+    // onHover: () => {
+    //   // if (mode !== modes.AREA) {
+    //   //   setHoveredAreaId(object?.id);
+    //   // }
+    // },
+    // onClick: () => {
+    //   // setSelectedAreaData(info.object);
+    // }
+  });
+
   // const contourAreasLayer = new PolygonLayer({
   //   id: 'contourAreasLayer',
   //   data: areasData.filter((area) => area.maxZoom <= zoom),
@@ -390,7 +461,9 @@ const Map = (props) => {
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
     iconLayer,
-    titleLayer
+    titleLayer,
+    cityTitleLayer,
+    // cityPointLayer
   ];
 
   const controller = { dragPan: true }
