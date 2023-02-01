@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import Cookies from 'js-cookie';
 import debounce from 'lodash.debounce';
+import './App.scss'
 
 import { useDrag } from 'hooks'
 import { Information, Map, Navigation } from 'components';

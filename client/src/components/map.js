@@ -15,6 +15,7 @@ import {
   // PathLayer,
   ScatterplotLayer,
   // LineLayer,
+  TextLayer,
   PolygonLayer,
   IconLayer,
 } from '@deck.gl/layers';
@@ -103,15 +104,15 @@ const Map = (props) => {
       if (adminLevelTag.attributes.value === "2") {
         return zoom < 6.0
       } else if (adminLevelTag.attributes.value === "4") {
-        return zoom < 7.0
+        return zoom < 7.0 && zoom > 6.0
       } else if (adminLevelTag.attributes.value === "6") {
-        return zoom < 10
+        return zoom < 10 && zoom > 7.0
       } else if (adminLevelTag.attributes.value === "8") {
-        return zoom < 11
+        return zoom < 11 && zoom > 10.0
       } else if (adminLevelTag.attributes.value === "9") {
-        return zoom < 14
+        return zoom < 14 && zoom > 11.0
       } else if (adminLevelTag.attributes.value === "10") {
-        return zoom < 14
+        return zoom < 14 && zoom > 11.0
       } else {
         return maxZoom > zoom
       }
@@ -124,47 +125,47 @@ const Map = (props) => {
     id: 'polygon-layer',
     data,
     pickable: true,
-    extruded: true,
+    // extruded: true,
     filled: true,
     getPolygon: d => d.contour,
-    wireframe: true,
-    getElevation: ({ id, tags }) => {
-      let resultElevation = 0
-      let hoverMultiplier = 1
+    // wireframe: true,
+    // getElevation: ({ id, tags }) => {
+    //   let resultElevation = 0
+    //   let hoverMultiplier = 1
 
-      const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+    //   const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
 
-      if (adminLevelTag) {
-        if (adminLevelTag.attributes.value === "2") {
-          resultElevation = 5000
-          hoverMultiplier = 5
-        } else if (adminLevelTag.attributes.value === "4") {
-          resultElevation = 1600
-          hoverMultiplier = 4
-        } else if (adminLevelTag.attributes.value === "6") {
-          resultElevation = 500
-          hoverMultiplier = 3
-        } else if (adminLevelTag.attributes.value === "8") {
-          resultElevation = 200
-          hoverMultiplier = 2
-        } else if (adminLevelTag.attributes.value === "9") {
-          resultElevation = 100
-          hoverMultiplier = 1.5
-        } else if (adminLevelTag.attributes.value === "10") {
-          resultElevation = 100
-          hoverMultiplier = 1.5
-        } else {
-          resultElevation = 10
-          hoverMultiplier = 3
-        }
-      }
+    //   if (adminLevelTag) {
+    //     if (adminLevelTag.attributes.value === "2") {
+    //       resultElevation = 5000
+    //       hoverMultiplier = 5
+    //     } else if (adminLevelTag.attributes.value === "4") {
+    //       resultElevation = 1600
+    //       hoverMultiplier = 4
+    //     } else if (adminLevelTag.attributes.value === "6") {
+    //       resultElevation = 500
+    //       hoverMultiplier = 3
+    //     } else if (adminLevelTag.attributes.value === "8") {
+    //       resultElevation = 200
+    //       hoverMultiplier = 2
+    //     } else if (adminLevelTag.attributes.value === "9") {
+    //       resultElevation = 100
+    //       hoverMultiplier = 1.5
+    //     } else if (adminLevelTag.attributes.value === "10") {
+    //       resultElevation = 100
+    //       hoverMultiplier = 1.5
+    //     } else {
+    //       resultElevation = 10
+    //       hoverMultiplier = 3
+    //     }
+    //   }
 
-      if (hoveredAreaId === id || selectedAreaData?.id === id) {
-        resultElevation *= hoverMultiplier
-      }
+    //   if (hoveredAreaId === id || selectedAreaData?.id === id) {
+    //     resultElevation *= hoverMultiplier
+    //   }
 
-      return resultElevation
-    },
+    //   return resultElevation
+    // },
     getFillColor: ({ id, areaId, peopleCount, addedPeopleCount, color }) => {
       let fillColor = null;
 
@@ -186,7 +187,43 @@ const Map = (props) => {
       return fillColor;
     },
     getLineColor: [255, 255, 255],
-    getLineWidth: 1,
+    getLineWidth: ({ id, tags }) => {
+      let resultElevation = 0
+    //   let hoverMultiplier = 1
+
+      const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+
+      if (adminLevelTag) {
+        if (adminLevelTag.attributes.value === "2") {
+          resultElevation = 5000
+          // hoverMultiplier = 5
+        } else if (adminLevelTag.attributes.value === "4") {
+          resultElevation = 1600
+          // hoverMultiplier = 4
+        } else if (adminLevelTag.attributes.value === "6") {
+          resultElevation = 500
+          // hoverMultiplier = 3
+        } else if (adminLevelTag.attributes.value === "8") {
+          resultElevation = 200
+          // hoverMultiplier = 2
+        } else if (adminLevelTag.attributes.value === "9") {
+          resultElevation = 100
+          // hoverMultiplier = 1.5
+        } else if (adminLevelTag.attributes.value === "10") {
+          resultElevation = 100
+          // hoverMultiplier = 1.5
+        } else {
+          resultElevation = 10
+          // hoverMultiplier = 3
+        }
+      }
+
+      // if (hoveredAreaId === id || selectedAreaData?.id === id) {
+        // resultElevation *= hoverMultiplier
+      // }
+
+      return resultElevation
+    },
     lineJointRounded: true,
     onHover: ({ object }) => {
       if (mode !== modes.AREA) {
@@ -202,6 +239,44 @@ const Map = (props) => {
         }
       }
     }
+  });
+
+  const textData = data.filter(({ tags, maxZoom }) => {
+    const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+
+    if (adminLevelTag) {
+      if (adminLevelTag.attributes.value === "2") {
+        return zoom < 6.0
+      } else if (adminLevelTag.attributes.value === "4") {
+        return zoom < 7.0 && zoom > 6.0
+      } else if (adminLevelTag.attributes.value === "6") {
+        return zoom < 10 && zoom > 7.0
+      } else if (adminLevelTag.attributes.value === "8") {
+        return zoom < 11 && zoom > 10.0
+      } else if (adminLevelTag.attributes.value === "9") {
+        return zoom < 14 && zoom > 11.0
+      } else if (adminLevelTag.attributes.value === "10") {
+        return zoom < 14 && zoom > 11.0
+      } else {
+        // return maxZoom > zoom
+      }
+    }
+
+    return false
+  })
+
+  const titleLayer = new TextLayer({
+    id: 'text-layer',
+    data: textData,
+    pickable: true,
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    getText: d => d.number,
+    characterSet: 'auto',
+    fontFamily: 'sans-serif',
+    backgroundPadding: [6, 6, 6, 6],
+    maxWidth: 500,
+    getSize: 14,
+    background: true,
   });
 
   // const contourAreasLayer = new PolygonLayer({
@@ -315,6 +390,7 @@ const Map = (props) => {
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
     iconLayer,
+    titleLayer
   ];
 
   const controller = { dragPan: true }
