@@ -3,10 +3,13 @@ module Api
     class AreasController < ApplicationController
       def index
         date = params[:date] ? Time.new(params[:date]) : Time.zone.now
+        zoom = params[:zoom] || 1
 
         areas = Area.where(hidden: false)
           .where("start_at is null OR start_at < ?", date)
+          # .where("start_at < ?", date)
           .where("end_at is null OR end_at > ?", date)
+          .where("max_zoom > ?", zoom)
           .includes(:company).includes(:tags)
 
         render json: AreasSerializer.new(areas).serializable_hash.to_json

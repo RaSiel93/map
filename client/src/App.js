@@ -28,7 +28,7 @@ const App = (props) => {
 
   const reloadData = useCallback(() => {
     loadAreasData();
-    loadPointsData();
+    // loadPointsData();
     loadCompanies();
   }, [])
 

@@ -25,7 +25,7 @@ export function areaToPolygonObject(area) {
     index: id,
     number: title,
     notice: description,
-    contour: coordinates.map(coordinate => JSON.parse(coordinate)),
+    contour: coordinates,
     notes: notes,
     maxZoom: max_zoom,
     areaId: area_id,

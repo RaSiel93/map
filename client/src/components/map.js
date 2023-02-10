@@ -57,45 +57,45 @@ const Map = (props) => {
     setLongitude
   } = props;
 
-  const pointsLayer = new ScatterplotLayer({
-    id: 'scatterplot-layer1',
-    data: pointsData,
-    pickable: true,
-    opacity: 0.6,
-    stroked: true,
-    filled: true,
-    radiusScale: 3,
-    radiusMinPixels: 1,
-    radiusMaxPixels: 20,
-    lineWidthMinPixels: 1,
-    getPosition: d => d.coordinates,
-    getRadius: d => Math.sqrt(d.exits),
-    getFillColor: () => {
-      // getFillColor: ({ id }) => {
-      let color = null;
+  // const pointsLayer = new ScatterplotLayer({
+  //   id: 'scatterplot-layer1',
+  //   data: pointsData,
+  //   pickable: true,
+  //   opacity: 0.6,
+  //   stroked: true,
+  //   filled: true,
+  //   radiusScale: 3,
+  //   radiusMinPixels: 1,
+  //   radiusMaxPixels: 20,
+  //   lineWidthMinPixels: 1,
+  //   getPosition: d => d.coordinates,
+  //   getRadius: d => Math.sqrt(d.exits),
+  //   getFillColor: () => {
+  //     // getFillColor: ({ id }) => {
+  //     let color = null;
 
-      // if (selectedAreaData?.id === id) {
-      //   color = [255, 204, 0, 105];
-      // } else {
-      color = [200, 200, 200, 100];
-      // }
+  //     // if (selectedAreaData?.id === id) {
+  //     //   color = [255, 204, 0, 105];
+  //     // } else {
+  //     color = [200, 200, 200, 100];
+  //     // }
 
-      // if (hoveredAreaId === id) {
-      //   color[3] += 30;
-      // }
+  //     // if (hoveredAreaId === id) {
+  //     //   color[3] += 30;
+  //     // }
 
-      return color;
-    },
-    getLineColor: () => [0, 0, 0],
-    onHover: () => {
-      // if (mode !== modes.AREA) {
-      //   setHoveredAreaId(object?.id);
-      // }
-    },
-    onClick: () => {
-      // setSelectedAreaData(info.object);
-    }
-  });
+  //     return color;
+  //   },
+  //   getLineColor: () => [0, 0, 0],
+  //   onHover: () => {
+  //     // if (mode !== modes.AREA) {
+  //     //   setHoveredAreaId(object?.id);
+  //     // }
+  //   },
+  //   onClick: () => {
+  //     // setSelectedAreaData(info.object);
+  //   }
+  // });
 
   const data = areasData.filter(({ maxZoom, tags }) => {
     const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
@@ -121,13 +121,98 @@ const Map = (props) => {
     return maxZoom > zoom
   })
 
+  const getFillColor = ({ id, areaId, peopleCount, addedPeopleCount, color }) => {
+    let fillColor = null;
+
+    if (selectedAreaData?.id === id) {
+      fillColor = [255, 204, 0, 205];
+    } else {//if (!areaId) {
+    //   color = [250, 100, 100, 65.5];
+    // } else if (peopleCount !== addedPeopleCount) {
+    //   color = [100, 250, 250, 65.5];
+    // } else {
+      // [100, 250, 100, 65.5]
+      fillColor = color ? convertHexToRGBA(color, 0.9) : [200, 250, 200, 65.5];
+    }
+
+    if (hoveredAreaId === id) {
+      fillColor[3] -= 30;
+    }
+
+    return fillColor;
+  }
+
+  const getLineWidth = ({ id, tags }) => {
+    let resultElevation = 0
+  //   let hoverMultiplier = 1
+
+    const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+
+    if (adminLevelTag) {
+      if (adminLevelTag.attributes.value === "2") {
+        resultElevation = 5000
+        // hoverMultiplier = 5
+      } else if (adminLevelTag.attributes.value === "4") {
+        resultElevation = 1600
+        // hoverMultiplier = 4
+      } else if (adminLevelTag.attributes.value === "6") {
+        resultElevation = 500
+        // hoverMultiplier = 3
+      } else if (adminLevelTag.attributes.value === "8") {
+        resultElevation = 200
+        // hoverMultiplier = 2
+      } else if (adminLevelTag.attributes.value === "9") {
+        resultElevation = 100
+        // hoverMultiplier = 1.5
+      } else if (adminLevelTag.attributes.value === "10") {
+        resultElevation = 100
+        // hoverMultiplier = 1.5
+      } else {
+        resultElevation = 10
+        // hoverMultiplier = 3
+      }
+    }
+
+    // if (hoveredAreaId === id || selectedAreaData?.id === id) {
+      // resultElevation *= hoverMultiplier
+    // }
+
+    return resultElevation
+  }
+
+  const getLineColor = [255, 255, 255]
+
+  const getPolygon = d => d.contour
+
+  const onClick = ({ object }) => {
+    if (mode !== modes.AREA) {
+      if (selectedAreaData?.id !== object.id) {
+        setSelectedAreaData(object);
+      } else {
+        setSelectedAreaData(null);
+      }
+    }
+  }
+
+  const onHover = ({ object }) => {
+    if (mode !== modes.AREA) {
+      setHoveredAreaId(object?.id);
+    }
+  }
+
   const areasLayer = new PolygonLayer({
     id: 'polygon-layer',
     data,
+    getFillColor,
+    getLineWidth,
+    getLineColor,
+    getPolygon,
+    onClick,
+    onHover,
     pickable: true,
-    // extruded: true,
     filled: true,
-    getPolygon: d => d.contour,
+    lineJointRounded: true,
+    // extruded: true,
     // wireframe: true,
     // getElevation: ({ id, tags }) => {
     //   let resultElevation = 0
@@ -166,79 +251,6 @@ const Map = (props) => {
 
     //   return resultElevation
     // },
-    getFillColor: ({ id, areaId, peopleCount, addedPeopleCount, color }) => {
-      let fillColor = null;
-
-      if (selectedAreaData?.id === id) {
-        fillColor = [255, 204, 0, 205];
-      } else {//if (!areaId) {
-      //   color = [250, 100, 100, 65.5];
-      // } else if (peopleCount !== addedPeopleCount) {
-      //   color = [100, 250, 250, 65.5];
-      // } else {
-        // [100, 250, 100, 65.5]
-        fillColor = color ? convertHexToRGBA(color, 0.9) : [200, 250, 200, 65.5];
-      }
-
-      if (hoveredAreaId === id) {
-        fillColor[3] -= 30;
-      }
-
-      return fillColor;
-    },
-    getLineColor: [255, 255, 255],
-    getLineWidth: ({ id, tags }) => {
-      let resultElevation = 0
-    //   let hoverMultiplier = 1
-
-      const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
-
-      if (adminLevelTag) {
-        if (adminLevelTag.attributes.value === "2") {
-          resultElevation = 5000
-          // hoverMultiplier = 5
-        } else if (adminLevelTag.attributes.value === "4") {
-          resultElevation = 1600
-          // hoverMultiplier = 4
-        } else if (adminLevelTag.attributes.value === "6") {
-          resultElevation = 500
-          // hoverMultiplier = 3
-        } else if (adminLevelTag.attributes.value === "8") {
-          resultElevation = 200
-          // hoverMultiplier = 2
-        } else if (adminLevelTag.attributes.value === "9") {
-          resultElevation = 100
-          // hoverMultiplier = 1.5
-        } else if (adminLevelTag.attributes.value === "10") {
-          resultElevation = 100
-          // hoverMultiplier = 1.5
-        } else {
-          resultElevation = 10
-          // hoverMultiplier = 3
-        }
-      }
-
-      // if (hoveredAreaId === id || selectedAreaData?.id === id) {
-        // resultElevation *= hoverMultiplier
-      // }
-
-      return resultElevation
-    },
-    lineJointRounded: true,
-    onHover: ({ object }) => {
-      if (mode !== modes.AREA) {
-        setHoveredAreaId(object?.id);
-      }
-    },
-    onClick: ({ object }) => {
-      if (mode !== modes.AREA) {
-        if (selectedAreaData?.id !== object.id) {
-          setSelectedAreaData(object);
-        } else {
-          setSelectedAreaData(null);
-        }
-      }
-    }
   });
 
   const textData = data.filter(({ tags, maxZoom }) => {
@@ -273,6 +285,7 @@ const Map = (props) => {
     getText: d => d.number,
     characterSet: 'auto',
     fontFamily: 'sans-serif',
+    fontWeight: "bold",
     backgroundPadding: [6, 6, 6, 6],
     maxWidth: 500,
     getSize: 14,
@@ -288,11 +301,12 @@ const Map = (props) => {
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getText: d => d.number,
     characterSet: 'auto',
-    fontFamily: 'sans-serif',
-    backgroundPadding: [6, 6, 6, 6],
+    // fontFamily: 'sans-serif',
+    backgroundPadding: [4, 4, 4, 4],
     maxWidth: 500,
-    getSize: 14,
+    getSize: 12,
     background: true,
+    getBorderWidth: 1,
     getPixelOffset: [0, 0]
   });
 
@@ -401,9 +415,11 @@ const Map = (props) => {
     }
   });
 
+  const iconData = areasData.filter((area) => area.logoUrl)
+
   const iconLayer = new IconLayer({
     id: 'icon-layer',
-    data: areasData.filter((area) => area.logoUrl),
+    data: iconData,
     pickable: true,
     sizeScale: 1,
     sizeMinPixels: 20,
@@ -426,7 +442,7 @@ const Map = (props) => {
     }
   })
 
-  const onClick = (event) => {
+  const onMapClick = (event) => {
     switch (mode) {
       case modes.AREA: {
         addNewAreaPointForAreaMode(event.coordinate);
@@ -455,14 +471,14 @@ const Map = (props) => {
   };
 
   const layers = [
-    pointsLayer,
+    // pointsLayer,
     // contourAreasLayer,
     areasLayer,
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
     iconLayer,
-    titleLayer,
     cityTitleLayer,
+    titleLayer,
     // cityPointLayer
   ];
 
@@ -484,7 +500,7 @@ const Map = (props) => {
 
   return (
     <DeckGL
-      onClick={onClick}
+      onClick={onMapClick}
       initialViewState={initialViewState}
       layers={layers}
       controller={controller}
