@@ -9,7 +9,8 @@ export const loadAreasData = () => (dispatch) => {
   client.get(`${API_URL}/api/v1/areas.json`, {
       params: {
         date: localStorage.getItem('date'),
-        zoom: localStorage.getItem('zoom')
+        zoom: localStorage.getItem('zoom'),
+        startDate: localStorage.getItem('filters.startDate') === 'true'
       },
       withCredentials: true
     })

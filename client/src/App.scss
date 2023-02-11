@@ -1,11 +1,3 @@
 body {
   font-family: Georgia, serif;
 }
-
-input[type="number"]::-webkit-inner-spin-button,
-input[type="number"]::-webkit-outer-spin-button {
-  -webkit-appearance: textfield;
-  -moz-appearance: textfield;
-  appearance: textfield;
-  opacity: 1;
-}

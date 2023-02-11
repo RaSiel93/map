@@ -4,10 +4,17 @@ module Api
       def index
         date = params[:date] ? Time.new(params[:date]) : Time.zone.now
         zoom = params[:zoom] || 1
+        startDate = params[:startDate] === "true"
 
         areas = Area.where(hidden: false)
-          .where("start_at is null OR start_at < ?", date)
-          # .where("start_at < ?", date)
+
+        areas = if (startDate)
+          areas.where("start_at is null OR start_at < ?", date)
+        else
+          areas.where("start_at < ?", date)
+        end
+
+        areas = areas
           .where("end_at is null OR end_at > ?", date)
           .where("max_zoom > ?", zoom)
           .includes(:company).includes(:tags)

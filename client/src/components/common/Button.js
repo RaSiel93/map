@@ -8,6 +8,7 @@ export const Button = styled.button`
   border: none;
   border-radius: 50%;
   z-index: 10;
+  cursor: pointer;
 
   &:after {
     color: #aaa;
@@ -16,7 +17,6 @@ export const Button = styled.button`
   &:hover {
     background-color: #333;
     color: #ccc;
-    cursor: pointer;
   }
 
   &.active {

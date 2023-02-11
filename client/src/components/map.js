@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { StaticMap } from 'react-map-gl';
 import DeckGL from '@deck.gl/react';
-import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes } from 'constants';
+import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY } from 'constants';
 
 import {
   setZoom,
@@ -292,7 +292,11 @@ const Map = (props) => {
     background: true,
   });
 
-  const cities = data.filter(({ tags }) => tags.find(({ attributes: { key, value }}) => key === 'place' && value === 'city'));
+  const cityFilter = localStorage.getItem(FILTER_CITY) === 'true'
+
+  // console.log(cityFilter)
+
+  const cities = cityFilter ? data.filter(({ tags }) => tags.find(({ attributes: { key, value }}) => key === 'place' && value === 'city')) : [];
 
   const cityTitleLayer = new TextLayer({
     id: 'city-title-layer',
