@@ -37,7 +37,13 @@ const Container = styled.div`
 const Information = ({ zoom, date, selectedAreaData }) => {
   return (
     <Container>
-      zoom: {zoom}
+      {
+        (localStorage.getItem('filters.info') === 'true') && (
+          <p>
+            zoom: {zoom}
+          </p>
+        )
+      }
       {
         selectedAreaData && <div className="Mode">{selectedAreaData.number}</div>
       }

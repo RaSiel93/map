@@ -32,7 +32,7 @@ const EditMode = (props) => {
   };
 
   return <>
-    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
+    <ModeButton onClick={onClick} title="Рэдагаваньне" className={active ? 'active' : ''}/>
     {
       active && selectedAreaData && <EditModeModal
         isOpen={active}

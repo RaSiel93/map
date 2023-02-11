@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, ImportMode, NavigateMode, DateMode } from 'components/modes';
 import cx from 'classnames'
 
-import { NAVIGATION_COLLAPSE, FILTER_START_DATE, FILTER_CITY } from 'constants'
+import { NAVIGATION_COLLAPSE, FILTER_START_DATE, FILTER_CITY, FILTER_INFO } from 'constants'
 
 const Container = styled.div`
   display: flex;
@@ -91,6 +91,7 @@ const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
   const [collapse, setCollapse] = useState(localStorage.getItem(NAVIGATION_COLLAPSE) === 'true')
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [cityFilter, setCityFilter] = useState(localStorage.getItem(FILTER_CITY) === 'true')
+  const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
 
   const onClick = () => {
     setCollapse(!collapse)
@@ -105,6 +106,11 @@ const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
   const changeCityFilter = () => {
     setCityFilter(!cityFilter)
     localStorage.setItem(FILTER_CITY, !cityFilter)
+  }
+
+  const changeInfoFilter = () => {
+    setInfoFilter(!infoFilter)
+    localStorage.setItem(FILTER_INFO, !infoFilter)
   }
 
   return (
@@ -128,11 +134,15 @@ const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
           <div className="Filters">
             <div className="Filter">
               <input type="checkbox" id="startDate" checked={startDateFilter} onClick={changeStartDateFilter}/>
-              <label for="startDate">Бяз даты</label>
+              <label for="startDate">Бяз&nbsp;даты</label>
             </div>
             <div className="Filter">
               <input type="checkbox" id="city" checked={cityFilter} onClick={changeCityFilter}/>
               <label for="city">Гарады</label>
+            </div>
+            <div className="Filter">
+              <input type="checkbox" id="info" checked={infoFilter} onClick={changeInfoFilter}/>
+              <label for="info">Інфармацыя</label>
             </div>
           </div>
           {/*<PersonMode*/}

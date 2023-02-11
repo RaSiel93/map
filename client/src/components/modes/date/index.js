@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import dayjs from 'dayjs'
 
 const Container = styled('div')`
   align-items: center;
@@ -38,17 +39,35 @@ const Container = styled('div')`
 
 const DateMode = ({ date, setDate }) => {
   const onChange = (event) => {
-    const date = event.target.value
+    saveDate(event.target.value)
+  }
 
+  const saveDate = (date) => {
     setDate(date)
     localStorage.setItem('date', date)
   }
 
+  const changeDate = (shift) => {
+    const changedDate = dayjs(date).add(shift, 'year').format("YYYY")
+
+    saveDate(changedDate)
+  }
+
+  const onPrev = () => {
+    // new Date(date)
+
+    // debugger
+    // setDate()
+  }
+
   return <Container>
-    <div className="Button">
+    <div className="Button" title="100 гадоў назад" onClick={() => changeDate(-100)}>
+      ⇇
+    </div>
+    <div className="Button" title="10 гадоў назад" onClick={() => changeDate(-10)}>
       ↞
     </div>
-    <div className="Button">
+    <div className="Button" title="1 гадоў назад" onClick={() => changeDate(-1)}>
       ←
     </div>
     <input
@@ -57,11 +76,14 @@ const DateMode = ({ date, setDate }) => {
       onChange={onChange}
       className="Date"
     />
-    <div className="Button">
+    <div className="Button" title="1 гадоў наперад" onClick={() => changeDate(1)}>
       →
     </div>
-    <div className="Button">
+    <div className="Button" title="10 гадоў наперад" onClick={() => changeDate(10)}>
       ↠
+    </div>
+    <div className="Button" title="100 гадоў наперад" onClick={() => changeDate(100)}>
+      ⇉
     </div>
   </Container>
 }

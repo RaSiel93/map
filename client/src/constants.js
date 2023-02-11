@@ -46,6 +46,7 @@ export const DEBOUNCE_TIME = 300
 export const NAVIGATION_COLLAPSE = "navigation-collapse"
 export const FILTER_START_DATE = "filters.startDate"
 export const FILTER_CITY = "filters.city"
+export const FILTER_INFO = "filters.info"
 
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
 

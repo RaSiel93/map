@@ -46,7 +46,7 @@ const ImportMode = (props) => {
 
   return <>
     <input type="file" multiple hidden ref={inputRef} onChange={onChange}/>
-    <ModeButton onClick={onClick}/>
+    <ModeButton title="Імпарт" onClick={onClick}/>
   </>
 }
 

@@ -22,7 +22,7 @@ const NavigateMode = (props) => {
   }
 
   return <>
-    <ModeButton onClick={onClick}/>
+    <ModeButton onClick={onClick} title="Абнавіць пачатковыя каардынаты" />
   </>
 }
 

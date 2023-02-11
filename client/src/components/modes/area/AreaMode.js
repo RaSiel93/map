@@ -100,7 +100,7 @@ const AreaMode = (props) => {
   };
 
   return <>
-    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
+    <ModeButton onClick={onClick} title="Тэрыторыя" className={active ? 'active' : ''}/>
     {
       active && newAreaPoints.length > 0 && <>
         <CreateButton onClick={onCreate}/>

@@ -33,7 +33,7 @@ const PointMode = (props) => {
   };
 
   return <>
-    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
+    <ModeButton onClick={onClick} title="Дадаць кропку" className={active ? 'active' : ''}/>
     {
       active && pointCoordinates && <PointModeModal
         isOpen={active}

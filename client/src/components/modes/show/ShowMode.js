@@ -32,7 +32,7 @@ const ShowMode = (props) => {
   };
 
   return <>
-    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
+    <ModeButton onClick={onClick} title="Прагляд" className={active ? 'active' : ''}/>
     {
       active && selectedAreaData && <ShowModeModal
         isOpen={active}

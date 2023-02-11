@@ -31,7 +31,7 @@ const NoteMode = (props) => {
   };
 
   return <>
-    <ModeButton onClick={onClick} className={active ? 'active' : ''}/>
+    <ModeButton onClick={onClick} title="Дадаць нататку" className={active ? 'active' : ''}/>
     {
       active && <NoteModeModal
         isOpen={active}
