@@ -23,7 +23,8 @@ module Api
       end
 
       def create
-        area = Area.create(area_params)
+        date = params[:date] ? Time.new(params[:date]) : Time.zone.now
+        area = Area.create(area_params.merge(start_at: date))
 
         area.update_max_zoom
         area.update_coordinate
@@ -39,8 +40,17 @@ module Api
 
       def update
         area = Area.find(params[:id])
+        date = params[:date] ? Time.new(params[:date]) : Time.zone.now
 
-        area.update(area_params)
+        if (area.start_at === nil || !area_params['coordinates'] || date.year === area.start_at.year)
+          area.update(area_params)
+        else
+          area = Area.create(area_params.merge(
+            title: area.title,
+            start_at: date,
+            tags_attributes: area.tags.map { |tag| tag.attributes.slice('key', 'value') }
+          ))
+        end
 
         area.update_max_zoom
         area.update_coordinate

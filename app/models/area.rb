@@ -7,6 +7,8 @@ class Area < ApplicationRecord
   belongs_to :area, optional: true
   belongs_to :company, optional: true
 
+  accepts_nested_attributes_for :tags
+
   delegate :logo, to: :company, allow_nil: true
 
   ZOOM_MULTIPLICATOR = 23525234

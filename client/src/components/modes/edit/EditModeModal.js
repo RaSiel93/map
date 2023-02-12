@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import Select from 'react-select';
 import { SpinnerCircular } from 'spinners-react';
 import { connect } from 'react-redux';
+import dayjs from 'dayjs'
 
 import { Modal } from 'components/common/Modal';
 import { modes } from 'constants';
@@ -158,7 +159,7 @@ const EditModeModal = (props) => {
         <input
           id='startAt'
           type='date'
-          value={startAt ? (new Date(startAt)).toISOString().split('T')[0] : ''}
+          value={startAt ? dayjs(startAt).format('YYYY-MM-DD') : ''}
           placeholder='Дата пачатку'
           onChange={(e) => { setStartAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
@@ -168,7 +169,7 @@ const EditModeModal = (props) => {
         <input
           id='endAt'
           type='date'
-          value={endAt ? (new Date(endAt)).toISOString().split('T')[0] : ''}
+          value={endAt ? dayjs(endAt).format('YYYY-MM-DD') : ''}
           placeholder='Дата сканчэньня'
           onChange={(e) => { setEndAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}

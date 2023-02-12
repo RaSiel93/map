@@ -13,7 +13,14 @@ import { API_URL } from 'constants'
 export const createAreaForAreaMode = (params) => (dispatch) => {
   const token = Cookies.get('csrf_token');
 
-  client.post(`${API_URL}/api/v1/areas.json`, params, { headers: { 'X-CSRF-TOKEN': token }})
+  client.post(
+    `${API_URL}/api/v1/areas.json`,
+    {
+      ...params,
+      date: localStorage.getItem('date')
+    },
+    { headers: { 'X-CSRF-TOKEN': token }}
+  )
     .then((response) => {
       dispatch(toggleMode(modes.AREA));
       dispatch(resetNewAreaPointsForAreaMode());
@@ -27,7 +34,14 @@ export const createAreaForAreaMode = (params) => (dispatch) => {
 export const updateAreaForAreaMode = (id, params) => (dispatch) => {
   const token = Cookies.get('csrf_token');
 
-  client.put(`${API_URL}/api/v1/areas/${id}.json`, params, { headers: { 'X-CSRF-TOKEN': token }})
+  client.put(
+    `${API_URL}/api/v1/areas/${id}.json`,
+    {
+      ...params,
+      date: localStorage.getItem('date')
+    },
+    { headers: { 'X-CSRF-TOKEN': token }}
+  )
     .then((response) => {
       dispatch(toggleMode(modes.AREA));
       dispatch(resetNewAreaPointsForAreaMode());

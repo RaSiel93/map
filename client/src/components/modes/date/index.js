@@ -53,13 +53,6 @@ const DateMode = ({ date, setDate }) => {
     saveDate(changedDate)
   }
 
-  const onPrev = () => {
-    // new Date(date)
-
-    // debugger
-    // setDate()
-  }
-
   return <Container>
     <div className="Button" title="100 гадоў назад" onClick={() => changeDate(-100)}>
       ⇇
