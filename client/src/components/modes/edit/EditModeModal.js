@@ -159,7 +159,7 @@ const EditModeModal = (props) => {
         <input
           id='startAt'
           type='date'
-          value={startAt ? dayjs(startAt).format('YYYY-MM-DD') : ''}
+          value={startAt ? (new Date(startAt)).toISOString().split('T')[0] : ''}
           placeholder='Дата пачатку'
           onChange={(e) => { setStartAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
@@ -169,7 +169,7 @@ const EditModeModal = (props) => {
         <input
           id='endAt'
           type='date'
-          value={endAt ? dayjs(endAt).format('YYYY-MM-DD') : ''}
+          value={endAt ? (new Date(endAt)).toISOString().split('T')[0] : ''}
           placeholder='Дата сканчэньня'
           onChange={(e) => { setEndAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
