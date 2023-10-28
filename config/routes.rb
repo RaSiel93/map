@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   root 'home#index'
 
+  get '/health', to: 'health_check#show'
+
   namespace :api do
     namespace :v1 do
       resources :areas, only: %i[index create show update destroy]
