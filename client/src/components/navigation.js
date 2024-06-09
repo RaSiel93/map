@@ -1,10 +1,11 @@
 import { useState } from 'react'
-import { connect } from 'react-redux';
-import styled from 'styled-components';
-import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, ImportMode, NavigateMode, DateMode } from 'components/modes';
+import { connect } from 'react-redux'
+import styled from 'styled-components'
+import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, ImportMode, NavigateMode, DateMode } from 'components/modes'
+import { Filters } from 'components/menu'
 import cx from 'classnames'
 
-import { NAVIGATION_COLLAPSE, FILTER_START_DATE, FILTER_CITY, FILTER_INFO } from 'constants'
+import { NAVIGATION_COLLAPSE } from 'constants'
 
 const Container = styled.div`
   display: flex;
@@ -66,52 +67,16 @@ const Container = styled.div`
       transform: rotate(180deg)
     }
   }
-
-  .Filters {
-    gap: 8px;
-    align-items: center;
-    // flex-direction: column;
-    // flex-wrap: wrap;
-    display: flex;
-    height: 36px;
-
-    .Filter {
-      input, label {
-        cursor: pointer;
-      }
-
-      &:hover {
-        color: #333;
-      }
-    }
-  }
 `
 
 const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
   const [collapse, setCollapse] = useState(localStorage.getItem(NAVIGATION_COLLAPSE) === 'true')
-  const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
-  const [cityFilter, setCityFilter] = useState(localStorage.getItem(FILTER_CITY) === 'true')
-  const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
 
   const onClick = () => {
     setCollapse(!collapse)
     localStorage.setItem(NAVIGATION_COLLAPSE, !collapse)
   }
 
-  const changeStartDateFilter = () => {
-    setStartDateFilter(!startDateFilter)
-    localStorage.setItem(FILTER_START_DATE, !startDateFilter)
-  }
-
-  const changeCityFilter = () => {
-    setCityFilter(!cityFilter)
-    localStorage.setItem(FILTER_CITY, !cityFilter)
-  }
-
-  const changeInfoFilter = () => {
-    setInfoFilter(!infoFilter)
-    localStorage.setItem(FILTER_INFO, !infoFilter)
-  }
 
   return (
     <Container className={cx({ Collapse: collapse })}>
@@ -131,20 +96,7 @@ const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
           <EditMode/>
           <AreaMode/>
           <NoteMode/>
-          <div className="Filters">
-            <div className="Filter">
-              <input type="checkbox" id="startDate" checked={startDateFilter} onClick={changeStartDateFilter}/>
-              <label for="startDate">Бяз&nbsp;даты</label>
-            </div>
-            <div className="Filter">
-              <input type="checkbox" id="city" checked={cityFilter} onClick={changeCityFilter}/>
-              <label for="city">Гарады</label>
-            </div>
-            <div className="Filter">
-              <input type="checkbox" id="info" checked={infoFilter} onClick={changeInfoFilter}/>
-              <label for="info">Інфармацыя</label>
-            </div>
-          </div>
+          <Filters/>
           {/*<PersonMode*/}
         </div>
       </div>

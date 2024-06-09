@@ -23,13 +23,13 @@ const EditMode = (props) => {
     mode,
     toggleMode,
     selectedAreaData,
-  } = props;
+  } = props
 
-  const active = mode === modes.EDIT;
+  const active = mode === modes.EDIT
 
   const onClick = () => {
-    toggleMode(modes.EDIT);
-  };
+    toggleMode(modes.EDIT)
+  }
 
   return <>
     <ModeButton onClick={onClick} title="Рэдагаваньне" className={active ? 'active' : ''}/>
