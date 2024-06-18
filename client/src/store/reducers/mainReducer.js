@@ -13,6 +13,7 @@ import {
   SET_SELECTED_AREA_DATA,
   SET_HOVERED_AREA_ID,
   TOGGLE_MODE,
+  SET_TAGS,
 } from 'constants';
 
 export const mainReducer = (state = {}, action) => {
@@ -102,6 +103,12 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         mode: state.mode === action.payload ? null : action.payload,
+      }
+    }
+    case SET_TAGS: {
+      return {
+        ...state,
+        tags: action.payload,
       }
     }
   }

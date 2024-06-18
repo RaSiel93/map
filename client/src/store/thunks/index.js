@@ -2,6 +2,7 @@ export {
   loadAreasData,
   loadCompanies,
   loadPointsData,
+  loadTags,
 } from './mainThunks';
 
 export {

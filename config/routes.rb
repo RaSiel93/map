@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :people, only: %i[index create update destroy]
       resources :companies, only: %i[index create update destroy]
       resources :load, only: %i[index create update destroy]
+      resources :tags, only: %i[index]
     end
   end
 

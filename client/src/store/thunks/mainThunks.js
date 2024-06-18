@@ -1,6 +1,6 @@
 import { client } from 'api/client';
 import { areaToPolygonObject, pointToScatterplotObject } from 'services/deckGl';
-import { setAreasData, setCompanies, setPointsData } from 'store/actions';
+import { setAreasData, setCompanies, setPointsData, setTags } from 'store/actions';
 import Cookies from 'js-cookie';
 
 import { API_URL } from 'constants'
@@ -41,3 +41,16 @@ export const loadPointsData = () => (dispatch) => {
       console.log(error)
     });
 }
+
+export const loadTags = () => (dispatch) => {
+  client.get(`${API_URL}/api/v1/tags.json`, { withCredentials: true })
+    .then(response => {
+      dispatch(setTags(response.data.data));
+    })
+    .catch((response) => {
+      console.log(response);
+
+      return [];
+    })
+}
+

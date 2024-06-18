@@ -51,7 +51,7 @@ export const Modal = styled(ReactModalAdapter)`
   }
 
   label, input, button {
-    font-size: 20px;
+    font-size: 16px;
   }
 
   > div {

@@ -14,6 +14,7 @@ export const SET_SELECTED_AREA_ID = 'main/setSelectedAreaId';
 export const SET_SELECTED_AREA_DATA = 'main/setSelectedAreaData';
 export const SET_HOVERED_AREA_ID = 'main/setHoveredAreaId';
 export const TOGGLE_MODE = 'main/toggleMode';
+export const SET_TAGS = 'main/setTags'
 
 export const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiZmFld2ZhZXdmIiwiYSI6ImNsNHkyczJveTA5bXgzY282Y244NzZldTQifQ.e_xurgA24psxPjnR6sBHZA"
 
@@ -47,6 +48,7 @@ export const NAVIGATION_COLLAPSE = "navigation-collapse"
 export const FILTER_START_DATE = "filters.startDate"
 export const FILTER_CITY = "filters.city"
 export const FILTER_INFO = "filters.info"
+export const FILTER_TAGS = "filters.tags"
 
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
 

@@ -71,7 +71,9 @@ module Api
 
       def area_params
         @area_params ||= params.require(:area).permit(
-          :title, :description, :area_id, :company_id, :people_count, :start_at, :end_at, coordinates: []
+          :title, :description, :area_id, :company_id, :people_count, :start_at, :end_at, :tag_ids,
+          coordinates: [],
+          tags_attributes: [:id, :area_id, :tag_key_id, :tag_value_id, :_destroy]
         )
       end
 

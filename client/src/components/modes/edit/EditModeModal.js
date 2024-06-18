@@ -1,22 +1,57 @@
-import React, { useState, useEffect } from 'react';
-import PropTypes from 'prop-types';
-import Select from 'react-select';
-import { SpinnerCircular } from 'spinners-react';
-import { connect } from 'react-redux';
+import React, { useState, useEffect } from 'react'
+import PropTypes from 'prop-types'
+import Select from 'react-select/creatable'
+import { SpinnerCircular } from 'spinners-react'
+import { connect } from 'react-redux'
 import dayjs from 'dayjs'
 
-import { Modal } from 'components/common/Modal';
-import { modes } from 'constants';
-import { getArea, removeArea, updateArea } from 'api';
+import { Modal } from 'components/common/Modal'
+import { modes } from 'constants'
+import { getArea, removeArea, updateArea } from 'api'
 import {
   toggleMode,
   removeAreaData,
   updateAreaData,
   setSelectedAreaData
-} from 'store/actions';
-import { areaToPolygonObject } from 'services/deckGl';
+} from 'store/actions'
+import { areaToPolygonObject } from 'services/deckGl'
+import styled from 'styled-components'
 
-const ENTER_KEY = 'Enter';
+const ENTER_KEY = 'Enter'
+
+const Tag = styled.div`
+  display: flex;
+  flex-direction: row;
+
+  .TagKey {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .TagValue {
+    flex-grow: 1;
+    flex-basis: 0;
+  }
+
+  .RemoveTag {
+    flex-basis: 30px;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    border-radius: 4px;
+    border-style: solid;
+    border-width: 1px;
+    border-color: hsl(0, 0%, 80%);
+    cursor: pointer;
+  }
+`
+
+const AddTagButton = styled.button`
+  width: 100%;
+  border: none;
+  padding: 4px;
+  cursor: pointer;
+`
 
 const EditModeModal = (props) => {
   const {
@@ -28,18 +63,24 @@ const EditModeModal = (props) => {
     updateAreaData,
     removeAreaData,
     setSelectedAreaData,
-  } = props;
+    tags,
+  } = props
 
-  const [area, setArea] = useState(null);
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [areaId, setAreaId] = useState(null);
-  const [companyId, setCompanyId] = useState(null);
-  const [peopleCount, setPeopleCount] = useState(null);
-  const [areaOptions, setAreaOptions] = useState([]);
-  const [companyOptions, setCompanyOptions] = useState([]);
-  const [startAt, setStartAt] = useState(null);
-  const [endAt, setEndAt] = useState(null);
+  const [area, setArea] = useState(null)
+  const [title, setTitle] = useState('')
+  const [description, setDescription] = useState('')
+  const [areaId, setAreaId] = useState(null)
+  const [companyId, setCompanyId] = useState(null)
+  const [peopleCount, setPeopleCount] = useState(null)
+  const [areaOptions, setAreaOptions] = useState([])
+  const [companyOptions, setCompanyOptions] = useState([])
+  const [startAt, setStartAt] = useState(null)
+  const [endAt, setEndAt] = useState(null)
+  const [selectedTags, setSelectedTags] = useState([])
+  // const [tagOptions, setTagOptions] = useState([])
+  // const [selectedTags, setSelectedTags] = useState([])
+  const [tagKeyOptions, setTagKeyOptions] = useState([])
+  const [tagValuesOptions, setTagValuesOptions] = useState([])
 
   useEffect(() => {
     setAreaOptions([
@@ -47,33 +88,52 @@ const EditModeModal = (props) => {
       ...areasData.map(areaData => (
         { value: areaData.id, label: areaData.number }
       ))
-    ]);
+    ])
     setCompanyOptions([
       { value: '', label: 'Знаходзіцца кампанія' },
       ...companies.map(company => (
         { value: +company.id, label: company.attributes.name }
       ))
-    ]);
-  }, []);
+    ])
+
+    setTagKeyOptions([
+      ...tags.map(({ attributes: { id, name }}) => {
+        // const label = `${key}:${value}`
+
+        return { value: id, label: name }
+      })
+    ])
+    // debugger
+    setTagValuesOptions([
+      ...tags.map(({ attributes: { id, name, options }}) => {
+        return { id: id, options: [...options.map(({ attributes: { id, name, label } }) => ({ value: id, label: name }))] }
+      })
+    ])
+  }, [areasData, companies, tags])
 
   const onRequestClose = () => {
-    toggleMode(modes.EDIT);
-  };
+    toggleMode(modes.EDIT)
+  }
 
+  const extractTags = ({ attributes: { id, area_id, key: { attributes: { id: keyId }}, value: { attributes: { id: valueId }} } }) => ({ id, area_id, tag_key_id: keyId, tag_value_id: valueId })
+  
   useEffect(async () => {
-    const area = await getArea(id);
-    const { attributes: { title, description, area_id, people_count, company_id, start_at, end_at }} = area;
+    const area = await getArea(id)
+    const { attributes: { title, description, area_id, people_count, company_id, start_at, end_at, tags }} = area
 
-    setArea(area);
+    setArea(area)
 
-    setTitle(title);
-    setDescription(description);
-    setAreaId(area_id);
-    setCompanyId(company_id);
-    setPeopleCount(people_count);
-    setStartAt(start_at);
-    setEndAt(end_at);
-  }, [id]);
+    setTitle(title)
+    setDescription(description)
+    setAreaId(area_id)
+    setCompanyId(company_id)
+    setPeopleCount(people_count)
+    setStartAt(start_at)
+    setEndAt(end_at)
+    // setSelectedTags(tags.map(({ attributes: { id, key, value }}) => ({ value: id, label: `${key}:${value}` })))
+    // setTagKeys(tags)
+    setSelectedTags(tags.map(extractTags))
+  }, [id])
 
   const handleUpdateArea = async () => {
     const params = {
@@ -85,23 +145,76 @@ const EditModeModal = (props) => {
         people_count: peopleCount,
         start_at: startAt,
         end_at: endAt,
+        tags_attributes: selectedTags
       }
-    };
-    const area = await updateArea(id, params);
+    }
+    const area = await updateArea(id, params)
 
-    updateAreaData(areaToPolygonObject(area));
-    toggleMode(modes.EDIT);
-  };
+    updateAreaData(areaToPolygonObject(area))
+    toggleMode(modes.EDIT)
+  }
+
+  console.log('selectedTags', selectedTags)
+  // console.log('tagKeyOptions', tagKeyOptions)
+  // console.log('tagValuesOptions', tagValuesOptions)
 
   const handleRemoveArea = async () => {
     if (window.confirm("Вы ўпэўнены, што жадаеце выдаліць аб'ект?")) {
-      await removeArea(id);
+      await removeArea(id)
 
-      removeAreaData(id);
-      setSelectedAreaData(null);
-      toggleMode(modes.EDIT);
+      removeAreaData(id)
+      setSelectedAreaData(null)
+      toggleMode(modes.EDIT)
     }
-  };
+  }
+
+  const onAddTag = () => {
+    setSelectedTags([
+      ...selectedTags,
+      {
+        tag_key_id: null,
+        tag_value_id: null
+      }
+    ])
+  }
+
+  const onTagKeyChange = (index, option) => {
+    if (selectedTags[index]['tag_key_id'] != option.value) {
+      setSelectedTags([
+        ...selectedTags.slice(0, index),
+        {
+          ...selectedTags[index],
+          tag_key_id: option.value,
+          tag_value_id: null
+        },
+        ...selectedTags.slice(index + 1, selectedTags.length)
+      ])
+    }
+  }
+
+  const onTagValueChange = (index, option) => {
+    if (selectedTags[index]['tag_value_id'] != option.value) {
+      setSelectedTags([
+        ...selectedTags.slice(0, index),
+        {
+          ...selectedTags[index],
+          tag_value_id: option.value
+        },
+        ...selectedTags.slice(index + 1, selectedTags.length)
+      ])
+    }
+  }
+
+  const onTagRemove = (index) => {
+    setSelectedTags([
+      ...selectedTags.slice(0, index),
+      {
+        ...selectedTags[index],
+        _destroy: true
+      },
+      ...selectedTags.slice(index + 1, selectedTags.length)
+    ])
+  }
 
   if (area) {
     return <Modal
@@ -175,6 +288,64 @@ const EditModeModal = (props) => {
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
         ></input>
       </div>
+      <div>
+        <div>Тэгі:</div>
+        {
+          selectedTags.filter(({ _destroy }) => !_destroy).map(({ tag_key_id: keyId, tag_value_id: valueId }, index) => {
+            const tagValueOptions = tagValuesOptions.find(({ id }) => id == keyId)?.options
+
+            const tagKeyOption = tagKeyOptions.find(({ value }) => value == keyId) || null
+            const tagValueOption = tagValueOptions?.find(({ value }) => (value == valueId) || '' ) || null
+
+            return (
+              <Tag key={index}>
+                <Select
+                  className='TagKey'
+                  value={tagKeyOption}
+                  onChange={(option) => onTagKeyChange(index, option)}
+                  options={tagKeyOptions}
+                  placeholder='Ключ'
+                />
+                <Select
+                  className='TagValue'
+                  value={tagValueOption}
+                  onChange={(option) => onTagValueChange(index, option)}
+                  options={tagValueOptions}
+                  placeholder='Значэньне'
+                />
+                <div className='RemoveTag' onClick={() => onTagRemove(index)}>x</div>
+              </Tag>
+            )
+          })
+        }
+        <AddTagButton onClick={onAddTag}>Дадаць тэг</AddTagButton>
+        <br/>
+        <br/>
+        {/* <Select
+          name='tags'
+          value={selectedTags}
+          onChange={setSelectedTags}
+          options={tagOptions}
+          isMulti
+          placeholder='Тэгі'
+        />
+        <Select
+          name='tags'
+          value={selectedTags}
+          onChange={setSelectedTags}
+          options={tagOptions}
+          isMulti
+          placeholder='Тэгі'
+        /> */}
+      </div>
+      {/* <textarea
+        id='description'
+        value={description || ''}
+        onChange={(e) => { setDescription(e.target.value) }}
+        placeholder='Апісанне'
+        cols='50'
+        rows='10'
+      ></textarea> */}
       <button onClick={handleRemoveArea}>Выдаліць</button>
       <button onClick={handleUpdateArea}>
         Прыняць
@@ -208,6 +379,7 @@ export default connect(
     id: state.main.selectedAreaData.id,
     areasData: state.main.areasData,
     companies: state.main.companies,
+    tags: state.main.tags,
   }),
   {
     toggleMode,
@@ -215,4 +387,4 @@ export default connect(
     removeAreaData,
     setSelectedAreaData,
   }
-)(EditModeModal);
+)(EditModeModal)

@@ -1,7 +1,9 @@
-import { connect } from 'react-redux';
-import { StaticMap } from 'react-map-gl';
-import DeckGL from '@deck.gl/react';
-import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY } from 'constants';
+import { useState } from 'react'
+import { connect } from 'react-redux'
+import { StaticMap } from 'react-map-gl'
+import DeckGL from '@deck.gl/react'
+import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY, FILTER_TAGS } from 'constants'
+import { safeParseJson, compareTags } from 'utils/helper'
 
 import {
   setZoom,
@@ -292,15 +294,17 @@ const Map = (props) => {
     background: true,
   });
 
-  const cityFilter = localStorage.getItem(FILTER_CITY) === 'true'
+  const [tagsFilter, setTagsFilter] = useState(safeParseJson(localStorage.getItem(FILTER_TAGS), []) || [])
 
-  // console.log(cityFilter)
+  const tagFilteredAreas = (data || []).filter(({ tags }) => {
+    return tags.find(({ attributes: { key: { attributes: { name: keyName }}, value: { attributes: { name: keyValue }}} }) => {
+      return tagsFilter.some(compareTags(keyName, keyValue))
+    })
+  })
 
-  const cities = cityFilter ? data.filter(({ tags }) => tags.find(({ attributes: { key, value }}) => key === 'place' && value === 'city')) : [];
-
-  const cityTitleLayer = new TextLayer({
-    id: 'city-title-layer',
-    data: cities,
+  const tagsLayer = new TextLayer({
+    id: 'tags-layer',
+    data: tagFilteredAreas,
     pickable: true,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getText: d => d.number,
@@ -312,61 +316,61 @@ const Map = (props) => {
     background: true,
     getBorderWidth: 1,
     getPixelOffset: [0, 0]
-  });
+  })
 
 
-  const cityPointLayer = new ScatterplotLayer({
-    id: 'scatterplot-layer22',
-    data: cities,
-    // pickable: true,
-    // opacity: 0.6,
-    // stroked: true,
-    // filled: true,
-    radiusScale: 10,
-    // radiusMinPixels: 1,
-    // radiusMaxPixels: 120,
-    // lineWidthMinPixels: 1,
-    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
-    pickable: true,
-    // opacity: 0.8,
-    stroked: true,
-    filled: true,
-    // radiusScale: 6000,
-    // radiusMinPixels: 1,
-    // radiusMaxPixels: 100,
-    // lineWidthMinPixels: 1,
-    // getPosition: d => d.coordinates,
-    getRadius: d => 500,
-    getFillColor: d => [255, 140, 0],
-    getLineColor: d => [0, 0, 0],
-    lineWidthScale: 2000,
-    // getRadius: d => Math.sqrt(d.exits),
-    // getFillColor: () => {
-    //   // getFillColor: ({ id }) => {
-    //   let color = null;
+  // const tagPointLayer = new ScatterplotLayer({
+  //   id: 'scatterplot-layer22',
+  //   data: tagFilteredAreas,
+  //   // pickable: true,
+  //   // opacity: 0.6,
+  //   // stroked: true,
+  //   // filled: true,
+  //   radiusScale: 10,
+  //   // radiusMinPixels: 1,
+  //   // radiusMaxPixels: 120,
+  //   // lineWidthMinPixels: 1,
+  //   getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+  //   pickable: true,
+  //   // opacity: 0.8,
+  //   stroked: true,
+  //   filled: true,
+  //   radiusScale: 100,
+  //   // radiusMinPixels: 1,
+  //   // radiusMaxPixels: 100,
+  //   // lineWidthMinPixels: 1,
+  //   // getPosition: d => d.coordinates,
+  //   getRadius: d => 5,
+  //   getFillColor: d => [255, 140, 0],
+  //   getLineColor: d => [0, 0, 0],
+  //   lineWidthScale: 1,
+  //   // getRadius: d => Math.sqrt(d.exits),
+  //   // getFillColor: () => {
+  //   //   // getFillColor: ({ id }) => {
+  //   //   let color = null;
 
-    //   // if (selectedAreaData?.id === id) {
-    //   //   color = [255, 204, 0, 105];
-    //   // } else {
-    //   color = [200, 200, 200, 255];
-    //   // }
+  //   //   // if (selectedAreaData?.id === id) {
+  //   //   //   color = [255, 204, 0, 105];
+  //   //   // } else {
+  //   //   color = [200, 200, 200, 255];
+  //   //   // }
 
-    //   // if (hoveredAreaId === id) {
-    //   //   color[3] += 30;
-    //   // }
+  //   //   // if (hoveredAreaId === id) {
+  //   //   //   color[3] += 30;
+  //   //   // }
 
-    //   return color;
-    // },
-    // getLineColor: () => [0, 0, 0],
-    // onHover: () => {
-    //   // if (mode !== modes.AREA) {
-    //   //   setHoveredAreaId(object?.id);
-    //   // }
-    // },
-    // onClick: () => {
-    //   // setSelectedAreaData(info.object);
-    // }
-  });
+  //   //   return color;
+  //   // },
+  //   // getLineColor: () => [0, 0, 0],
+  //   // onHover: () => {
+  //   //   // if (mode !== modes.AREA) {
+  //   //   //   setHoveredAreaId(object?.id);
+  //   //   // }
+  //   // },
+  //   // onClick: () => {
+  //   //   // setSelectedAreaData(info.object);
+  //   // }
+  // })
 
   // const contourAreasLayer = new PolygonLayer({
   //   id: 'contourAreasLayer',
@@ -481,9 +485,9 @@ const Map = (props) => {
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
     iconLayer,
-    cityTitleLayer,
+    tagsLayer,
     titleLayer,
-    // cityPointLayer
+    // tagPointLayer
   ];
 
   const controller = { dragPan: true }

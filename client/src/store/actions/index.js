@@ -12,6 +12,7 @@ export {
   setSelectedAreaId,
   setSelectedAreaData,
   setHoveredAreaId,
+  setTags,
   toggleMode,
 } from './mainActions';
 

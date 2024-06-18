@@ -13,6 +13,7 @@ import {
   SET_SELECTED_AREA_DATA,
   SET_HOVERED_AREA_ID,
   TOGGLE_MODE,
+  SET_TAGS,
 } from 'constants';
 
 export const setZoom = (zoom) => ({ type: SET_ZOOM, payload: zoom });
@@ -42,3 +43,5 @@ export const setSelectedAreaData = (data) => ({ type: SET_SELECTED_AREA_DATA, pa
 export const setHoveredAreaId = (id) => ({ type: SET_HOVERED_AREA_ID, payload: id });
 
 export const toggleMode = (mode) => ({ type: TOGGLE_MODE, payload: mode });
+
+export const setTags = (tags) => ({ type: SET_TAGS, payload: tags })

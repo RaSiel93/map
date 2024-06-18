@@ -11,6 +11,7 @@ import {
   loadAreasData,
   loadCompanies,
   loadPointsData,
+  loadTags
 } from 'store/thunks';
 
 const token = Cookies.get('csrf_token');
@@ -20,6 +21,7 @@ const App = (props) => {
     loadAreasData,
     loadPointsData,
     loadCompanies,
+    loadTags,
   } = props;
 
   const [latitude, setLatitude] = useState()
@@ -27,9 +29,10 @@ const App = (props) => {
   const [date, setDate] = useState(localStorage.getItem('date'))
 
   const reloadData = useCallback(() => {
-    loadAreasData();
-    // loadPointsData();
-    loadCompanies();
+    loadAreasData()
+    // loadPointsData()
+    loadCompanies()
+    loadTags()
   }, [])
 
   useDrag()
@@ -51,6 +54,7 @@ App.propTypes = {
   loadAreasData: PropTypes.func,
   loadPointsData: PropTypes.func,
   loadCompanies: PropTypes.func,
+  loadTags: PropTypes.func
 }
 
 export default connect(
@@ -60,5 +64,6 @@ export default connect(
     loadAreasData: () => dispatch(loadAreasData()),
     loadCompanies: () => dispatch(loadCompanies()),
     loadPointsData: () => dispatch(loadPointsData()),
+    loadTags: () => dispatch(loadTags())
   })
 )(App);

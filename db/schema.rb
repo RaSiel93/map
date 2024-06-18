@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_01_29_153622) do
+ActiveRecord::Schema.define(version: 2024_06_14_175519) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -108,15 +108,38 @@ ActiveRecord::Schema.define(version: 2023_01_29_153622) do
     t.index ["mother_id"], name: "index_people_on_mother_id"
   end
 
+  create_table "tag_keys", force: :cascade do |t|
+    t.string "name"
+    t.string "label"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "tag_values", force: :cascade do |t|
+    t.string "name"
+    t.string "label"
+    t.bigint "tag_key_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["tag_key_id"], name: "index_tag_values_on_tag_key_id"
+  end
+
   create_table "tags", force: :cascade do |t|
-    t.string "key"
-    t.string "value"
+    t.string "draft_key"
+    t.string "draft_value"
     t.bigint "area_id"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
+    t.bigint "tag_key_id", null: false
+    t.bigint "tag_value_id", null: false
     t.index ["area_id"], name: "index_tags_on_area_id"
+    t.index ["tag_key_id"], name: "index_tags_on_tag_key_id"
+    t.index ["tag_value_id"], name: "index_tags_on_tag_value_id"
   end
 
   add_foreign_key "areas", "companies"
   add_foreign_key "notes", "areas"
+  add_foreign_key "tag_values", "tag_keys"
+  add_foreign_key "tags", "tag_keys"
+  add_foreign_key "tags", "tag_values"
 end

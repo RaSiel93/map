@@ -2,12 +2,12 @@ class Area < ApplicationRecord
   has_many :notes
   has_many :people
   has_many :areas
-  has_many :tags
+  has_many :tags, dependent: :destroy
 
   belongs_to :area, optional: true
   belongs_to :company, optional: true
 
-  accepts_nested_attributes_for :tags
+  accepts_nested_attributes_for :tags, allow_destroy: true
 
   delegate :logo, to: :company, allow_nil: true
 
