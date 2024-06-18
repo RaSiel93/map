@@ -1,11 +1,11 @@
 ActiveAdmin.register Tag do
-  permit_params :key, :value, :area_id
+  permit_params :tag_key_id, :tag_value_id, :area_id
 
   index do
     id_column
     column :key
     column :value
-    column :area_id
+    column :area
     column :created_at
     column :updated_at
     actions
@@ -15,7 +15,7 @@ ActiveAdmin.register Tag do
     f.inputs "Tag" do
       f.input :key
       f.input :value
-      f.input :area_id
+      f.input :area
     end
 
     f.actions
