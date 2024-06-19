@@ -11,6 +11,6 @@ export const NavigateMode = (props) => {
   }
 
   return <>
-    <div onClick={onClick}>Абнавіць пачатковыя каардынаты</div>
+    <div onClick={onClick}>Абнавіць&nbsp;каардынаты</div>
   </>
 }

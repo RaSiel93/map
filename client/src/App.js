@@ -24,8 +24,10 @@ const token = Cookies.get('csrf_token')
 
 const Container = styled.div`
   display: flex;
-  // height: 100%;
-  height: 100vh;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 100%;
 
   .Main {
     flex-grow: 1;
