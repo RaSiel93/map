@@ -14,6 +14,7 @@ export {
   setHoveredAreaId,
   setTags,
   toggleMode,
+  toggleSidebar,
 } from './mainActions';
 
 export {

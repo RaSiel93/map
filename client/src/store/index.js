@@ -2,6 +2,8 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
 
+console.log('localStorage.getItem("sidebarExtended")', localStorage.getItem('sidebarExtended'))
+
 const initialState = {
   main: {
     mode: null,
@@ -13,6 +15,7 @@ const initialState = {
     hoveredAreaId: null,
     companies: [],
     pointCoordinates: null,
+    sidebarExtended: localStorage.getItem('sidebarExtended') == 'true',
   },
   modes: {
     area: {

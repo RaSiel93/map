@@ -1,15 +1,15 @@
 import { useState } from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
-import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, ImportMode, NavigateMode, DateMode } from 'components/modes'
-import { Filters } from 'components/menu'
+import { AreaMode, EditMode, PointMode, ShowMode, NoteMode, ImportMode, DateMode } from 'components/modes'
+
 import cx from 'classnames'
 
 import { NAVIGATION_COLLAPSE } from 'constants'
 
 const Container = styled.div`
   display: flex;
-  position: fixed;
+  position: absolute;
   bottom: 0;
   right: 0;
   background-color: #fff6;
@@ -69,7 +69,7 @@ const Container = styled.div`
   }
 `
 
-const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
+const Navigation = ({ date, setDate }) => {
   const [collapse, setCollapse] = useState(localStorage.getItem(NAVIGATION_COLLAPSE) === 'true')
 
   const onClick = () => {
@@ -90,13 +90,11 @@ const Navigation = ({ date, setDate, longitude, latitude, zoom }) => {
         <div className='Buttons-Wrapper'>
           <DateMode date={date} setDate={setDate}/>
           <ImportMode/>
-          <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
           <PointMode/>
           <ShowMode/>
           <EditMode/>
           <AreaMode/>
           <NoteMode/>
-          <Filters/>
           {/*<PersonMode*/}
         </div>
       </div>

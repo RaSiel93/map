@@ -15,6 +15,7 @@ export const SET_SELECTED_AREA_DATA = 'main/setSelectedAreaData';
 export const SET_HOVERED_AREA_ID = 'main/setHoveredAreaId';
 export const TOGGLE_MODE = 'main/toggleMode';
 export const SET_TAGS = 'main/setTags'
+export const TOGGLE_SIDEBAR = 'main/toggleSidebar'
 
 export const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiZmFld2ZhZXdmIiwiYSI6ImNsNHkyczJveTA5bXgzY282Y244NzZldTQifQ.e_xurgA24psxPjnR6sBHZA"
 

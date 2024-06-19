@@ -1,3 +1,4 @@
+import Cookies from 'js-cookie'
 import {
   SET_ZOOM,
   ADD_AREA_DATA,
@@ -14,6 +15,7 @@ import {
   SET_HOVERED_AREA_ID,
   TOGGLE_MODE,
   SET_TAGS,
+  TOGGLE_SIDEBAR,
 } from 'constants';
 
 export const mainReducer = (state = {}, action) => {
@@ -109,6 +111,14 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         tags: action.payload,
+      }
+    }
+    case TOGGLE_SIDEBAR: {
+      localStorage.setItem('sidebarExtended', !state.sidebarExtended)
+
+      return {
+        ...state,
+        sidebarExtended: !state.sidebarExtended
       }
     }
   }
