@@ -16,6 +16,7 @@ import {
   TOGGLE_MODE,
   SET_TAGS,
   TOGGLE_SIDEBAR,
+  SET_SEARCH,
 } from 'constants';
 
 export const mainReducer = (state = {}, action) => {
@@ -119,6 +120,12 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         sidebarExtended: !state.sidebarExtended
+      }
+    }
+    case SET_SEARCH: {
+      return {
+        ...state,
+        search: action.payload
       }
     }
   }

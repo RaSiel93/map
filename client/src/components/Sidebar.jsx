@@ -6,7 +6,7 @@ import cx from 'classnames'
 import { FILTER_START_DATE, FILTER_INFO, FILTER_TAGS } from 'constants'
 import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
-
+import { setSearch } from 'store/actions'
 
 const Container = styled.div`
   flex-basis: 0;
@@ -21,6 +21,9 @@ const Container = styled.div`
   }
 
   .Wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
     padding: 8px;
   }
 
@@ -46,7 +49,7 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, longitude, latitude, zoom }) => {
+const Sidebar = ({ sidebarExtended, tags, longitude, latitude, zoom, setSearch }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
   const [tagsFilter, setTagsFilter] = useState(safeParseJson(localStorage.getItem(FILTER_TAGS), []) || [])
@@ -86,10 +89,15 @@ const Sidebar = ({ sidebarExtended, tags, longitude, latitude, zoom }) => {
     localStorage.setItem(FILTER_INFO, !infoFilter)
   }
 
+  const onSearch = ({ target: { value }}) => {
+    setSearch(value)
+  }
+
   return (
     <Container className={cx('Sidebar', { active: sidebarExtended })}>
       <div className='Wrapper'>
         <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
+        <input className='Search' placeholder='Пошук' onChange={onSearch}></input>
         <div className="Filters">
           <div className='FilterGroup'>
             <div className="Filter">
@@ -135,6 +143,7 @@ export default connect(
     sidebarExtended: state.main.sidebarExtended
   }),
   (dispatch) => ({
+    setSearch: (value) => dispatch(setSearch(value))
   })
 )(Sidebar);
 

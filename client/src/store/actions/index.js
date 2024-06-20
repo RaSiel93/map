@@ -15,6 +15,7 @@ export {
   setTags,
   toggleMode,
   toggleSidebar,
+  setSearch,
 } from './mainActions';
 
 export {

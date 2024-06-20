@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { StaticMap } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
@@ -56,7 +56,8 @@ const Map = (props) => {
     setHoveredAreaId,
     addPoint,
     setLatitude,
-    setLongitude
+    setLongitude,
+    search,
   } = props;
 
   // const pointsLayer = new ScatterplotLayer({
@@ -202,6 +203,14 @@ const Map = (props) => {
     }
   }
 
+  const searchFilterAreas = useMemo(() => {
+    if (search) {
+      return (data || []).filter(({ notice, number }) => notice?.toLowerCase()?.includes(search.toLowerCase()) || number?.toLowerCase()?.includes(search.toLowerCase()))
+    } else {
+      return []
+    }
+  }, [search])
+
   const areasLayer = new PolygonLayer({
     id: 'polygon-layer',
     data,
@@ -317,6 +326,7 @@ const Map = (props) => {
     getBorderWidth: 1,
     getPixelOffset: [0, 0]
   })
+
 
 
   // const tagPointLayer = new ScatterplotLayer({
@@ -450,6 +460,30 @@ const Map = (props) => {
     }
   })
 
+  const scatterplotSearchFilterAreaPointsLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer3',
+    data: searchFilterAreas,
+    pickable: true,
+    opacity: 1,
+    stroked: true,
+    filled: true,
+    radiusScale: 1,
+    radiusMinPixels: 1,
+    radiusMaxPixels: 1000,
+    lineWidthMinPixels: 1,
+    // getPosition: d => d,
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    getRadius: d => (20 - zoom)**4/zoom/2,
+    getFillColor: () => [250, 250, 100],
+    getLineColor: () => [0, 0, 0],
+    onDragStart: (info, event) => {
+      console.log('onDragStart', info, event)
+    },
+    onDragEnd: (info, event) => {
+      console.log('onDragEnd', info, event)
+    }
+  });
+
   const onMapClick = (event) => {
     switch (mode) {
       case modes.AREA: {
@@ -487,6 +521,7 @@ const Map = (props) => {
     iconLayer,
     tagsLayer,
     titleLayer,
+    scatterplotSearchFilterAreaPointsLayer,
     // tagPointLayer
   ];
 
@@ -534,6 +569,7 @@ export default connect(
     selectedAreaData: state.main.selectedAreaData,
     hoveredAreaId: state.main.hoveredAreaId,
     newAreaPoints: state.modes.area.newAreaPoints,
+    search: state.main.search,
   }),
   (dispatch) => ({
     setZoom: (zoom) => dispatch(setZoom(zoom)),

@@ -16,6 +16,7 @@ const initialState = {
     companies: [],
     pointCoordinates: null,
     sidebarExtended: localStorage.getItem('sidebarExtended') == 'true',
+    search: ''
   },
   modes: {
     area: {
