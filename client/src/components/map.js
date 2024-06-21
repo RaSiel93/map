@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import { StaticMap } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
 import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY, FILTER_TAGS } from 'constants'
-import { safeParseJson, compareTags } from 'utils/helper'
+import { compareTags } from 'utils/helper'
 
 import {
   setLatitude,
@@ -63,6 +63,7 @@ const Map = (props) => {
     setLatitude,
     setLongitude,
     search,
+    selectedTags,
   } = props;
 
   // const pointsLayer = new ScatterplotLayer({
@@ -308,17 +309,17 @@ const Map = (props) => {
     background: true,
   });
 
-  const [tagsFilter, setTagsFilter] = useState(safeParseJson(localStorage.getItem(FILTER_TAGS), []) || [])
-
-  const tagFilteredAreas = (data || []).filter(({ tags }) => {
-    return tags.find(({ attributes: { key: { attributes: { name: keyName }}, value: { attributes: { name: keyValue }}} }) => {
-      return tagsFilter.some(compareTags(keyName, keyValue))
+  const tagSelectedAreas = useMemo(() => {
+    return (data || []).filter(({ tags }) => {
+      return tags.find(({ attributes: { key: { attributes: { name: keyName }}, value: { attributes: { name: keyValue }}} }) => {
+        return selectedTags.some(compareTags(keyName, keyValue))
+      })
     })
-  })
+  }, [data, selectedTags])
 
   const tagsLayer = new TextLayer({
     id: 'tags-layer',
-    data: tagFilteredAreas,
+    data: tagSelectedAreas,
     pickable: true,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getText: d => d.number,
@@ -331,8 +332,6 @@ const Map = (props) => {
     getBorderWidth: 1,
     getPixelOffset: [0, 0]
   })
-
-
 
   // const tagPointLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer22',
@@ -580,6 +579,7 @@ export default connect(
     hoveredAreaId: state.main.hoveredAreaId,
     newAreaPoints: state.modes.area.newAreaPoints,
     search: state.main.search,
+    selectedTags: state.main.selectedTags,
   }),
   (dispatch) => ({
     setLatitude: (latitude) => dispatch(setLatitude(latitude)),

@@ -1,8 +1,7 @@
-export const safeParseJson = (value, defaultValue) => {
+export const safeParseJson = (value) => {
   try {
-    return  JSON.parse(value)
+    return JSON.parse(value)
   } catch (e) {
-    return defaultValue
   }
 }
 

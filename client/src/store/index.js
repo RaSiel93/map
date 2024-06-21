@@ -2,6 +2,8 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
 import jsCookie from 'js-cookie'
+import { SELECTED_TAGS } from 'constants'
+import { safeParseJson } from 'utils/helper'
 
 const [latitude, longitude, zoom] = (jsCookie.get('_map_location') || '').split('|')
 
@@ -19,7 +21,9 @@ const initialState = {
     companies: [],
     pointCoordinates: null,
     sidebarExtended: localStorage.getItem('sidebarExtended') == 'true',
-    search: localStorage.getItem('search')
+    search: localStorage.getItem('search'),
+    tags: [],
+    selectedTags: safeParseJson(localStorage.getItem(SELECTED_TAGS)) || [],
   },
   modes: {
     area: {

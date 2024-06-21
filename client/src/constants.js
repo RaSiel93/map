@@ -17,6 +17,7 @@ export const SET_SELECTED_AREA_DATA = 'main/setSelectedAreaData';
 export const SET_HOVERED_AREA_ID = 'main/setHoveredAreaId';
 export const TOGGLE_MODE = 'main/toggleMode';
 export const SET_TAGS = 'main/setTags'
+export const SET_SELECTED_TAGS = 'main/setSelectedTags'
 export const TOGGLE_SIDEBAR = 'main/toggleSidebar'
 export const SET_SEARCH = 'main/setSearch'
 
@@ -50,9 +51,9 @@ export const DEBOUNCE_TIME = 300
 
 export const NAVIGATION_COLLAPSE = "navigation-collapse"
 export const FILTER_START_DATE = "filters.startDate"
-export const FILTER_CITY = "filters.city"
+// export const FILTER_CITY = "filters.city"
 export const FILTER_INFO = "filters.info"
-export const FILTER_TAGS = "filters.tags"
+export const SELECTED_TAGS = "selected.tags"
 
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
 

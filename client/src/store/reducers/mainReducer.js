@@ -17,8 +17,10 @@ import {
   SET_HOVERED_AREA_ID,
   TOGGLE_MODE,
   SET_TAGS,
+  SET_SELECTED_TAGS,
   TOGGLE_SIDEBAR,
   SET_SEARCH,
+  SELECTED_TAGS,
 } from 'constants';
 
 export const mainReducer = (state = {}, action) => {
@@ -126,6 +128,14 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         tags: action.payload,
+      }
+    }
+    case SET_SELECTED_TAGS: {
+      localStorage.setItem(SELECTED_TAGS, JSON.stringify(action.payload))
+
+      return {
+        ...state,
+        selectedTags: action.payload,
       }
     }
     case TOGGLE_SIDEBAR: {

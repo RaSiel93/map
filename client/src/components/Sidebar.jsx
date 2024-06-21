@@ -3,10 +3,10 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import cx from 'classnames'
 
-import { FILTER_START_DATE, FILTER_INFO, FILTER_TAGS } from 'constants'
+import { FILTER_START_DATE, FILTER_INFO, SELECTED_TAGS } from 'constants'
 import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
-import { setSearch } from 'store/actions'
+import { setSearch, setSelectedTags } from 'store/actions'
 
 const Container = styled.div`
   flex-basis: 0;
@@ -49,31 +49,15 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, search, setSearch }) => {
+const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSelectedTags }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
-  const [tagsFilter, setTagsFilter] = useState(safeParseJson(localStorage.getItem(FILTER_TAGS), []) || [])
 
   const toogleTagsFilter = (key, value) => {
-    if (tagsFilter.some(compareTags(key, value))) {
-      setTagsFilter((tags) => {
-        const filteredTags = [...tags.filter(([key2, value2]) => (key !== key2) || (value !== value2))]
-
-        localStorage.setItem(FILTER_TAGS, JSON.stringify(filteredTags))
-
-        return filteredTags
-      })
+    if (selectedTags.some(compareTags(key, value))) {
+      setSelectedTags([...selectedTags.filter(([key2, value2]) => (key !== key2) || (value !== value2))])
     } else {
-      setTagsFilter((tags) => {
-        const filteredTags = [
-          ...tags,
-          [key, value]
-        ]
-
-        localStorage.setItem(FILTER_TAGS, JSON.stringify(filteredTags))
-
-        return filteredTags
-      })
+      setSelectedTags([...selectedTags, [key, value]])
     }
   }
 
@@ -118,7 +102,7 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch }) => {
                       options.map(({ attributes: { name: value }}, index) => {
                         return (
                           <div key={index}>
-                            <input id={idFromTag(key, value)} type='checkbox' onChange={() => toogleTagsFilter(key, value)} checked={tagsFilter.some(compareTags(key, value))}></input>
+                            <input id={idFromTag(key, value)} type='checkbox' onChange={() => toogleTagsFilter(key, value)} checked={selectedTags.some(compareTags(key, value))}></input>
                             <label htmlFor={idFromTag(key, value)}>{value}</label>
                           </div>
                         )
@@ -140,10 +124,12 @@ export default connect(
     zoom: state.main.zoom,
     tags: state.main.tags,
     search: state.main.search,
+    selectedTags: state.main.selectedTags,
     sidebarExtended: state.main.sidebarExtended
   }),
   (dispatch) => ({
-    setSearch: (value) => dispatch(setSearch(value))
+    setSearch: (value) => dispatch(setSearch(value)),
+    setSelectedTags: (tags) => dispatch(setSelectedTags(tags))
   })
 )(Sidebar);
 

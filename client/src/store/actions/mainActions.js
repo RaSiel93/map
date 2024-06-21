@@ -16,6 +16,7 @@ import {
   SET_HOVERED_AREA_ID,
   TOGGLE_MODE,
   SET_TAGS,
+  SET_SELECTED_TAGS,
   TOGGLE_SIDEBAR,
   SET_SEARCH,
 } from 'constants'
@@ -51,6 +52,8 @@ export const setHoveredAreaId = (id) => ({ type: SET_HOVERED_AREA_ID, payload: i
 export const toggleMode = (mode) => ({ type: TOGGLE_MODE, payload: mode })
 
 export const setTags = (tags) => ({ type: SET_TAGS, payload: tags })
+
+export const setSelectedTags = (tags) => ({ type: SET_SELECTED_TAGS, payload: tags })
 
 export const toggleSidebar = () => ({ type: TOGGLE_SIDEBAR })
 
