@@ -84,8 +84,6 @@ const App = (props) => {
     loadTags,
   } = props;
 
-  const [latitude, setLatitude] = useState()
-  const [longitude, setLongitude] = useState()
   const [date, setDate] = useState(localStorage.getItem('date'))
 
   const reloadData = useCallback(() => {
@@ -103,7 +101,7 @@ const App = (props) => {
 
   return token && (
     <Container>
-      <Sidebar longitude={longitude} latitude={latitude}/>
+      <Sidebar/>
       <div className='Main'>
         <div>
           <div className={cx("Sidebar-Button", { active: sidebarExtended })} onClick={toggleSidebar}>
@@ -113,7 +111,7 @@ const App = (props) => {
           </div>
           <Information date={date}/>
         </div>
-        <Map setLatitude={setLatitude} setLongitude={setLongitude}/>
+        <Map/>
         <Navigation date={date} setDate={setDate}/>
       </div>
     </Container>

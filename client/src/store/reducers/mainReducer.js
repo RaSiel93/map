@@ -1,5 +1,7 @@
 import Cookies from 'js-cookie'
 import {
+  SET_LATITUDE,
+  SET_LONGITUDE,
   SET_ZOOM,
   ADD_AREA_DATA,
   ADD_POINT,
@@ -21,6 +23,18 @@ import {
 
 export const mainReducer = (state = {}, action) => {
   switch (action.type) {
+    case SET_LATITUDE: {
+      return {
+        ...state,
+        latitude: action.payload,
+      }
+    }
+    case SET_LONGITUDE: {
+      return {
+        ...state,
+        longitude: action.payload,
+      }
+    }
     case SET_ZOOM: {
       return {
         ...state,

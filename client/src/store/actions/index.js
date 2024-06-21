@@ -1,4 +1,6 @@
 export {
+  setLatitude,
+  setLongitude,
   setZoom,
   setAreasData,
   setCompanies,

@@ -49,7 +49,7 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, longitude, latitude, zoom, setSearch }) => {
+const Sidebar = ({ sidebarExtended, tags, setSearch }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
   const [tagsFilter, setTagsFilter] = useState(safeParseJson(localStorage.getItem(FILTER_TAGS), []) || [])
@@ -96,7 +96,6 @@ const Sidebar = ({ sidebarExtended, tags, longitude, latitude, zoom, setSearch }
   return (
     <Container className={cx('Sidebar', { active: sidebarExtended })}>
       <div className='Wrapper'>
-        <NavigateMode longitude={longitude} latitude={latitude} zoom={zoom}/>
         <input className='Search' placeholder='Пошук' onChange={onSearch}></input>
         <div className="Filters">
           <div className='FilterGroup'>

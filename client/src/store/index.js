@@ -1,13 +1,16 @@
 import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
+import jsCookie from 'js-cookie'
 
-console.log('localStorage.getItem("sidebarExtended")', localStorage.getItem('sidebarExtended'))
+const [latitude, longitude, zoom] = (jsCookie.get('_map_location') || '').split('|')
 
 const initialState = {
   main: {
     mode: null,
-    zoom: null,
+    latitude: +latitude,
+    longitude: +longitude,
+    zoom: +zoom,
     areasData: [],
     companiesData: [],
     pointsData: [],

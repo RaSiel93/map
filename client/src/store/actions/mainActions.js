@@ -1,4 +1,6 @@
 import {
+  SET_LATITUDE,
+  SET_LONGITUDE,
   SET_ZOOM,
   ADD_AREA_DATA,
   REMOVE_AREA_DATA,
@@ -18,6 +20,8 @@ import {
   SET_SEARCH,
 } from 'constants'
 
+export const setLatitude = (zoom) => ({ type: SET_LATITUDE, payload: zoom })
+export const setLongitude = (zoom) => ({ type: SET_LONGITUDE, payload: zoom })
 export const setZoom = (zoom) => ({ type: SET_ZOOM, payload: zoom })
 
 export const setAreasData = (areasData) => ({ type: SET_AREAS_DATA, payload: areasData })

@@ -6,6 +6,8 @@ import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, 
 import { safeParseJson, compareTags } from 'utils/helper'
 
 import {
+  setLatitude,
+  setLongitude,
   setZoom,
   setSelectedAreaData,
   setHoveredAreaId,
@@ -21,6 +23,7 @@ import {
   PolygonLayer,
   IconLayer,
 } from '@deck.gl/layers';
+import jsCookie from 'js-cookie'
 
 const convertHexToRGBA = (hexCode, opacity = 1) => {
   let hex = hexCode.replace('#', '');
@@ -43,6 +46,8 @@ const convertHexToRGBA = (hexCode, opacity = 1) => {
 
 const Map = (props) => {
   const {
+    latitude,
+    longitude,
     mode,
     zoom,
     areasData,
@@ -502,15 +507,15 @@ const Map = (props) => {
         }
       }
     }
-  };
+  }
 
   const initialViewState = {
-    longitude: +localStorage.getItem('longitude') || 27.878700,
-    latitude: +localStorage.getItem('latitude') || 53.868718,
-    zoom: +localStorage.getItem('zoom') || 6.4,
+    longitude: longitude || 27.878700,
+    latitude: latitude || 53.868718,
+    zoom: zoom || 6.4,
     pitch: 0,
     bearing: 0
-  };
+  }
 
   const layers = [
     // pointsLayer,
@@ -523,7 +528,7 @@ const Map = (props) => {
     titleLayer,
     scatterplotSearchFilterAreaPointsLayer,
     // tagPointLayer
-  ];
+  ]
 
   const controller = { dragPan: true }
 
@@ -533,8 +538,10 @@ const Map = (props) => {
 
   const onViewStateChange = ({ viewState: { zoom, longitude, latitude } }) => {
     setZoom(zoom)
-    setLongitude(longitude)
     setLatitude(latitude)
+    setLongitude(longitude)
+
+    jsCookie.set('_map_location', `${latitude}|${longitude}|${zoom}`)
     {/*setHoveredAreaId(null);*/}
     {/*refreshAreas();*/}
   }
@@ -562,8 +569,12 @@ const Map = (props) => {
 
 export default connect(
   (state) => ({
-    mode: state.main.mode,
+    latitude: state.main.latitude,
+    longitude: state.main.longitude,
     zoom: state.main.zoom,
+    mode: state.main.mode,
+    longitude: state.main.longitude,
+    latitude: state.main.latitude,
     areasData: state.main.areasData,
     pointsData: state.main.pointsData,
     selectedAreaData: state.main.selectedAreaData,
@@ -572,10 +583,12 @@ export default connect(
     search: state.main.search,
   }),
   (dispatch) => ({
+    setLatitude: (latitude) => dispatch(setLatitude(latitude)),
+    setLongitude: (longitude) => dispatch(setLongitude(longitude)),
     setZoom: (zoom) => dispatch(setZoom(zoom)),
     setSelectedAreaData: (data) => dispatch(setSelectedAreaData(data)),
     setHoveredAreaId: (id) => dispatch(setHoveredAreaId(id)),
     addNewAreaPointForAreaMode: (coordinates) => dispatch(addNewAreaPointForAreaMode(coordinates)),
     addPoint: (coordinates) => dispatch(addPoint(coordinates)),
   })
-)(Map);
+)(Map)

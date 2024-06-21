@@ -1,5 +1,7 @@
 export const API_URL = process.env.REACT_APP_API_URL || ''
 
+export const SET_LATITUDE = 'main/setLatitude';
+export const SET_LONGITUDE = 'main/setLongitude';
 export const SET_ZOOM = 'main/setZoom';
 export const SET_AREAS_DATA = 'main/setAreasData';
 export const SET_COMPANIES = 'main/setCompanies';
