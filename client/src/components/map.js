@@ -214,7 +214,7 @@ const Map = (props) => {
     } else {
       return []
     }
-  }, [search])
+  }, [data, search])
 
   const areasLayer = new PolygonLayer({
     id: 'polygon-layer',
@@ -473,14 +473,13 @@ const Map = (props) => {
     stroked: true,
     filled: true,
     radiusScale: 1,
-    radiusMinPixels: 1,
+    radiusMinPixels: 8,
     radiusMaxPixels: 1000,
-    lineWidthMinPixels: 1,
+    lineWidthMinPixels: 2,
     // getPosition: d => d,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
-    getRadius: d => (20 - zoom)**4/zoom/2,
-    getFillColor: () => [250, 250, 100],
-    getLineColor: () => [0, 0, 0],
+    getFillColor: () => [60, 150, 255],
+    getLineColor: () => [255, 255, 255],
     onDragStart: (info, event) => {
       console.log('onDragStart', info, event)
     },

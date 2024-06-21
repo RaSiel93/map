@@ -19,7 +19,7 @@ const initialState = {
     companies: [],
     pointCoordinates: null,
     sidebarExtended: localStorage.getItem('sidebarExtended') == 'true',
-    search: ''
+    search: localStorage.getItem('search')
   },
   modes: {
     area: {

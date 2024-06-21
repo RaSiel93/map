@@ -71,4 +71,34 @@ export const Modal = styled(ReactModalAdapter)`
     opacity: 0.3;
   }
 
+  .Remove {
+    background-color: #f44336;
+    color: #fff;
+    border-color: #f00;
+    width: fit-content;
+    flex-grow: 0;
+
+    &:hover {
+      background-color: #e43326;
+    }
+  }
+
+  .Dates {
+    display: flex;
+
+    input {
+      flex-grow: 1;
+    }
+  }
+
+  .Actions {
+    display: flex;
+  }
+
+  button {
+    cursor: pointer;
+    padding: 4px;
+    flex-grow: 1;
+  }
+]
 `

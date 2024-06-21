@@ -268,7 +268,7 @@ const EditModeModal = (props) => {
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
         ></input>
       </div>
-      <div>
+      <div className='Dates'>
         <input
           id='startAt'
           type='date'
@@ -277,8 +277,6 @@ const EditModeModal = (props) => {
           onChange={(e) => { setStartAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
         ></input>
-      </div>
-      <div>
         <input
           id='endAt'
           type='date'
@@ -301,6 +299,7 @@ const EditModeModal = (props) => {
               <Tag key={index}>
                 <Select
                   className='TagKey'
+                  menuPlacement='top'
                   value={tagKeyOption}
                   onChange={(option) => onTagKeyChange(index, option)}
                   options={tagKeyOptions}
@@ -308,6 +307,7 @@ const EditModeModal = (props) => {
                 />
                 <Select
                   className='TagValue'
+                  menuPlacement='top'
                   value={tagValueOption}
                   onChange={(option) => onTagValueChange(index, option)}
                   options={tagValueOptions}
@@ -346,10 +346,10 @@ const EditModeModal = (props) => {
         cols='50'
         rows='10'
       ></textarea> */}
-      <button onClick={handleRemoveArea}>Выдаліць</button>
-      <button onClick={handleUpdateArea}>
-        Прыняць
-      </button>
+      <div className='Actions'>
+        <button className='Remove' onClick={handleRemoveArea}>Выдаліць</button>
+        <button onClick={handleUpdateArea}>Прыняць</button>
+      </div>
     </Modal>
   } else {
     return <Modal

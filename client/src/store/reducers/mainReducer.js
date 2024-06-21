@@ -137,6 +137,8 @@ export const mainReducer = (state = {}, action) => {
       }
     }
     case SET_SEARCH: {
+      localStorage.setItem('search', action.payload)
+
       return {
         ...state,
         search: action.payload

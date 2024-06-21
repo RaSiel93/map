@@ -49,7 +49,7 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, setSearch }) => {
+const Sidebar = ({ sidebarExtended, tags, search, setSearch }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
   const [tagsFilter, setTagsFilter] = useState(safeParseJson(localStorage.getItem(FILTER_TAGS), []) || [])
@@ -96,7 +96,7 @@ const Sidebar = ({ sidebarExtended, tags, setSearch }) => {
   return (
     <Container className={cx('Sidebar', { active: sidebarExtended })}>
       <div className='Wrapper'>
-        <input className='Search' placeholder='Пошук' onChange={onSearch}></input>
+        <input className='Search' placeholder='Пошук' value={search} onChange={onSearch}></input>
         <div className="Filters">
           <div className='FilterGroup'>
             <div className="Filter">
@@ -139,6 +139,7 @@ export default connect(
   (state) => ({
     zoom: state.main.zoom,
     tags: state.main.tags,
+    search: state.main.search,
     sidebarExtended: state.main.sidebarExtended
   }),
   (dispatch) => ({
