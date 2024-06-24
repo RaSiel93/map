@@ -23,7 +23,7 @@ module Api
       end
 
       def create
-        date = params[:date] ? Time.new(params[:date]) : Time.zone.now
+        date = params[:date].present? ? Time.new(params[:date]) : Time.zone.now
         area = Area.create(area_params.merge(start_at: date))
 
         area.update_max_zoom
