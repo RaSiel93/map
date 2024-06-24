@@ -272,7 +272,7 @@ const EditModeModal = (props) => {
         <input
           id='startAt'
           type='date'
-          value={startAt ? (new Date(startAt)).toISOString().split('T')[0] : ''}
+          value={startAt ? (new Date(startAt)).toLocaleString('sv').split(' ')[0] : ''}
           placeholder='Дата пачатку'
           onChange={(e) => { setStartAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
@@ -280,7 +280,7 @@ const EditModeModal = (props) => {
         <input
           id='endAt'
           type='date'
-          value={endAt ? (new Date(endAt)).toISOString().split('T')[0] : ''}
+          value={endAt ? (new Date(endAt)).toLocaleString('sv').split(' ')[0] : ''}
           placeholder='Дата сканчэньня'
           onChange={(e) => { setEndAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
