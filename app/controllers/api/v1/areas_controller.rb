@@ -4,11 +4,11 @@ module Api
       def index
         date = params[:date].present? ? Time.new(params[:date]) : Time.zone.now
         zoom = params[:zoom] || 1
-        startDate = params[:startDate] === "true"
+        start_date = params[:startDate] === "true"
 
         areas = Area.where(hidden: false)
 
-        areas = if (startDate)
+        areas = if (start_date)
           areas.where("start_at is null OR start_at <= ?", date)
         else
           areas.where("start_at <= ?", date)
@@ -17,7 +17,7 @@ module Api
         areas = areas
           .where("end_at is null OR end_at > ?", date)
           .where("max_zoom > ?", zoom)
-          .includes(:company).includes(:tags)
+          .includes(:company).includes(tags: [:key, :value])
 
         render json: AreasSerializer.new(areas).serializable_hash.to_json
       end

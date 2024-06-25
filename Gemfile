@@ -12,6 +12,7 @@ gem 'puma', '~> 5.0'
 gem 'rack-cors'
 gem 'rails', '~> 6.1.4', '>= 6.1.4.4'
 gem 'sass-rails', require: false
+gem 'active_model_serializers', '~> 0.10.0'
 
 group :development do
   gem 'capistrano', '~> 3.11'
