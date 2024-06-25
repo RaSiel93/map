@@ -2,16 +2,16 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        date = params[:date] ? Time.new(params[:date]) : Time.zone.now
+        date = params[:date].present? ? Time.new(params[:date]) : Time.zone.now
         zoom = params[:zoom] || 1
         startDate = params[:startDate] === "true"
 
         areas = Area.where(hidden: false)
 
         areas = if (startDate)
-          areas.where("start_at is null OR start_at < ?", date)
+          areas.where("start_at is null OR start_at <= ?", date)
         else
-          areas.where("start_at < ?", date)
+          areas.where("start_at <= ?", date)
         end
 
         areas = areas

@@ -8,3 +8,5 @@ export const safeParseJson = (value) => {
 export const compareTags = (key, value) => ([key2, value2]) => {
   return key === key2 && value === value2
 }
+
+export const formatInputDate = (date) => (date && (new Date(date)).toLocaleDateString('en-CA'))

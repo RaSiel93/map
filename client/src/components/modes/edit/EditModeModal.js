@@ -16,6 +16,7 @@ import {
 } from 'store/actions'
 import { areaToPolygonObject } from 'services/deckGl'
 import styled from 'styled-components'
+import { formatInputDate } from 'utils/helper'
 
 const ENTER_KEY = 'Enter'
 
@@ -272,7 +273,7 @@ const EditModeModal = (props) => {
         <input
           id='startAt'
           type='date'
-          value={startAt ? (new Date(startAt)).toLocaleString('sv').split(' ')[0] : ''}
+          value={formatInputDate(startAt)}
           placeholder='Дата пачатку'
           onChange={(e) => { setStartAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
@@ -280,7 +281,7 @@ const EditModeModal = (props) => {
         <input
           id='endAt'
           type='date'
-          value={endAt ? (new Date(endAt)).toLocaleString('sv').split(' ')[0] : ''}
+          value={formatInputDate(endAt)}
           placeholder='Дата сканчэньня'
           onChange={(e) => { setEndAt(e.target.value) }}
           onKeyDown={({ key }) => (key === ENTER_KEY) && handleUpdateArea()}
