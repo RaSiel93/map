@@ -1,5 +1,3 @@
-class CompanySerializer
-  include JSONAPI::Serializer
-
-  attributes :name, :number, :notice, :area_id
+class CompanySerializer < ActiveModel::Serializer
+  attributes :id, :name, :number, :notice, :area_id
 end

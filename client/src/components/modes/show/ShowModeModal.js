@@ -129,7 +129,7 @@ export const ShowModeModal = (props) => {
     toggleMode,
     setSelectedAreaData,
     areasData,
-  } = props;
+  } = props
 
   const [area, setArea] = useState(null);
   const [firstName, setFirstName] = useState('');
@@ -153,9 +153,9 @@ export const ShowModeModal = (props) => {
     resetFields();
 
     setCompanyOptions([
-      { value: '', label: 'Месца працы' },
+      { value: '', label: 'Мейсца працы' },
       ...companies.map(company => (
-        { value: company.id, label: company.attributes.name }
+        { value: company.id, label: company.name }
       ))
     ]);
   }, []);
@@ -168,17 +168,15 @@ export const ShowModeModal = (props) => {
         area_id: area.id,
         company_id: companyId,
       }
-    };
-    const person = await createPerson(params);
+    }
+
+    const person = await createPerson(params)
 
     setArea({
       ...area,
-      attributes: {
-        ...area.attributes,
-        people: [...area.attributes.people, person],
-        added_people_count: area.attributes.added_people_count + 1,
-      }
-    });
+      people: [...area.people, person],
+      added_people_count: area.added_people_count + 1,
+    })
 
     resetFields();
   }
@@ -187,33 +185,27 @@ export const ShowModeModal = (props) => {
     const params = {
       title: childAreaTitle,
       area_id: id,
-    };
-    const child = await createArea(params);
+    }
+    const child = await createArea(params)
 
-    addAreaData(areaToPolygonObject(child));
+    addAreaData(areaToPolygonObject(child))
 
     setArea({
       ...area,
-      attributes: {
-        ...area.attributes,
-        areas: [...area.attributes.areas, child],
-      }
-    });
-    setChildAreaTitle('');
+      areas: [...area.areas, child]
+    })
+    setChildAreaTitle('')
   }
 
   const handleRemoveArea = async (id) => {
     if (window.confirm("Вы ўпэўнены, што жадаеце выдаліць аб'ект?")) {
-      const child = await removeArea(id);
+      const child = await removeArea(id)
 
       setArea({
         ...area,
-        attributes: {
-          ...area.attributes,
-          areas: area.attributes.areas.filter(({ id }) => id !== child.id),
-        }
-      });
-      removeAreaData(child.id);
+        areas: area.areas.filter(({ id }) => id !== child.id)
+      })
+      removeAreaData(child.id)
     }
   }
 
@@ -228,24 +220,22 @@ export const ShowModeModal = (props) => {
   }, [id]);
 
   const changeArea = (id) => {
-    setArea(null);
-    resetFields();
-    setSelectedAreaData(areasData.find((areaData) => (areaData.id === id)));
+    setArea(null)
+    resetFields()
+    setSelectedAreaData(areasData.find((areaData) => (areaData.id === id)))
   }
 
   if (area) {
     const {
-      attributes: {
-        title,
-        description,
-        notes,
-        added_people_count,
-        people_count,
-        estimated_people_count,
-        people,
-        parent,
-        areas,
-      }
+      title,
+      description,
+      notes,
+      added_people_count,
+      people_count,
+      estimated_people_count,
+      people,
+      parent,
+      areas,
     } = area;
 
     return <Modal
@@ -258,7 +248,7 @@ export const ShowModeModal = (props) => {
       </div>
       {
         description && <Description>
-          <h3>Апісанне:</h3>
+          <h3>Апісаньне:</h3>
           <p>
             {description.split(/\n/).map((line, index) => {
               return <span key={index}>{line}</span>;
@@ -272,7 +262,7 @@ export const ShowModeModal = (props) => {
           <ul>
             {
               notes.map((note) => {
-                const { attributes: { id, text } } = note;
+                const { id, text } = note
 
                 return <li key={id}>{text}</li>
               })
@@ -284,25 +274,25 @@ export const ShowModeModal = (props) => {
         <h3>Насельніцтва:</h3>
         <div>
           <h5 htmlFor='peopleCount'>
-            Колькасць жыхароў: ({added_people_count}/{people_count}/{estimated_people_count})
+            Колькасьць жыхароў: ({added_people_count}/{people_count}/{estimated_people_count})
           </h5>
         </div>
         {
           people.length > 0 && <table>
             <tbody>
               <tr>
-                <th>Прозвішча</th>
+                <th>Прозьвішча</th>
                 <th>Імя</th>
-                <th>Месца працы</th>
+                <th>Мейсца працы</th>
               </tr>
               {
                 people.map((person) => {
-                  const { attributes: { id, first_name, last_name, company } } = person;
+                  const { id, first_name, last_name, company } = person
 
                   return <tr key={id}>
                     <td>{last_name}</td>
                     <td>{first_name}</td>
-                    <td>{company?.attributes?.name || ''}</td>
+                    <td>{company?.name || ''}</td>
                   </tr>
                 })
               }
@@ -313,7 +303,7 @@ export const ShowModeModal = (props) => {
           <input
             id='lastName'
             value={lastName}
-            placeholder='Прозвішча'
+            placeholder='Прозьвішча'
             onChange={(e) => { setLastName(e.target.value) }}
             onKeyDown={({ key }) => (key === ENTER_KEY) && handleCreatePerson()}
           ></input>
@@ -335,11 +325,11 @@ export const ShowModeModal = (props) => {
       </People>
       {
         parent && <Areas>
-          <h3>Знешні аб&apos;ект:</h3>
+          <h3>Зьнешні абьект:</h3>
           <div className='areas'>
             {
               [parent].map((area) => {
-                const { attributes: { id, title } } = area;
+                const { id, title } = area;
 
                 return <a key={id} onClick={() => changeArea(id)}>
                   {
@@ -352,12 +342,12 @@ export const ShowModeModal = (props) => {
         </Areas>
       }
       <Areas>
-        <h3>Унутранныя аб&apos;екты:</h3>
+        <h3>Унутраныя абьекты:</h3>
         {
           areas.length > 0 && <div className='areas'>
             {
               areas.map((area) => {
-                const { attributes: { id, title } } = area;
+                const { id, title } = area;
 
                 return <a key={id} onClick={() => changeArea(id)}>
                   {

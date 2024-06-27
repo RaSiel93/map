@@ -19,7 +19,9 @@ module Api
           .where("max_zoom > ?", zoom)
           .includes(:company).includes(tags: [:key, :value])
 
-        render json: AreasSerializer.new(areas).serializable_hash.to_json
+        # render json: AreasSerializer.new(areas).serializable_hash.to_json
+        # render json: areas, include: %w[tags.key tags.value], exclude: %w[notes areas person]
+        render json: areas, include: %w[tags.key tags.value], fields: %i[id title description max_zoom area_id people_count logo_url longitude latitude start_at end_at color coordinates]
       end
 
       def create
@@ -29,13 +31,16 @@ module Api
         area.update_max_zoom
         area.update_coordinate
 
-        render json: serialize(area)
+        render json: area, include: %w[tags.key tags.value]
       end
 
       def show
-        area = Area.find(params[:id])
+        area = Area.includes(people: :company).find(params[:id])
 
-        render json: serialize(area)
+        # render json: area, include: %w[tags.key tags.value people.company area], fields: %i[id title description max_zoom area_id
+        #   people_count logo_url longitude latitude start_at end_at color notes areas]
+
+        render json: area, include: %w[tags.key tags.value people.company parent]
       end
 
       def update
@@ -56,7 +61,7 @@ module Api
         area.update_max_zoom
         area.update_coordinate
 
-        render json: serialize(area)
+        render json: area, include: %w[tags.key tags.value]
       end
 
       def destroy
@@ -64,7 +69,7 @@ module Api
 
         area.destroy
 
-        render json: serialize(area)
+        render json: area
       end
 
       private
@@ -75,10 +80,6 @@ module Api
           coordinates: [],
           tags_attributes: [:id, :area_id, :tag_key_id, :tag_value_id, :_destroy]
         )
-      end
-
-      def serialize(records, options = {})
-        AreaSerializer.new(records).serializable_hash.to_json
       end
     end
   end

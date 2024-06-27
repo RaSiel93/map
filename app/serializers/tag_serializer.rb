@@ -1,13 +1,6 @@
-class TagSerializer
-  include JSONAPI::Serializer
-
+class TagSerializer < ActiveModel::Serializer
   attributes :id, :area_id
 
-  attribute :key do |tag|
-    TagKeySerializer.new(tag.key).as_json["data"]
-  end
-
-  attribute :value do |tag|
-    TagValueSerializer.new(tag.value).as_json["data"]
-  end
+  belongs_to :key
+  belongs_to :value
 end

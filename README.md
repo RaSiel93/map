@@ -49,3 +49,13 @@ Things you may want to cover:
 725ms (Views: 0.1ms | ActiveRecord: 320.7ms | Allocations: 588835)
 479ms (Views: 0.3ms | ActiveRecord: 47.0ms | Allocations: 584751)
 574ms (Views: 0.1ms | ActiveRecord: 153.7ms | Allocations: 585309)
+
+
+##### coordinates
+id: 232
+### Before
+12ms (Views: 7.6ms | ActiveRecord: 0.8ms | Allocations: 12367)
+11ms (Views: 7.4ms | ActiveRecord: 0.6ms | Allocations: 12354)
+10ms (Views: 6.7ms | ActiveRecord: 0.6ms | Allocations: 12363)
+26ms (Views: 21.0ms | ActiveRecord: 0.9ms | Allocations: 12385)
+11ms (Views: 6.7ms | ActiveRecord: 0.7ms | Allocations: 12375)

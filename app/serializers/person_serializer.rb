@@ -1,9 +1,5 @@
-class PersonSerializer
-  include JSONAPI::Serializer
-
+class PersonSerializer < ActiveModel::Serializer
   attributes :id, :first_name, :last_name, :middle_name, :birth_at, :notice
 
-  attribute :company do |person|
-    CompanySerializer.new(person.company).as_json["data"]
-  end
+  belongs_to :company
 end

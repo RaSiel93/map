@@ -2,9 +2,9 @@ module Api
   module V1
     class TagsController < ApplicationController
       def index
-        tags = TagKey.includes(:options)
+        tags = Tag.includes(:key, :value)
 
-        render json: TagKeysSerializer.new(tags).serializable_hash.to_json
+        render json: tags
       end
     end
   end

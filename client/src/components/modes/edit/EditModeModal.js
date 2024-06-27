@@ -3,7 +3,6 @@ import PropTypes from 'prop-types'
 import Select from 'react-select/creatable'
 import { SpinnerCircular } from 'spinners-react'
 import { connect } from 'react-redux'
-import dayjs from 'dayjs'
 
 import { Modal } from 'components/common/Modal'
 import { modes } from 'constants'
@@ -93,21 +92,16 @@ const EditModeModal = (props) => {
     setCompanyOptions([
       { value: '', label: 'Знаходзіцца кампанія' },
       ...companies.map(company => (
-        { value: +company.id, label: company.attributes.name }
+        { value: +company.id, label: company.name }
       ))
     ])
 
     setTagKeyOptions([
-      ...tags.map(({ attributes: { id, name }}) => {
-        // const label = `${key}:${value}`
-
-        return { value: id, label: name }
-      })
+      ...tags.map(({ id, name }) => ({ value: id, label: name }))
     ])
-    // debugger
     setTagValuesOptions([
-      ...tags.map(({ attributes: { id, name, options }}) => {
-        return { id: id, options: [...options.map(({ attributes: { id, name, label } }) => ({ value: id, label: name }))] }
+      ...tags.map(({ id, name, options }) => {
+        return { id: id, options: [...options.map(({ id, name, label }) => ({ value: id, label: name }))] }
       })
     ])
   }, [areasData, companies, tags])
@@ -116,11 +110,11 @@ const EditModeModal = (props) => {
     toggleMode(modes.EDIT)
   }
 
-  const extractTags = ({ attributes: { id, area_id, key: { attributes: { id: keyId }}, value: { attributes: { id: valueId }} } }) => ({ id, area_id, tag_key_id: keyId, tag_value_id: valueId })
-  
+  const extractTags = ({ id, area_id, key: { id: keyId }, value: { id: valueId } }) => ({ id, area_id, tag_key_id: keyId, tag_value_id: valueId })
+
   useEffect(async () => {
     const area = await getArea(id)
-    const { attributes: { title, description, area_id, people_count, company_id, start_at, end_at, tags }} = area
+    const { title, description, area_id, people_count, company_id, start_at, end_at, tags } = area
 
     setArea(area)
 

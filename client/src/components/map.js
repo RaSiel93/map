@@ -106,21 +106,21 @@ const Map = (props) => {
   //   }
   // });
 
-  const data = areasData.filter(({ maxZoom, tags }) => {
-    const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+  const data = areasData.filter(({ id, maxZoom, tags }) => {
+    const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
 
     if (adminLevelTag) {
-      if (adminLevelTag.attributes.value === "2") {
+      if (adminLevelTag.value.name === "2") {
         return zoom < 6.0
-      } else if (adminLevelTag.attributes.value === "4") {
+      } else if (adminLevelTag.value.name === "4") {
         return zoom < 7.0 && zoom > 6.0
-      } else if (adminLevelTag.attributes.value === "6") {
+      } else if (adminLevelTag.value.name === "6") {
         return zoom < 10 && zoom > 7.0
-      } else if (adminLevelTag.attributes.value === "8") {
+      } else if (adminLevelTag.value.name === "8") {
         return zoom < 11 && zoom > 10.0
-      } else if (adminLevelTag.attributes.value === "9") {
+      } else if (adminLevelTag.value.name === "9") {
         return zoom < 14 && zoom > 11.0
-      } else if (adminLevelTag.attributes.value === "10") {
+      } else if (adminLevelTag.value.name === "10") {
         return zoom < 14 && zoom > 11.0
       } else {
         return maxZoom > zoom
@@ -155,25 +155,25 @@ const Map = (props) => {
     let resultElevation = 0
   //   let hoverMultiplier = 1
 
-    const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+    const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
 
     if (adminLevelTag) {
-      if (adminLevelTag.attributes.value === "2") {
+      if (adminLevelTag.value.name === "2") {
         resultElevation = 5000
         // hoverMultiplier = 5
-      } else if (adminLevelTag.attributes.value === "4") {
+      } else if (adminLevelTag.value.name === "4") {
         resultElevation = 1600
         // hoverMultiplier = 4
-      } else if (adminLevelTag.attributes.value === "6") {
+      } else if (adminLevelTag.value.name === "6") {
         resultElevation = 500
         // hoverMultiplier = 3
-      } else if (adminLevelTag.attributes.value === "8") {
+      } else if (adminLevelTag.value.name === "8") {
         resultElevation = 200
         // hoverMultiplier = 2
-      } else if (adminLevelTag.attributes.value === "9") {
+      } else if (adminLevelTag.value.name === "9") {
         resultElevation = 100
         // hoverMultiplier = 1.5
-      } else if (adminLevelTag.attributes.value === "10") {
+      } else if (adminLevelTag.value.name === "10") {
         resultElevation = 100
         // hoverMultiplier = 1.5
       } else {
@@ -271,20 +271,21 @@ const Map = (props) => {
   });
 
   const textData = data.filter(({ tags, maxZoom }) => {
-    const adminLevelTag = tags.find(({ attributes: { key, value }}) => key === 'admin_level')
+    const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
 
     if (adminLevelTag) {
-      if (adminLevelTag.attributes.value === "2") {
+      // debugger
+      if (adminLevelTag.value.name === "2") {
         return zoom < 6.0
-      } else if (adminLevelTag.attributes.value === "4") {
+      } else if (adminLevelTag.value.name === "4") {
         return zoom < 7.0 && zoom > 6.0
-      } else if (adminLevelTag.attributes.value === "6") {
+      } else if (adminLevelTag.value.name === "6") {
         return zoom < 10 && zoom > 7.0
-      } else if (adminLevelTag.attributes.value === "8") {
+      } else if (adminLevelTag.value.name === "8") {
         return zoom < 11 && zoom > 10.0
-      } else if (adminLevelTag.attributes.value === "9") {
+      } else if (adminLevelTag.value.name === "9") {
         return zoom < 14 && zoom > 11.0
-      } else if (adminLevelTag.attributes.value === "10") {
+      } else if (adminLevelTag.value.name === "10") {
         return zoom < 14 && zoom > 11.0
       } else {
         // return maxZoom > zoom
@@ -311,7 +312,7 @@ const Map = (props) => {
 
   const tagSelectedAreas = useMemo(() => {
     return (data || []).filter(({ tags }) => {
-      return tags.find(({ attributes: { key: { attributes: { name: keyName }}, value: { attributes: { name: keyValue }}} }) => {
+      return tags.find(({ key: { name: keyName }, value: { name: keyValue }}) => {
         return selectedTags.some(compareTags(keyName, keyValue))
       })
     })

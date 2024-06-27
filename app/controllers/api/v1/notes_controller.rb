@@ -2,13 +2,13 @@ module Api
   module V1
     class NotesController < ApplicationController
       def index
-        render json: serialize(Note.all)
+        render json: Note.all
       end
 
       def create
         note = Note.create(note_params)
 
-        render json: serialize(note)
+        render json: note
       end
 
       def destroy
@@ -16,17 +16,13 @@ module Api
 
         note.destroy
 
-        render json: serialize(note)
+        render json: note
       end
 
       private
 
       def note_params
         @note_params ||= params.require(:note).permit(:text, :area_id)
-      end
-
-      def serialize(records, options = {})
-        NoteSerializer.new(records, options).serializable_hash.to_json
       end
     end
   end

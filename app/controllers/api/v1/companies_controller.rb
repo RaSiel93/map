@@ -2,13 +2,13 @@ module Api
   module V1
     class CompaniesController < ApplicationController
       def index
-        render json: serialize(Company.all)
+        render json: Company.all
       end
 
       def create
         company = Company.create(company_params)
 
-        render json: serialize(company)
+        render json: company
       end
 
       def destroy
@@ -16,19 +16,13 @@ module Api
 
         company.destroy
 
-        render json: serialize(company)
+        render json: company
       end
 
       private
 
       def company_params
-        @company_params ||= params.require(:company).permit(
-          :name, :number, :notice, :area_id
-        )
-      end
-
-      def serialize(records, options = {})
-        CompanySerializer.new(records, options).serializable_hash.to_json
+        @company_params ||= params.require(:company).permit(:name, :number, :notice, :area_id)
       end
     end
   end

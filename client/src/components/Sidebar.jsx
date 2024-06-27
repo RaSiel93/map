@@ -93,13 +93,13 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSe
             </div>
           </div>
           {
-            tags && tags.map(({ attributes: { name: key, options } }, index) => {
+            tags && tags.map(({ name: key, options }, index) => {
               return (
                 <div className='FilterGroup' key={index}>
                   <div className='FilterGroupKey'>{key}</div>
                   <div className='FilterGroupValues'>
                     {
-                      options.map(({ attributes: { name: value }}, index) => {
+                      options.map(({ name: value }, index) => {
                         return (
                           <div key={index}>
                             <input id={idFromTag(key, value)} type='checkbox' onChange={() => toogleTagsFilter(key, value)} checked={selectedTags.some(compareTags(key, value))}></input>

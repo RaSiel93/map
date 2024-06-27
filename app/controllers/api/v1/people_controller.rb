@@ -2,13 +2,13 @@ module Api
   module V1
     class PeopleController < ApplicationController
       def index
-        render json: serialize(Person.includes(:company, :area))
+        render json: Person.includes(:company, :area)
       end
 
       def create
         person = Person.create(person_params)
 
-        render json: serialize(person)
+        render json: person
       end
 
       def destroy
@@ -16,7 +16,7 @@ module Api
 
         person.destroy
 
-        render json: serialize(person)
+        render json: person
       end
 
       private
@@ -26,10 +26,6 @@ module Api
           :first_name, :last_name, :middle_name, :birth_at,
           :notice, :area_id, :company_id
         )
-      end
-
-      def serialize(records, options = {})
-        PersonSerializer.new(records, options).serializable_hash.to_json
       end
     end
   end
