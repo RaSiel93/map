@@ -24,6 +24,7 @@ const initialState = {
     search: localStorage.getItem('search'),
     tags: [],
     selectedTags: safeParseJson(localStorage.getItem(SELECTED_TAGS)) || [],
+    mapStyle: localStorage.getItem('mapStyle')
   },
   modes: {
     area: {

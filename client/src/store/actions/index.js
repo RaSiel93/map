@@ -19,6 +19,7 @@ export {
   toggleMode,
   toggleSidebar,
   setSearch,
+  setMapStyle,
 } from './mainActions';
 
 export {

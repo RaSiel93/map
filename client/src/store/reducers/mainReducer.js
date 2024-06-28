@@ -21,6 +21,7 @@ import {
   TOGGLE_SIDEBAR,
   SET_SEARCH,
   SELECTED_TAGS,
+  SET_MAP_STYLE,
 } from 'constants';
 
 export const mainReducer = (state = {}, action) => {
@@ -152,6 +153,14 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         search: action.payload
+      }
+    }
+    case SET_MAP_STYLE: {
+      localStorage.setItem('mapStyle', action.payload)
+
+      return {
+        ...state,
+        mapStyle: action.payload
       }
     }
   }

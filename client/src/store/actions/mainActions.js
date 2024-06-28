@@ -19,6 +19,7 @@ import {
   SET_SELECTED_TAGS,
   TOGGLE_SIDEBAR,
   SET_SEARCH,
+  SET_MAP_STYLE,
 } from 'constants'
 
 export const setLatitude = (zoom) => ({ type: SET_LATITUDE, payload: zoom })
@@ -58,3 +59,5 @@ export const setSelectedTags = (tags) => ({ type: SET_SELECTED_TAGS, payload: ta
 export const toggleSidebar = () => ({ type: TOGGLE_SIDEBAR })
 
 export const setSearch = (value) => ({ type: SET_SEARCH, payload: value })
+
+export const setMapStyle = (style) => ({ type: SET_MAP_STYLE, payload: style })

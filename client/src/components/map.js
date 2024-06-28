@@ -65,6 +65,7 @@ const Map = (props) => {
     setLongitude,
     search,
     selectedTags,
+    mapStyle,
   } = props;
 
   // const pointsLayer = new ScatterplotLayer({
@@ -559,10 +560,16 @@ const Map = (props) => {
       onViewStateChange={onViewStateChange}
       getCursor={getCursor}
     >
-      <StaticMap
-        mapStyle="mapbox://styles/mapbox/satellite-v9"
-        mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
-      />
+      {
+        mapStyle == 'satellite' ? (
+          <StaticMap
+            mapStyle={"mapbox://styles/mapbox/satellite-v9"}
+            mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}
+          />
+        ) : (
+          <StaticMap mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN}/>
+        )
+      }
     </DeckGL>
   )
 }
@@ -582,6 +589,7 @@ export default connect(
     newAreaPoints: state.modes.area.newAreaPoints,
     search: state.main.search,
     selectedTags: state.main.selectedTags,
+    mapStyle: state.main.mapStyle
   }),
   (dispatch) => ({
     setLatitude: (latitude) => dispatch(setLatitude(latitude)),

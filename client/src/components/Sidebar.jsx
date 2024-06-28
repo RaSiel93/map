@@ -6,7 +6,7 @@ import cx from 'classnames'
 import { FILTER_START_DATE, FILTER_INFO, FILTER_COMPANY, SELECTED_TAGS } from 'constants'
 import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
-import { setSearch, setSelectedTags } from 'store/actions'
+import { setMapStyle, setSearch, setSelectedTags } from 'store/actions'
 
 const Container = styled.div`
   flex-basis: 0;
@@ -49,7 +49,7 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSelectedTags }) => {
+const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSelectedTags, setMapStyle, mapStyle }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
   const [companyFilter, setCompanyFilter] = useState(localStorage.getItem(FILTER_COMPANY) === 'true')
@@ -79,6 +79,10 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSe
     localStorage.setItem(FILTER_COMPANY, !companyFilter)
   }
 
+  const changeMapStyle = () => {
+    setMapStyle(mapStyle === 'satellite' ? null : 'satellite')
+  }
+
   const onSearch = ({ target: { value }}) => {
     setSearch(value)
   }
@@ -100,6 +104,10 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSe
             <div className="Filter">
               <input type="checkbox" id="company" checked={companyFilter} onChange={changeCompanyFilter}/>
               <label htmlFor="company">Кампаніі</label>
+            </div>
+            <div className="Filter">
+              <input type="checkbox" id="mapStyle" checked={mapStyle === 'satellite'} onChange={changeMapStyle}/>
+              <label htmlFor="mapStyle">Спутнік</label>
             </div>
           </div>
           {
@@ -135,11 +143,13 @@ export default connect(
     tags: state.main.tags,
     search: state.main.search,
     selectedTags: state.main.selectedTags,
-    sidebarExtended: state.main.sidebarExtended
+    sidebarExtended: state.main.sidebarExtended,
+    mapStyle: state.main.mapStyle,
   }),
   (dispatch) => ({
     setSearch: (value) => dispatch(setSearch(value)),
-    setSelectedTags: (tags) => dispatch(setSelectedTags(tags))
+    setSelectedTags: (tags) => dispatch(setSelectedTags(tags)),
+    setMapStyle: (style) => dispatch(setMapStyle(style))
   })
 )(Sidebar);
 
