@@ -19,8 +19,10 @@ export const TOGGLE_MODE = 'main/toggleMode';
 export const SET_TAGS = 'main/setTags'
 export const SET_SELECTED_TAGS = 'main/setSelectedTags'
 export const TOGGLE_SIDEBAR = 'main/toggleSidebar'
-export const SET_SEARCH = 'main/setSearch'
+export const SET_SEARCH_QUERY = 'main/setSearchQuery'
+export const SET_SEARCH_RESULT = 'main/setSearchResult'
 export const SET_MAP_STYLE = 'main/setMapStyle'
+export const SET_DATE = 'main/setDate'
 
 export const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZmFld2ZhZXdmIiwiYSI6ImNsNHkyczJveTA5bXgzY282Y244NzZldTQifQ.e_xurgA24psxPjnR6sBHZA'
 

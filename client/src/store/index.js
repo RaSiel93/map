@@ -21,7 +21,9 @@ const initialState = {
     companies: [],
     pointCoordinates: null,
     sidebarExtended: localStorage.getItem('sidebarExtended') == 'true',
-    search: localStorage.getItem('search'),
+    searchQuery: localStorage.getItem('searchQuery'),
+    searchResult: [],
+    date: localStorage.getItem('date'),
     tags: [],
     selectedTags: safeParseJson(localStorage.getItem(SELECTED_TAGS)) || [],
     mapStyle: localStorage.getItem('mapStyle')

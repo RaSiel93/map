@@ -63,7 +63,7 @@ const Map = (props) => {
     addPoint,
     setLatitude,
     setLongitude,
-    search,
+    searchResult,
     selectedTags,
     mapStyle,
   } = props;
@@ -210,14 +210,6 @@ const Map = (props) => {
       setHoveredAreaId(object?.id);
     }
   }
-
-  const searchFilterAreas = useMemo(() => {
-    if (search) {
-      return (data || []).filter(({ notice, number }) => notice?.toLowerCase()?.includes(search.toLowerCase()) || number?.toLowerCase()?.includes(search.toLowerCase()))
-    } else {
-      return []
-    }
-  }, [data, search])
 
   const areasLayer = new PolygonLayer({
     id: 'polygon-layer',
@@ -433,10 +425,10 @@ const Map = (props) => {
     getFillColor: () => [250, 250, 100],
     getLineColor: () => [0, 0, 0],
     onDragStart: (info, event) => {
-      console.log('onDragStart', info, event)
+      // console.log('onDragStart', info, event)
     },
     onDragEnd: (info, event) => {
-      console.log('onDragEnd', info, event)
+      // console.log('onDragEnd', info, event)
     }
   });
 
@@ -469,7 +461,7 @@ const Map = (props) => {
 
   const scatterplotSearchFilterAreaPointsLayer = new ScatterplotLayer({
     id: 'scatterplot-layer3',
-    data: searchFilterAreas,
+    data: searchResult,
     pickable: true,
     opacity: 1,
     stroked: true,
@@ -483,10 +475,10 @@ const Map = (props) => {
     getFillColor: () => [60, 150, 255],
     getLineColor: () => [255, 255, 255],
     onDragStart: (info, event) => {
-      console.log('onDragStart', info, event)
+      // console.log('onDragStart', info, event)
     },
     onDragEnd: (info, event) => {
-      console.log('onDragEnd', info, event)
+      // console.log('onDragEnd', info, event)
     }
   });
 
@@ -587,9 +579,9 @@ export default connect(
     selectedAreaData: state.main.selectedAreaData,
     hoveredAreaId: state.main.hoveredAreaId,
     newAreaPoints: state.modes.area.newAreaPoints,
-    search: state.main.search,
+    searchResult: state.main.searchResult,
     selectedTags: state.main.selectedTags,
-    mapStyle: state.main.mapStyle
+    mapStyle: state.main.mapStyle,
   }),
   (dispatch) => ({
     setLatitude: (latitude) => dispatch(setLatitude(latitude)),

@@ -18,8 +18,10 @@ export {
   setSelectedTags,
   toggleMode,
   toggleSidebar,
-  setSearch,
+  setSearchQuery,
+  setSearchResult,
   setMapStyle,
+  setDate,
 } from './mainActions';
 
 export {

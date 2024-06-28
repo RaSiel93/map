@@ -14,6 +14,7 @@ Rails.application.routes.draw do
       resources :load, only: %i[index create update destroy]
       resources :tag_keys, only: %i[index]
       resources :tags, only: %i[index]
+      resources :search, only: %i[index]
     end
   end
 

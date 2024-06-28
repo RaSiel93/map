@@ -19,10 +19,12 @@ import {
   SET_TAGS,
   SET_SELECTED_TAGS,
   TOGGLE_SIDEBAR,
-  SET_SEARCH,
+  SET_SEARCH_QUERY,
   SELECTED_TAGS,
   SET_MAP_STYLE,
+  SET_DATE,
 } from 'constants';
+import { SET_SEARCH_RESULT } from 'constants';
 
 export const mainReducer = (state = {}, action) => {
   switch (action.type) {
@@ -147,12 +149,18 @@ export const mainReducer = (state = {}, action) => {
         sidebarExtended: !state.sidebarExtended
       }
     }
-    case SET_SEARCH: {
-      localStorage.setItem('search', action.payload)
+    case SET_SEARCH_QUERY: {
+      localStorage.setItem('searchQuery', action.payload)
 
       return {
         ...state,
-        search: action.payload
+        searchQuery: action.payload
+      }
+    }
+    case SET_SEARCH_RESULT: {
+      return {
+        ...state,
+        searchResult: action.payload
       }
     }
     case SET_MAP_STYLE: {
@@ -161,6 +169,14 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         mapStyle: action.payload
+      }
+    }
+    case SET_DATE: {
+      localStorage.setItem('date', action.payload)
+
+      return {
+        ...state,
+        date: action.payload
       }
     }
   }

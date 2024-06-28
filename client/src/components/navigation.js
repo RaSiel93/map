@@ -69,7 +69,7 @@ const Container = styled.div`
   }
 `
 
-const Navigation = ({ date, setDate }) => {
+const Navigation = () => {
   const [collapse, setCollapse] = useState(localStorage.getItem(NAVIGATION_COLLAPSE) === 'true')
 
   const onClick = () => {
@@ -88,7 +88,7 @@ const Navigation = ({ date, setDate }) => {
       </div>
       <div className='Buttons'>
         <div className='Buttons-Wrapper'>
-          <DateMode date={date} setDate={setDate}/>
+          <DateMode/>
           <ImportMode/>
           <PointMode/>
           <ShowMode/>

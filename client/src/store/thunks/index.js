@@ -3,6 +3,7 @@ export {
   loadCompanies,
   loadPointsData,
   loadTags,
+  search,
 } from './mainThunks';
 
 export {

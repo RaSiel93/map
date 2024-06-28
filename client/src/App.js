@@ -13,11 +13,13 @@ import {
   loadAreasData,
   loadCompanies,
   loadPointsData,
-  loadTags
+  loadTags,
+  search,
 } from 'store/thunks'
 
 import {
   toggleSidebar,
+  setDate,
 } from 'store/actions'
 
 const token = Cookies.get('csrf_token')
@@ -82,9 +84,13 @@ const App = (props) => {
     loadPointsData,
     loadCompanies,
     loadTags,
+    search,
+    setDate,
+    date,
+    searchQuery,
   } = props;
 
-  const [date, setDate] = useState(localStorage.getItem('date'))
+  // const [date, setDate] = useState(localStorage.getItem('date'))
 
   const reloadData = useCallback(() => {
     loadAreasData()
@@ -92,6 +98,10 @@ const App = (props) => {
     loadCompanies()
     loadTags()
   }, [])
+
+  useEffect(() => {
+    search(searchQuery)
+  }, [searchQuery, date])
 
   useDrag()
 
@@ -112,7 +122,7 @@ const App = (props) => {
           <Information date={date}/>
         </div>
         <Map/>
-        <Navigation date={date} setDate={setDate}/>
+        <Navigation/>
       </div>
     </Container>
   )
@@ -127,13 +137,17 @@ App.propTypes = {
 
 export default connect(
   (state) => ({
-    sidebarExtended: state.main.sidebarExtended
+    sidebarExtended: state.main.sidebarExtended,
+    searchQuery: state.main.searchQuery,
+    date: state.main.date,
   }),
   (dispatch) => ({
     loadAreasData: () => dispatch(loadAreasData()),
     loadCompanies: () => dispatch(loadCompanies()),
     loadPointsData: () => dispatch(loadPointsData()),
     loadTags: () => dispatch(loadTags()),
-    toggleSidebar: () => dispatch(toggleSidebar())
+    toggleSidebar: () => dispatch(toggleSidebar()),
+    setDate: () => dispatch(setDate()),
+    search: (value) => dispatch(search(value)),
   })
 )(App);

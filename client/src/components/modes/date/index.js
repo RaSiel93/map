@@ -1,5 +1,10 @@
 import styled from 'styled-components';
+import { connect } from 'react-redux'
 import dayjs from 'dayjs'
+
+import {
+  setDate,
+} from 'store/actions'
 
 const Container = styled('div')`
   align-items: center;
@@ -81,4 +86,11 @@ const DateMode = ({ date, setDate }) => {
   </Container>
 }
 
-export default DateMode
+export default connect(
+  (state) => ({
+    date: state.main.date,
+  }),
+  (dispatch) => ({
+    setDate: (date) => dispatch(setDate(date))
+  })
+)(DateMode);

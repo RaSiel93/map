@@ -1,6 +1,6 @@
 import { client } from 'api/client';
 import { areaToPolygonObject, pointToScatterplotObject } from 'services/deckGl';
-import { setAreasData, setCompanies, setPointsData, setTags } from 'store/actions';
+import { setAreasData, setCompanies, setPointsData, setTags, setSearchResult } from 'store/actions';
 import Cookies from 'js-cookie';
 
 import { API_URL } from 'constants'
@@ -54,3 +54,14 @@ export const loadTags = () => (dispatch) => {
     })
 }
 
+export const search = () => (dispatch) => {
+  client.get(`${API_URL}/api/v1/search.json`, { withCredentials: true, params: { q: localStorage.getItem('searchQuery'), date: localStorage.getItem('date') }})
+    .then(response => {
+      dispatch(setSearchResult(response.data));
+    })
+    .catch((response) => {
+      console.log(response);
+
+      return [];
+    })
+}

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 import cx from 'classnames'
@@ -6,7 +6,7 @@ import cx from 'classnames'
 import { FILTER_START_DATE, FILTER_INFO, FILTER_COMPANY, SELECTED_TAGS } from 'constants'
 import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
-import { setMapStyle, setSearch, setSelectedTags } from 'store/actions'
+import { setMapStyle, setSearchQuery, setSelectedTags } from 'store/actions'
 
 const Container = styled.div`
   flex-basis: 0;
@@ -49,7 +49,7 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSelectedTags, setMapStyle, mapStyle }) => {
+const Sidebar = ({ sidebarExtended, tags, search, setSearchQuery, searchQuery, date, selectedTags, setSelectedTags, setMapStyle, mapStyle }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
   const [companyFilter, setCompanyFilter] = useState(localStorage.getItem(FILTER_COMPANY) === 'true')
@@ -84,13 +84,13 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSe
   }
 
   const onSearch = ({ target: { value }}) => {
-    setSearch(value)
+    setSearchQuery(value)
   }
 
   return (
     <Container className={cx('Sidebar', { active: sidebarExtended })}>
       <div className='Wrapper'>
-        <input className='Search' placeholder='Пошук' value={search} onChange={onSearch}></input>
+        <input className='Search' placeholder='Пошук' value={searchQuery} onChange={onSearch}></input>
         <div className="Filters">
           <div className='FilterGroup'>
             <div className="Filter">
@@ -141,15 +141,16 @@ export default connect(
   (state) => ({
     zoom: state.main.zoom,
     tags: state.main.tags,
-    search: state.main.search,
+    searchQuery: state.main.searchQuery,
     selectedTags: state.main.selectedTags,
     sidebarExtended: state.main.sidebarExtended,
     mapStyle: state.main.mapStyle,
+    date: state.main.date,
   }),
   (dispatch) => ({
-    setSearch: (value) => dispatch(setSearch(value)),
+    setSearchQuery: (value) => dispatch(setSearchQuery(value)),
     setSelectedTags: (tags) => dispatch(setSelectedTags(tags)),
-    setMapStyle: (style) => dispatch(setMapStyle(style))
+    setMapStyle: (style) => dispatch(setMapStyle(style)),
   })
 )(Sidebar);
 
