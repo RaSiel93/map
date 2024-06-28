@@ -21,7 +21,7 @@ export const SET_SELECTED_TAGS = 'main/setSelectedTags'
 export const TOGGLE_SIDEBAR = 'main/toggleSidebar'
 export const SET_SEARCH = 'main/setSearch'
 
-export const MAPBOX_ACCESS_TOKEN = "pk.eyJ1IjoiZmFld2ZhZXdmIiwiYSI6ImNsNHkyczJveTA5bXgzY282Y244NzZldTQifQ.e_xurgA24psxPjnR6sBHZA"
+export const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZmFld2ZhZXdmIiwiYSI6ImNsNHkyczJveTA5bXgzY282Y244NzZldTQifQ.e_xurgA24psxPjnR6sBHZA'
 
 export const ADD_NEW_AREA_POINT_FOR_AREA_MODE = 'modes/addNewAreaPoint';
 export const RESET_NEW_AREA_POINTS_FOR_AREA_MODE = 'modes/resetNewAreaPoints';
@@ -49,11 +49,12 @@ export const requestStatuses = {
 
 export const DEBOUNCE_TIME = 300
 
-export const NAVIGATION_COLLAPSE = "navigation-collapse"
-export const FILTER_START_DATE = "filters.startDate"
-// export const FILTER_CITY = "filters.city"
-export const FILTER_INFO = "filters.info"
-export const SELECTED_TAGS = "selected.tags"
+export const NAVIGATION_COLLAPSE = 'navigation-collapse'
+export const FILTER_START_DATE = 'filters.startDate'
+// export const FILTER_CITY = 'filters.city'
+export const FILTER_INFO = 'filters.info'
+export const FILTER_COMPANY = 'filters.company'
+export const SELECTED_TAGS = 'selected.tags'
 
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
 

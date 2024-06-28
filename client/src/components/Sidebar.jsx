@@ -3,7 +3,7 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import cx from 'classnames'
 
-import { FILTER_START_DATE, FILTER_INFO, SELECTED_TAGS } from 'constants'
+import { FILTER_START_DATE, FILTER_INFO, FILTER_COMPANY, SELECTED_TAGS } from 'constants'
 import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
 import { setSearch, setSelectedTags } from 'store/actions'
@@ -52,6 +52,7 @@ const Container = styled.div`
 const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSelectedTags }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
+  const [companyFilter, setCompanyFilter] = useState(localStorage.getItem(FILTER_COMPANY) === 'true')
 
   const toogleTagsFilter = (key, value) => {
     if (selectedTags.some(compareTags(key, value))) {
@@ -73,6 +74,11 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSe
     localStorage.setItem(FILTER_INFO, !infoFilter)
   }
 
+  const changeCompanyFilter = () => {
+    setCompanyFilter(!companyFilter)
+    localStorage.setItem(FILTER_COMPANY, !companyFilter)
+  }
+
   const onSearch = ({ target: { value }}) => {
     setSearch(value)
   }
@@ -90,6 +96,10 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearch, selectedTags, setSe
             <div className="Filter">
               <input type="checkbox" id="info" checked={infoFilter} onChange={changeInfoFilter}/>
               <label htmlFor="info">Інфармацыя</label>
+            </div>
+            <div className="Filter">
+              <input type="checkbox" id="company" checked={companyFilter} onChange={changeCompanyFilter}/>
+              <label htmlFor="company">Кампаніі</label>
             </div>
           </div>
           {

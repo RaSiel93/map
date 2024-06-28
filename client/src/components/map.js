@@ -24,6 +24,7 @@ import {
   IconLayer,
 } from '@deck.gl/layers';
 import jsCookie from 'js-cookie'
+import { FILTER_COMPANY } from 'constants'
 
 const convertHexToRGBA = (hexCode, opacity = 1) => {
   let hex = hexCode.replace('#', '');
@@ -438,7 +439,7 @@ const Map = (props) => {
     }
   });
 
-  const iconData = areasData.filter((area) => area.logoUrl)
+  const iconData = (localStorage.getItem(FILTER_COMPANY) === 'true') ? areasData.filter((area) => area.logoUrl) : []
 
   const iconLayer = new IconLayer({
     id: 'icon-layer',

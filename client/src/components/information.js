@@ -1,6 +1,7 @@
 import { connect } from 'react-redux'
 import styled from 'styled-components'
 import cx from 'classnames'
+import { FILTER_INFO } from 'constants'
 
 const Container = styled.div`
   position: absolute;
@@ -53,7 +54,7 @@ const Information = ({ zoom, date, selectedAreaData }) => {
     <Container className={cx({ active: selectedAreaData })}>
       <div className='Info'>
         {
-          (localStorage.getItem('filters.info') === 'true') && (
+          (localStorage.getItem(FILTER_INFO) === 'true') && (
             <p>
               zoom: {zoom}
             </p>
