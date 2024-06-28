@@ -1,3 +1,7 @@
+# Create Castle tags
+Area.where(company: Company.find_by(name: 'Замак')).each {|a| a.tags.create(key: TagKey.find_by(name: 'пабудова'), value: TagValue.find_by(name: 'замак'))}
+Area.where(company: Company.find_by(name: 'Замак')).update_all(company_id: nil)
+
 # README
 
 This README would normally document whatever steps are necessary to get the

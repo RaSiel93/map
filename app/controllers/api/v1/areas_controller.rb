@@ -6,6 +6,7 @@ module Api
         zoom = params[:zoom] || 1
         start_date = params[:startDate] === "true"
 
+        # cached_areas = Rails.cache.fetch("test-#{date.year}") do
         areas = Area.where(hidden: false)
 
         areas = if (start_date)
@@ -19,9 +20,10 @@ module Api
           .where("max_zoom > ?", zoom)
           .includes(:company).includes(tags: [:key, :value])
 
-        # render json: AreasSerializer.new(areas).serializable_hash.to_json
-        # render json: areas, include: %w[tags.key tags.value], exclude: %w[notes areas person]
-        render json: areas, include: %w[tags.key tags.value], fields: %i[id title description max_zoom area_id people_count logo_url longitude latitude start_at end_at color coordinates]
+        cached_areas = render_to_string json: areas, include: %w[tags.key tags.value], fields: %i[id title description max_zoom area_id people_count logo_url longitude latitude start_at end_at color coordinates]
+        # end
+
+        render json: cached_areas
       end
 
       def create
