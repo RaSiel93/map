@@ -58,7 +58,7 @@ class KmlParser
       .map { |coordinate| "[#{coordinate}]"}
 
     [{
-      title: data.xpath("//xmlns:description")[0].content.gsub(/.+<br>/, ''),
+      title: data.xpath("//xmlns:description")[0]&.content&.gsub(/.+<br>/, ''),
       coordinates: coordinates,
       description: "KML exported"
     }]
