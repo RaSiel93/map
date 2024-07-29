@@ -6,6 +6,7 @@ class AreasImportService
 
   def initialize(file)
     @file = file
+
     @parser = case file.content_type
     when OSM_FORMAT
       OsmParser.new

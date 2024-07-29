@@ -10,3 +10,5 @@ export const compareTags = (key, value) => ([key2, value2]) => {
 }
 
 export const formatInputDate = (date) => (date && (new Date(date)).toLocaleDateString('en-CA'))
+
+export const formatInputDatetime = (datetime) => (datetime?.replace(/\..+/, ''))

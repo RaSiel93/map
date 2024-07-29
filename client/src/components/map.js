@@ -109,7 +109,7 @@ const Map = (props) => {
   // });
 
   const data = areasData.filter(({ id, maxZoom, tags }) => {
-    const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
+    const adminLevelTag = tags.find(({ key: { label }}) => label === 'admin_level')
 
     if (adminLevelTag) {
       if (adminLevelTag.value.name === "2") {
@@ -133,7 +133,13 @@ const Map = (props) => {
   })
 
   const getFillColor = ({ id, areaId, peopleCount, addedPeopleCount, color }) => {
-    let fillColor = null;
+    let fillColor, defaultColor = null;
+
+    if (mapStyle == 'satellite') {
+      defaultColor = [200, 250, 200, 65.5]
+    } else {
+      defaultColor = [0, 0, 0, 125]
+    }
 
     if (selectedAreaData?.id === id) {
       fillColor = [255, 204, 0, 205];
@@ -143,7 +149,7 @@ const Map = (props) => {
     //   color = [100, 250, 250, 65.5];
     // } else {
       // [100, 250, 100, 65.5]
-      fillColor = color ? convertHexToRGBA(color, 0.9) : [200, 250, 200, 65.5];
+      fillColor = color ? convertHexToRGBA(color, 0.5) : defaultColor;
     }
 
     if (hoveredAreaId === id) {
@@ -157,11 +163,11 @@ const Map = (props) => {
     let resultElevation = 0
   //   let hoverMultiplier = 1
 
-    const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
+    const adminLevelTag = tags.find(({ key: { label }}) => label === 'admin_level')
 
     if (adminLevelTag) {
       if (adminLevelTag.value.name === "2") {
-        resultElevation = 5000
+        resultElevation = 3000
         // hoverMultiplier = 5
       } else if (adminLevelTag.value.name === "4") {
         resultElevation = 1600
