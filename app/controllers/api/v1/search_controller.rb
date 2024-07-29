@@ -2,7 +2,7 @@ module Api
   module V1
     class SearchController < ApplicationController
       def index
-        date = params[:date].present? ? Time.zone.parse(params[:date]) : Time.zone.now
+        date = params[:date].present? ? params[:date] : Time.zone.now
 
         areas = if params[:q].present?
           Area.where(hidden: false).left_joins(:company, tags: [:key, :value])

@@ -2,7 +2,7 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        date = params[:date].present? ? Time.zone.parse(params[:date]) : Time.zone.now
+        date = params[:date].present? ? params[:date] : Time.zone.now
         zoom = params[:zoom] || 1
         start_date = params[:startDate] === "true"
 
@@ -27,7 +27,7 @@ module Api
       end
 
       def create
-        date = params[:date].present? ? Time.zone.parse(params[:date]) : nil
+        date = params[:date].present? ? params[:date] : nil
         area = Area.create(area_params.merge(start_at: date))
 
         area.update_max_zoom
@@ -47,7 +47,7 @@ module Api
 
       def update
         area = Area.find(params[:id])
-        date = params[:date] ? Time.zone.parse(params[:date]) : Time.zone.now
+        date = params[:date] ? params[:date] : Time.zone.now
 
         if (area.start_at === nil || !area_params['coordinates'] || date.year === area.start_at.year)
           area.update(area_params)
