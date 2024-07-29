@@ -2,7 +2,7 @@ module Api
   module V1
     class AreasController < ApplicationController
       def index
-        date = params[:date].present? ? params[:date] : Time.zone.now
+        date = params[:date].present? ? Time.zone.parse(params[:date]) : Time.zone.now
         zoom = params[:zoom] || 1
         start_date = params[:startDate] === "true"
 
