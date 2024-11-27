@@ -3,6 +3,7 @@ Rails.application.routes.draw do
   ActiveAdmin.routes(self)
 
   root 'home#index'
+  get '/health', to: 'health_check#show'
 
   namespace :api do
     namespace :v1 do
