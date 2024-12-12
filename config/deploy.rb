@@ -18,7 +18,7 @@ append :linked_files, "config/database.yml", 'config/master.key', '.env'
 
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "tmp/webpacker", ".bundle", "public/system", "files/system", "public/uploads", "vendor", "storage"
 
-set :keep_releases, 5
+set :keep_releases, 3
 
 set :pty, true
 set :use_sudo, false
