@@ -54,9 +54,10 @@ module Api
         else
           area = Area.create(area_params.merge(
             title: area.title,
+            description: area.description,
             start_at: date,
             color: area.color,
-            tags_attributes: area.tags.map { |tag| tag.attributes.slice('key', 'value') }
+            tags_attributes: area.tags.map { |tag| tag.attributes.slice('tag_key_id', 'tag_value_id') }
           ))
         end
 
