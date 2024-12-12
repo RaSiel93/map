@@ -6,6 +6,7 @@
     "deploy": "cp -a client/build/. public/",
     "deploy-force": "yarn build && yarn deploy && git add -A && git commit -m 'create build' && git push origin master && cap production deploy"
   },
+  "license": "MIT",
   "dependencies": {
     "lodash": "^4.17.21"
   }

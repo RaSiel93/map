@@ -24,7 +24,7 @@ export const createAreaForAreaMode = (params) => (dispatch) => {
     .then((response) => {
       dispatch(toggleMode(modes.AREA));
       dispatch(resetNewAreaPointsForAreaMode());
-      dispatch(addAreaData(areaToPolygonObject(response.data.data)));
+      dispatch(addAreaData(areaToPolygonObject(response.data)));
     })
     .catch((error) => {
       console.log(error);
@@ -45,7 +45,7 @@ export const updateAreaForAreaMode = (id, params) => (dispatch) => {
     .then((response) => {
       dispatch(toggleMode(modes.AREA));
       dispatch(resetNewAreaPointsForAreaMode());
-      dispatch(updateAreaData(areaToPolygonObject(response.data.data)));
+      dispatch(updateAreaData(areaToPolygonObject(response.data)));
     })
     .catch((error) => {
       console.log(error);
