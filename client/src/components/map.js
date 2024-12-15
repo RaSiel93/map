@@ -476,6 +476,7 @@ const Map = (props) => {
     radiusMinPixels: 8,
     radiusMaxPixels: 1000,
     lineWidthMinPixels: 2,
+    getText: d => d.description,
     // getPosition: d => d,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getFillColor: () => [60, 150, 255],
