@@ -467,7 +467,7 @@ const Map = (props) => {
 
   const scatterplotSearchFilterAreaPointsLayer = new ScatterplotLayer({
     id: 'scatterplot-layer3',
-    data: searchResult,
+    data: searchResult.map((item) => ({ ...item, notice: item.description })),
     pickable: true,
     opacity: 1,
     stroked: true,
@@ -476,7 +476,6 @@ const Map = (props) => {
     radiusMinPixels: 8,
     radiusMaxPixels: 1000,
     lineWidthMinPixels: 2,
-    getText: d => d.description,
     // getPosition: d => d,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getFillColor: () => [60, 150, 255],
@@ -532,7 +531,7 @@ const Map = (props) => {
 
   const controller = { dragPan: true }
 
-  const getTooltip = ({object}) => object && `${object.number}\n${object.notice?.match(/.{1,50}/g)?.join('\n')}`
+  const getTooltip = ({object}) => object && `${object.number ?? '-'}\n${object.notice?.match(/.{1,50}/g)?.join('\n') ?? '-'}`
 
   const style = { zIndex: '1', overflow: 'hidden' }
 
