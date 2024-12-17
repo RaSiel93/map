@@ -4,6 +4,7 @@ import { StaticMap } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
 import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY, FILTER_TAGS } from 'constants'
 import { compareTags } from 'utils/helper'
+import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 
 import {
   setLatitude,
@@ -488,6 +489,15 @@ const Map = (props) => {
     }
   });
 
+  const heatmapLayer = new HeatmapLayer({
+    id: 'HeatmapLayer',
+    data: searchResult.map((item) => ({ ...item, notice: item.description })),
+
+    aggregation: 'SUM',
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    radiusPixels: 25
+  });
+
   const onMapClick = (event) => {
     switch (mode) {
       case modes.AREA: {
@@ -525,7 +535,8 @@ const Map = (props) => {
     iconLayer,
     tagsLayer,
     titleLayer,
-    scatterplotSearchFilterAreaPointsLayer,
+    // scatterplotSearchFilterAreaPointsLayer,
+    heatmapLayer,
     // tagPointLayer
   ]
 

@@ -2,6 +2,11 @@
 # yarn lockfile v1
 
 
+"@deck.gl/react@^9.0.38":
+  version "9.0.38"
+  resolved "https://registry.yarnpkg.com/@deck.gl/react/-/react-9.0.38.tgz#16d44d20244be7e74433aca42f5b9f2f73a1822b"
+  integrity sha512-R8u6yU9xXNzL01qsKmYid+GENhPndv4PYumKdO8K8ZcJ93eIBNy2XPlhU1znghN7OvdVaAEX4uDTYU8bqs+qbQ==
+
 lodash@^4.17.21:
   version "4.17.21"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.21.tgz#679591c564c3bffaae8454cf0b3df370c3d6911c"
