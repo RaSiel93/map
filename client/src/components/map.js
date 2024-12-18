@@ -480,7 +480,30 @@ const Map = (props) => {
     lineWidthMinPixels: 2,
     // getPosition: d => d,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
-    getFillColor: ({ id }) => (searchHoveredAreaId === id ? [255, 204, 0, 205] : [60, 150, 255]),
+    getFillColor: [60, 150, 255],
+    getLineColor: () => [255, 255, 255],
+    onDragStart: (info, event) => {
+      // console.log('onDragStart', info, event)
+    },
+    onDragEnd: (info, event) => {
+      // console.log('onDragEnd', info, event)
+    }
+  });
+
+  const scatterplotSearchHoveredFilterAreaPointsLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer3',
+    data: searchHoveredAreaId && [searchResult.find(({ id }) => (id === searchHoveredAreaId))],
+    pickable: true,
+    opacity: 1,
+    stroked: true,
+    filled: true,
+    radiusScale: 1,
+    radiusMinPixels: 8,
+    radiusMaxPixels: 1000,
+    lineWidthMinPixels: 2,
+    // getPosition: d => d,
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    getFillColor: [255, 204, 0, 205],
     getLineColor: () => [255, 255, 255],
     onDragStart: (info, event) => {
       // console.log('onDragStart', info, event)
@@ -538,6 +561,7 @@ const Map = (props) => {
     tagsLayer,
     titleLayer,
     scatterplotSearchFilterAreaPointsLayer,
+    scatterplotSearchHoveredFilterAreaPointsLayer,
     // heatmapLayer,
     // tagPointLayer
   ]
