@@ -18,6 +18,7 @@ const initialState = {
     pointsData: [],
     selectedAreaData: null,
     hoveredAreaId: null,
+    searchHoveredAreaId: null,
     companies: [],
     pointCoordinates: null,
     sidebarExtended: localStorage.getItem('sidebarExtended') == 'true',

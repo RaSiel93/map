@@ -4,7 +4,7 @@ import { StaticMap } from 'react-map-gl'
 import DeckGL from '@deck.gl/react'
 import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY, FILTER_TAGS } from 'constants'
 import { compareTags } from 'utils/helper'
-import { HeatmapLayer } from '@deck.gl/aggregation-layers';
+// import { HeatmapLayer } from '@deck.gl/aggregation-layers';
 
 import {
   setLatitude,
@@ -67,6 +67,7 @@ const Map = (props) => {
     searchResult,
     selectedTags,
     mapStyle,
+    searchHoveredAreaId,
   } = props;
 
   // const pointsLayer = new ScatterplotLayer({
@@ -479,7 +480,7 @@ const Map = (props) => {
     lineWidthMinPixels: 2,
     // getPosition: d => d,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
-    getFillColor: () => [60, 150, 255],
+    getFillColor: ({ id }) => (searchHoveredAreaId === id ? [255, 204, 0, 205] : [60, 150, 255]),
     getLineColor: () => [255, 255, 255],
     onDragStart: (info, event) => {
       // console.log('onDragStart', info, event)
@@ -489,14 +490,15 @@ const Map = (props) => {
     }
   });
 
-  const heatmapLayer = new HeatmapLayer({
-    id: 'HeatmapLayer',
-    data: searchResult.map((item) => ({ ...item, notice: item.description })),
+  // TODO: Add disable button
+  // const heatmapLayer = new HeatmapLayer({
+  //   id: 'HeatmapLayer',
+  //   data: searchResult.map((item) => ({ ...item, notice: item.description })),
 
-    aggregation: 'SUM',
-    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
-    radiusPixels: 25
-  });
+  //   aggregation: 'SUM',
+  //   getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+  //   radiusPixels: 25
+  // });
 
   const onMapClick = (event) => {
     switch (mode) {
@@ -535,8 +537,8 @@ const Map = (props) => {
     iconLayer,
     tagsLayer,
     titleLayer,
-    // scatterplotSearchFilterAreaPointsLayer,
-    heatmapLayer,
+    scatterplotSearchFilterAreaPointsLayer,
+    // heatmapLayer,
     // tagPointLayer
   ]
 
@@ -595,6 +597,7 @@ export default connect(
     pointsData: state.main.pointsData,
     selectedAreaData: state.main.selectedAreaData,
     hoveredAreaId: state.main.hoveredAreaId,
+    searchHoveredAreaId: state.main.searchHoveredAreaId,
     newAreaPoints: state.modes.area.newAreaPoints,
     searchResult: state.main.searchResult,
     selectedTags: state.main.selectedTags,

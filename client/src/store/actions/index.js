@@ -14,6 +14,7 @@ export {
   setSelectedAreaId,
   setSelectedAreaData,
   setHoveredAreaId,
+  setSearchHoveredAreaId,
   setTags,
   setSelectedTags,
   toggleMode,

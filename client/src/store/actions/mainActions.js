@@ -14,6 +14,7 @@ import {
   SET_SELECTED_AREA_ID,
   SET_SELECTED_AREA_DATA,
   SET_HOVERED_AREA_ID,
+  SET_SEARCH_HOVERED_AREA_ID,
   TOGGLE_MODE,
   SET_TAGS,
   SET_SELECTED_TAGS,
@@ -51,6 +52,8 @@ export const setSelectedAreaId = (id) => ({ type: SET_SELECTED_AREA_ID, payload:
 export const setSelectedAreaData = (data) => ({ type: SET_SELECTED_AREA_DATA, payload: data })
 
 export const setHoveredAreaId = (id) => ({ type: SET_HOVERED_AREA_ID, payload: id })
+
+export const setSearchHoveredAreaId = (id) => ({ type: SET_SEARCH_HOVERED_AREA_ID, payload: id })
 
 export const toggleMode = (mode) => ({ type: TOGGLE_MODE, payload: mode })
 

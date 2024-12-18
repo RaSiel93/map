@@ -15,6 +15,7 @@ export const UPDATE_AREA_DATA = 'main/updateAreaData';
 export const SET_SELECTED_AREA_ID = 'main/setSelectedAreaId';
 export const SET_SELECTED_AREA_DATA = 'main/setSelectedAreaData';
 export const SET_HOVERED_AREA_ID = 'main/setHoveredAreaId';
+export const SET_SEARCH_HOVERED_AREA_ID = 'main/setSearchHoveredAreaId';
 export const TOGGLE_MODE = 'main/toggleMode';
 export const SET_TAGS = 'main/setTags'
 export const SET_SELECTED_TAGS = 'main/setSelectedTags'

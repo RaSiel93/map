@@ -8,7 +8,7 @@ import './App.scss'
 import cx from 'classnames'
 
 import { useDrag } from 'hooks'
-import { Sidebar, Information, Map, Navigation } from 'components'
+import { Sidebar, Information, Map, Navigation, SearchPanel } from 'components'
 import {
   loadAreasData,
   loadCompanies,
@@ -124,6 +124,7 @@ const App = (props) => {
         <Map/>
         <Navigation/>
       </div>
+      <SearchPanel/>
     </Container>
   )
 }

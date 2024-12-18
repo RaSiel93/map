@@ -15,6 +15,7 @@ import {
   SET_SELECTED_AREA_ID,
   SET_SELECTED_AREA_DATA,
   SET_HOVERED_AREA_ID,
+  SET_SEARCH_HOVERED_AREA_ID,
   TOGGLE_MODE,
   SET_TAGS,
   SET_SELECTED_TAGS,
@@ -119,6 +120,12 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         hoveredAreaId: action.payload,
+      }
+    }
+    case SET_SEARCH_HOVERED_AREA_ID: {
+      return {
+        ...state,
+        searchHoveredAreaId: action.payload,
       }
     }
     case TOGGLE_MODE: {
