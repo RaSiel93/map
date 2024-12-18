@@ -87,10 +87,11 @@ const SearchPanel = ({ id, sidebarExtended, search, setSearchQuery, searchQuery,
       <div className='Wrapper'>
         <input className='Search' placeholder='Пошук' value={searchQuery} onChange={onSearch}></input>
         <div className='SearchResult'>
+          Колькасьць: {searchResult.length}
           {
-            searchResult.map(({ id, description }) => {
+            searchResult.map(({ id, description }, index) => {
               return (
-                <div key={id} className='SearchResult-Item' onClick={() => changeArea(id)} onMouseEnter={() => setSearchHoveredAreaId(id)} onMouseLeave={() => setSearchHoveredAreaId(null)}>
+                <div key={`${index}-${id}`} className='SearchResult-Item' onClick={() => changeArea(id)} onMouseEnter={() => setSearchHoveredAreaId(id)} onMouseLeave={() => setSearchHoveredAreaId(null)}>
                   { description }
                 </div>
               )
