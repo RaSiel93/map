@@ -45,6 +45,11 @@ const Container = styled.div`
         border: 1px solid #aaaa;
         background-color: #666a;
       }
+
+      &-Title {
+        font-weight: bold;
+        display: block;
+      }
     }
   }
 
@@ -89,9 +94,10 @@ const SearchPanel = ({ id, sidebarExtended, search, setSearchQuery, searchQuery,
         <div className='SearchResult'>
           Колькасьць: {searchResult.length}
           {
-            searchResult.map(({ id, description }, index) => {
+            searchResult.map(({ id, title, description }, index) => {
               return (
                 <div key={`${index}-${id}`} className='SearchResult-Item' onClick={() => changeArea(id)} onMouseEnter={() => setSearchHoveredAreaId(id)} onMouseLeave={() => setSearchHoveredAreaId(null)}>
+                  <span className='SearchResult-Item-Title'>{title}</span>
                   { description }
                 </div>
               )
