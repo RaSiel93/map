@@ -5,10 +5,12 @@ module Api
         date = params[:date].present? ? Time.zone.parse(params[:date]) : Time.zone.now
 
         areas = if params[:q].present?
-          Area.where(hidden: false).left_joins(:company, tags: [:key, :value])
+          ids = Area.where(hidden: false).left_joins(:company, tags: [:key, :value])
             .where("concat_ws(' ', areas.title, areas.description, companies.name, tag_keys.name, tag_values.name) ILIKE ?", "%#{params[:q]}%")
             .where("start_at is null OR start_at <= ?", date)
-            .where("end_at is null OR end_at > ?", date)
+            .where("end_at is null OR end_at > ?", date).pluck(:id)
+
+          Area.where(id: ids).order(:title, :description)
         else
           []
         end
