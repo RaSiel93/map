@@ -364,7 +364,7 @@ const Map = (props) => {
     if (!bounds || !zoom) return;
 
     setClusters(clusterIndex.getClusters(bounds, Math.floor(zoom)));
-  }, [clusterIndex, zoom, bounds]);
+  }, [clusterIndex, zoom, bounds, data]);
 
   const getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
 
