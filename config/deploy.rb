@@ -1,5 +1,7 @@
 lock "~> 3.17.1"
 
+# set :default_env, { 'RUBYOPT' => '-rrbtrace' }
+
 set :application, "map"
 set :repo_url, "git@github.com:RaSiel93/map.git"
 
@@ -46,7 +48,3 @@ namespace :puma do
 
   before :start, :make_dirs
 end
-
-set :default_env, {
-  'RUBYOPT' => '-rrbtrace'
-}
