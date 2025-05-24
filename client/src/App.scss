@@ -2,3 +2,32 @@ body {
   font-family: Georgia, serif;
   margin: 0;
 }
+
+.Progress {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1000;
+}
+
+.Progress-Bar {
+  // height: 10px;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  gap: 8px;
+  display: flex;
+  height: 12px;
+  overflow: hidden;
+  background: rgb(15, 167, 15);
+  transition: width 0.3s ease-in-out;
+  font-size: 10px;
+  color: #fff;
+  // padding: 0 4px;
+}
+
+.Progress-Content-Length, .Progress-Duration-Length {
+  // position: absolute;
+  // top: 0;
+  // left: 0;
+}

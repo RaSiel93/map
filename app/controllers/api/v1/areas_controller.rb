@@ -23,7 +23,9 @@ module Api
         cached_areas = render_to_string json: areas, include: %w[tags.key tags.value], fields: %i[id title description max_zoom area_id people_count logo_url longitude latitude start_at end_at color coordinates]
         # end
 
-        render json: cached_areas
+        response.headers['Content-Length'] = cached_areas.bytesize.to_s
+
+        render body: cached_areas, content_type: 'application/json'
       end
 
       def create

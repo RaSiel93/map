@@ -22,7 +22,14 @@ export {
   setSearchQuery,
   setSearchResult,
   setMapStyle,
+  setTitleShow,
+  setIconShow,
+  setClusterShow,
   setDate,
+  setProgress,
+  setProgressContentLength,
+  setProgressDuration,
+  setAreaShow,
 } from './mainActions';
 
 export {

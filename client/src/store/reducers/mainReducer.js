@@ -22,8 +22,19 @@ import {
   TOGGLE_SIDEBAR,
   SET_SEARCH_QUERY,
   SELECTED_TAGS,
+  FILTER_TITLE,
   SET_MAP_STYLE,
+  SET_TITLE_SHOW,
+  SET_ICON_SHOW,
   SET_DATE,
+  SET_PROGRESS,
+  SET_PROGRESS_CONTENT_LENGTH,
+  SET_PROGRESS_DURATION,
+  SET_CLUSTER_SHOW,
+  FILTER_CLUSTER,
+  FILTER_ICON,
+  FILTER_AREA,
+  SET_AREA_SHOW,
 } from 'constants';
 import { SET_SEARCH_RESULT } from 'constants';
 
@@ -178,12 +189,62 @@ export const mainReducer = (state = {}, action) => {
         mapStyle: action.payload
       }
     }
+    case SET_TITLE_SHOW: {
+      localStorage.setItem(FILTER_TITLE, action.payload)
+
+      return {
+        ...state,
+        titleShow: action.payload
+      }
+    }
+    case SET_CLUSTER_SHOW: {
+      localStorage.setItem(FILTER_CLUSTER, action.payload)
+
+      return {
+        ...state,
+        clusterShow: action.payload
+      }
+    }
+    case SET_ICON_SHOW: {
+      localStorage.setItem(FILTER_ICON, action.payload)
+
+      return {
+        ...state,
+        iconShow: action.payload
+      }
+    }
+    case SET_AREA_SHOW: {
+      localStorage.setItem(FILTER_AREA, action.payload)
+
+      return {
+        ...state,
+        areaShow: action.payload
+      }
+    }
     case SET_DATE: {
       localStorage.setItem('date', action.payload)
 
       return {
         ...state,
         date: action.payload
+      }
+    }
+    case SET_PROGRESS: {
+      return {
+        ...state,
+        progress: action.payload
+      }
+    }
+    case SET_PROGRESS_CONTENT_LENGTH: {
+      return {
+        ...state,
+        progressContentLength: action.payload
+      }
+    }
+    case SET_PROGRESS_DURATION: {
+      return {
+        ...state,
+        progressDuration: action.payload
       }
     }
   }

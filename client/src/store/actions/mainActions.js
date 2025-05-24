@@ -22,7 +22,14 @@ import {
   SET_SEARCH_QUERY,
   SET_SEARCH_RESULT,
   SET_MAP_STYLE,
+  SET_TITLE_SHOW,
   SET_DATE,
+  SET_PROGRESS,
+  SET_PROGRESS_CONTENT_LENGTH,
+  SET_PROGRESS_DURATION,
+  SET_CLUSTER_SHOW,
+  SET_ICON_SHOW,
+  SET_AREA_SHOW,
 } from 'constants'
 
 export const setLatitude = (zoom) => ({ type: SET_LATITUDE, payload: zoom })
@@ -69,4 +76,18 @@ export const setSearchResult = (value) => ({ type: SET_SEARCH_RESULT, payload: v
 
 export const setMapStyle = (style) => ({ type: SET_MAP_STYLE, payload: style })
 
+export const setTitleShow = (show) => ({ type: SET_TITLE_SHOW, payload: show })
+
+export const setIconShow = (show) => ({ type: SET_ICON_SHOW, payload: show })
+
+export const setAreaShow = (show) => ({ type: SET_AREA_SHOW, payload: show })
+
 export const setDate = (date) => ({ type: SET_DATE, payload: date })
+
+export const setClusterShow = (show) => ({ type: SET_CLUSTER_SHOW, payload: show })
+
+export const setProgress = (progress) => ({ type: SET_PROGRESS, payload: progress })
+
+export const setProgressContentLength = (length) => ({ type: SET_PROGRESS_CONTENT_LENGTH, payload: length })
+
+export const setProgressDuration = (duration) => ({ type: SET_PROGRESS_DURATION, payload: duration })

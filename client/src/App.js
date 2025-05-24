@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
 import Cookies from 'js-cookie'
-import debounce from 'lodash.debounce'
+import throttle from 'lodash.throttle';
 import styled from 'styled-components'
 import './App.scss'
 import cx from 'classnames'
@@ -88,6 +88,9 @@ const App = (props) => {
     setDate,
     date,
     searchQuery,
+    progress,
+    progressContentLength,
+    progressDuration,
   } = props;
 
   // const [date, setDate] = useState(localStorage.getItem('date'))
@@ -99,9 +102,11 @@ const App = (props) => {
     loadTags()
   }, [])
 
+  const throttledSearch = useCallback(throttle((value) => search(value), 1000), [search]);
+
   useEffect(() => {
-    search(searchQuery)
-  }, [searchQuery, date])
+    throttledSearch(searchQuery)
+  }, [throttledSearch, searchQuery, date])
 
   useDrag()
 
@@ -120,6 +125,13 @@ const App = (props) => {
             <div className="bar3"></div>
           </div>
           <Information date={date}/>
+        </div>
+        <div className='Progress'>
+          <div className='Progress-Bar' style={{ width: `${progress}%` }}>
+            <div className='Progress-Content-Length'>{progressContentLength / 1000} KB</div>
+            <div className='Progress-Separator'>/</div>
+            <div className='Progress-Duration-Length'>{(progressDuration / 1000).toFixed(2)} s</div>
+          </div>
         </div>
         <Map/>
         <Navigation/>
@@ -141,6 +153,9 @@ export default connect(
     sidebarExtended: state.main.sidebarExtended,
     searchQuery: state.main.searchQuery,
     date: state.main.date,
+    progress: state.main.progress,
+    progressContentLength: state.main.progressContentLength,
+    progressDuration: state.main.progressDuration,
   }),
   (dispatch) => ({
     loadAreasData: () => dispatch(loadAreasData()),

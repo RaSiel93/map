@@ -1,25 +1,56 @@
+import throttle from 'lodash.throttle';
 import { client } from 'api/client';
 import { areaToPolygonObject, pointToScatterplotObject } from 'services/deckGl';
-import { setAreasData, setCompanies, setPointsData, setTags, setSearchResult } from 'store/actions';
-import Cookies from 'js-cookie';
+import { setAreasData, setCompanies, setPointsData, setTags, setSearchResult, setProgress, setProgressContentLength, setProgressDuration } from 'store/actions';
 
 import { API_URL } from 'constants'
 
-export const loadAreasData = () => (dispatch, state) => {
+let controller = null;
+
+const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate) => {
+  dispatch(setProgressDuration(0))
+  dispatch(setProgress(10));
+  const start = performance.now();
+
   client.get(`${API_URL}/api/v1/areas.json`, {
+      signal: controller.signal,
       params: {
-        date: localStorage.getItem('date'),
-        zoom: state().main.zoom,
-        startDate: localStorage.getItem('filters.startDate') === 'true'
+        date,
+        zoom,
+        startDate
       },
-      withCredentials: true
+      withCredentials: true,
+      onDownloadProgress: (progressEvent) => {
+        const percent = (progressEvent.loaded / (progressEvent?.total || 1)) * 100;
+
+        dispatch(setProgressDuration(performance.now() - start));
+        dispatch(setProgressContentLength(progressEvent.total));
+
+        dispatch(setProgress(percent));
+      }
     })
     .then((response) => {
       dispatch(setAreasData(response.data.map(areaToPolygonObject)));
     })
     .catch((error) => {
-      console.log(error)
+      if (error.name === 'CanceledError') {
+        console.warn('📭 Запыт абаронены');
+      } else {
+        console.error(error);
+      }
     });
+}, 1000);
+
+export const loadAreasData = () => (dispatch, state) => {
+  if (controller) controller.abort();
+
+  controller = new AbortController();
+
+  const date = localStorage.getItem('date');
+  const zoom = state().main.zoom;
+  const startDate = localStorage.getItem('filters.startDate') === 'true';
+
+  throttledLoadAreasData(dispatch, date, zoom, startDate);
 }
 
 export const loadCompanies = () => (dispatch) => {

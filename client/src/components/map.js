@@ -68,7 +68,11 @@ const Map = (props) => {
     searchResult,
     selectedTags,
     mapStyle,
+    titleShow,
+    iconShow,
+    clusterShow,
     searchHoveredAreaId,
+    areaShow,
   } = props;
 
   const [clusters, setClusters] = useState([]);
@@ -179,22 +183,22 @@ const Map = (props) => {
 
     if (adminLevelTag) {
       if (adminLevelTag.value.name === "2") {
-        resultElevation = 3000
+        resultElevation = 1500
         // hoverMultiplier = 5
       } else if (adminLevelTag.value.name === "4") {
-        resultElevation = 1600
+        resultElevation = 800
         // hoverMultiplier = 4
       } else if (adminLevelTag.value.name === "6") {
-        resultElevation = 500
+        resultElevation = 400
         // hoverMultiplier = 3
       } else if (adminLevelTag.value.name === "8") {
-        resultElevation = 200
+        resultElevation = 100
         // hoverMultiplier = 2
       } else if (adminLevelTag.value.name === "9") {
-        resultElevation = 100
+        resultElevation = 20
         // hoverMultiplier = 1.5
       } else if (adminLevelTag.value.name === "10") {
-        resultElevation = 100
+        resultElevation = 20
         // hoverMultiplier = 1.5
       } else {
         resultElevation = 10
@@ -496,7 +500,7 @@ const Map = (props) => {
     }
   });
 
-  const iconData = (localStorage.getItem(FILTER_COMPANY) === 'true') ? areasData.filter((area) => area.logoUrl) : []
+  const iconData = areasData.filter((area) => area.logoUrl)
 
   const iconLayer = new IconLayer({
     id: 'icon-layer',
@@ -610,16 +614,16 @@ const Map = (props) => {
   const layers = [
     // pointsLayer,
     // contourAreasLayer,
-    areasLayer,
+    areaShow ? areasLayer : null,
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
-    iconLayer,
-    tagsLayer,
-    titleLayer,
+    iconShow ? iconLayer : null,
+    titleShow ? tagsLayer : null,
+    titleShow ? titleLayer : null,
     scatterplotSearchFilterAreaPointsLayer,
     scatterplotSearchHoveredFilterAreaPointsLayer,
-    clusterLayer,
-    clusterTextLayer,
+    clusterShow ? clusterLayer : null,
+    clusterShow ? clusterTextLayer : null,
     // heatmapLayer,
     // tagPointLayer
   ]
@@ -696,6 +700,10 @@ export default connect(
     searchResult: state.main.searchResult,
     selectedTags: state.main.selectedTags,
     mapStyle: state.main.mapStyle,
+    titleShow: state.main.titleShow,
+    iconShow: state.main.iconShow,
+    clusterShow: state.main.clusterShow,
+    areaShow: state.main.areaShow,
   }),
   (dispatch) => ({
     setLatitude: (latitude) => dispatch(setLatitude(latitude)),

@@ -3,10 +3,10 @@ import { connect } from 'react-redux'
 import styled from 'styled-components'
 import cx from 'classnames'
 
-import { FILTER_START_DATE, FILTER_INFO, FILTER_COMPANY, SELECTED_TAGS } from 'constants'
+import { FILTER_START_DATE, FILTER_INFO, FILTER_ICON, FILTER_TITLE, FILTER_CLUSTER, SELECTED_TAGS } from 'constants'
 import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
-import { setMapStyle, setSearchQuery, setSelectedTags } from 'store/actions'
+import { setMapStyle, setSearchQuery, setSelectedTags, setTitleShow, setClusterShow, setIconShow, setAreaShow } from 'store/actions'
 
 const Container = styled.div`
   flex-basis: 0;
@@ -49,10 +49,27 @@ const Container = styled.div`
   }
 `
 
-const Sidebar = ({ sidebarExtended, tags, search, setSearchQuery, searchQuery, date, selectedTags, setSelectedTags, setMapStyle, mapStyle }) => {
+const Sidebar = ({
+    sidebarExtended,
+    tags,
+    searchQuery,
+    setSearchQuery,
+    date,
+    selectedTags,
+    setSelectedTags,
+    setMapStyle,
+    mapStyle,
+    setTitleShow,
+    titleShow,
+    clusterShow,
+    setClusterShow,
+    iconShow,
+    setIconShow,
+    areaShow,
+    setAreaShow,
+  }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
-  const [companyFilter, setCompanyFilter] = useState(localStorage.getItem(FILTER_COMPANY) === 'true')
 
   const toogleTagsFilter = (key, value) => {
     if (selectedTags.some(compareTags(key, value))) {
@@ -74,13 +91,24 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearchQuery, searchQuery, d
     localStorage.setItem(FILTER_INFO, !infoFilter)
   }
 
-  const changeCompanyFilter = () => {
-    setCompanyFilter(!companyFilter)
-    localStorage.setItem(FILTER_COMPANY, !companyFilter)
+  const changeIconShow = () => {
+    setIconShow(!iconShow)
   }
 
   const changeMapStyle = () => {
     setMapStyle(mapStyle === 'satellite' ? null : 'satellite')
+  }
+
+  const changeTitleShow = () => {
+    setTitleShow(!titleShow)
+  }
+
+  const changeClusterShow = () => {
+    setClusterShow(!clusterShow)
+  }
+
+  const changeAreaShow = () => {
+    setAreaShow(!areaShow)
   }
 
   const onSearch = ({ target: { value }}) => {
@@ -102,12 +130,24 @@ const Sidebar = ({ sidebarExtended, tags, search, setSearchQuery, searchQuery, d
               <label htmlFor="info">Інфармацыя</label>
             </div>
             <div className="Filter">
-              <input type="checkbox" id="company" checked={companyFilter} onChange={changeCompanyFilter}/>
-              <label htmlFor="company">Кампаніі</label>
+              <input type="checkbox" id="icon" checked={iconShow} onChange={changeIconShow}/>
+              <label htmlFor="icon">Іконкі</label>
             </div>
             <div className="Filter">
               <input type="checkbox" id="mapStyle" checked={mapStyle === 'satellite'} onChange={changeMapStyle}/>
               <label htmlFor="mapStyle">Спутнік</label>
+            </div>
+            <div className='Filter'>
+              <input type="checkbox" id="titleShow" checked={titleShow} onChange={changeTitleShow}/>
+              <label htmlFor="titleShow">Подпісы</label>
+            </div>
+            <div className='Filter'>
+              <input type="checkbox" id="clusterShow" checked={clusterShow} onChange={changeClusterShow}/>
+              <label htmlFor="clusterShow">Кластэры</label>
+            </div>
+            <div className='Filter'>
+              <input type="checkbox" id="areaShow" checked={areaShow} onChange={changeAreaShow}/>
+              <label htmlFor="areaShow">Абьекты</label>
             </div>
           </div>
           {
@@ -146,11 +186,19 @@ export default connect(
     sidebarExtended: state.main.sidebarExtended,
     mapStyle: state.main.mapStyle,
     date: state.main.date,
+    titleShow: state.main.titleShow,
+    iconShow: state.main.iconShow,
+    clusterShow: state.main.clusterShow,
+    areaShow: state.main.areaShow,
   }),
   (dispatch) => ({
     setSearchQuery: (value) => dispatch(setSearchQuery(value)),
     setSelectedTags: (tags) => dispatch(setSelectedTags(tags)),
     setMapStyle: (style) => dispatch(setMapStyle(style)),
+    setTitleShow: (show) => dispatch(setTitleShow(show)),
+    setIconShow: (show) => dispatch(setIconShow(show)),
+    setClusterShow: (show) => dispatch(setClusterShow(show)),
+    setAreaShow: (show) => dispatch(setAreaShow(show)),
   })
 )(Sidebar);
 
