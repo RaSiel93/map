@@ -128,9 +128,9 @@ const App = (props) => {
         </div>
         <div className='Progress'>
           <div className='Progress-Bar' style={{ width: `${progress}%` }}>
-            <div className='Progress-Content-Length'>{progressContentLength / 1000} KB</div>
+            <div className='Progress-Content-Length'>{progressContentLength / 1000}&nbsp;KB</div>
             <div className='Progress-Separator'>/</div>
-            <div className='Progress-Duration-Length'>{(progressDuration / 1000).toFixed(2)} s</div>
+            <div className='Progress-Duration-Length'>{(progressDuration / 1000).toFixed(2)}&nbsp;s</div>
           </div>
         </div>
         <Map/>
