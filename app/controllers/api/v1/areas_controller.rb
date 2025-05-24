@@ -5,6 +5,7 @@ module Api
         date = params[:date].present? ? Time.zone.parse(params[:date]) : Time.zone.now
         zoom = params[:zoom] || 1
         start_date = params[:startDate] === "true"
+        tags = (params[:tags] || []).map { |tag| JSON.parse(tag) }
 
         # cached_areas = Rails.cache.fetch("test-#{date.year}") do
         areas = Area.where(hidden: false)
@@ -19,6 +20,13 @@ module Api
           .where("end_at is null OR end_at > ?", date)
           .where("max_zoom > ?", zoom)
           .includes(:company).includes(tags: [:key, :value])
+
+        if tags.present?
+          areas = tags.reduce(nil) do |acc, (key_id, value_id)|
+            condition = areas.where(tags: { tag_key_id: key_id, tag_value_id: value_id })
+            acc ? acc.or(condition) : condition
+          end
+        end
 
         cached_areas = render_to_string json: areas, include: %w[tags.key tags.value], fields: %i[id title description max_zoom area_id people_count logo_url longitude latitude start_at end_at color coordinates]
         # end

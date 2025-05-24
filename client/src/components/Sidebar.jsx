@@ -151,16 +151,16 @@ const Sidebar = ({
             </div>
           </div>
           {
-            tags && tags.map(({ name: key, options }, index) => {
+            tags && tags.map(({ id: tagId, name: key, options }, index) => {
               return (
                 <div className='FilterGroup' key={index}>
                   <div className='FilterGroupKey'>{key}</div>
                   <div className='FilterGroupValues'>
                     {
-                      options.map(({ name: value }, index) => {
+                      options.map(({ id: valueId, name: value }, index) => {
                         return (
                           <div key={index}>
-                            <input id={idFromTag(key, value)} type='checkbox' onChange={() => toogleTagsFilter(key, value)} checked={selectedTags.some(compareTags(key, value))}></input>
+                            <input id={idFromTag(key, value)} type='checkbox' onChange={() => toogleTagsFilter(tagId, valueId)} checked={selectedTags.some(compareTags(tagId, valueId))}></input>
                             <label htmlFor={idFromTag(key, value)}>{value}</label>
                           </div>
                         )

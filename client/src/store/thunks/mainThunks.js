@@ -7,7 +7,7 @@ import { API_URL } from 'constants'
 
 let controller = null;
 
-const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate) => {
+const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate, tags) => {
   dispatch(setProgressDuration(0))
   dispatch(setProgress(10));
   const start = performance.now();
@@ -17,7 +17,8 @@ const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate) => {
       params: {
         date,
         zoom,
-        startDate
+        startDate,
+        tags
       },
       withCredentials: true,
       onDownloadProgress: (progressEvent) => {
@@ -50,7 +51,7 @@ export const loadAreasData = () => (dispatch, state) => {
   const zoom = state().main.zoom;
   const startDate = localStorage.getItem('filters.startDate') === 'true';
 
-  throttledLoadAreasData(dispatch, date, zoom, startDate);
+  throttledLoadAreasData(dispatch, date, zoom, startDate, state().main.selectedTags);
 }
 
 export const loadCompanies = () => (dispatch) => {

@@ -325,10 +325,12 @@ const Map = (props) => {
     background: true,
   });
 
+  console.log('tags', selectedTags)
+
   const tagSelectedAreas = useMemo(() => {
     return (data || []).filter(({ tags }) => {
-      return tags.find(({ key: { name: keyName }, value: { name: keyValue }}) => {
-        return selectedTags.some(compareTags(keyName, keyValue))
+      return tags.find(({ key: { id: keyId, name: keyName }, value: { id: valueId, name: keyValue }}) => {
+        return selectedTags.some(compareTags(keyId, valueId))
       })
     })
   }, [data, selectedTags])
@@ -362,9 +364,12 @@ const Map = (props) => {
 
   useEffect(() => {
     if (!bounds || !zoom) return;
+    const newClusters = clusterIndex.getClusters(bounds, Math.floor(zoom));
 
-    setClusters(clusterIndex.getClusters(bounds, Math.floor(zoom)));
-  }, [clusterIndex, zoom, bounds, data]);
+    if (JSON.stringify(newClusters) !== JSON.stringify(clusters)) {
+      setClusters(newClusters);
+    }
+  }, [bounds, zoom, clusterIndex, data]);
 
   const getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
 
