@@ -20,7 +20,8 @@
     "redux": "^4.2.0",
     "redux-thunk": "^2.4.0",
     "spinners-react": "^1.0.6",
-    "styled-components": "^5.3.0"
+    "styled-components": "^5.3.0",
+    "supercluster": "^8.0.1"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.1",

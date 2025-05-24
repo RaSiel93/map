@@ -1,10 +1,11 @@
 import { useEffect, useState, useMemo } from 'react'
 import { connect } from 'react-redux'
 import { StaticMap } from 'react-map-gl'
+import { WebMercatorViewport } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react'
 import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY, FILTER_TAGS } from 'constants'
 import { compareTags } from 'utils/helper'
-// import { HeatmapLayer } from '@deck.gl/aggregation-layers';
+import Supercluster from 'supercluster';
 
 import {
   setLatitude,
@@ -17,15 +18,15 @@ import {
 } from 'store/actions';
 
 import {
-  // PathLayer,
   ScatterplotLayer,
-  // LineLayer,
   TextLayer,
   PolygonLayer,
   IconLayer,
 } from '@deck.gl/layers';
 import jsCookie from 'js-cookie'
 import { FILTER_COMPANY } from 'constants'
+
+const clusterIndex = new Supercluster();
 
 const convertHexToRGBA = (hexCode, opacity = 1) => {
   let hex = hexCode.replace('#', '');
@@ -70,6 +71,9 @@ const Map = (props) => {
     searchHoveredAreaId,
   } = props;
 
+  const [clusters, setClusters] = useState([]);
+  const [bounds, setBounds] = useState([]);
+
   // const pointsLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer1',
   //   data: pointsData,
@@ -111,7 +115,7 @@ const Map = (props) => {
   // });
 
   const data = areasData.filter(({ id, maxZoom, tags }) => {
-    const adminLevelTag = tags.find(({ key: { label }}) => label === 'admin_level')
+    const adminLevelTag = tags.find(({ key: { label }}) => label === 'admin_level');
 
     if (adminLevelTag) {
       if (adminLevelTag.value.name === "2") {
@@ -129,6 +133,12 @@ const Map = (props) => {
       } else {
         return maxZoom > zoom
       }
+    }
+
+    const sourceTag = tags.find(({ key: { label }}) => label === 'source');
+
+    if (sourceTag) {
+      return true
     }
 
     return maxZoom > zoom
@@ -335,6 +345,52 @@ const Map = (props) => {
     getBorderWidth: 1,
     getPixelOffset: [0, 0]
   })
+
+  // CLUSTER
+
+  clusterIndex.load(tagSelectedAreas.map((d, i) => ({
+    geometry: { type: 'Point', coordinates: [d.longitude, d.latitude] },
+    properties: { id: i }
+  })));
+
+  useEffect(() => {
+    setClusters(clusterIndex.getClusters(bounds, Math.floor(zoom)));
+  }, [zoom, areasData, selectedTags]);
+
+  const getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
+
+  const clusterLayer = new ScatterplotLayer({
+    id: 'scatterplot-layer-2',
+    data: clusters,
+    stroked: true,
+    radiusScale: 1,
+    radiusMinPixels: 8,
+    radiusMaxPixels: 40,
+    radiusUnits: 'pixels',
+    lineWidthMinPixels: 2,
+    getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
+    getRadius: getRadius,
+    getFillColor: [255, 0, 0],
+    getLineColor: [255, 255, 255],
+    onDragStart: (info, event) => {
+      // console.log('onDragStart', info, event)
+    },
+    onDragEnd: (info, event) => {
+      // console.log('onDragEnd', info, event)
+    }
+  });
+
+  const clusterTextLayer = new TextLayer({
+    id: 'text-layer',
+    data: clusters.filter(d => d.properties.cluster),
+    getPosition: d => d.geometry.coordinates,
+    getText: d => String(d.properties.point_count),
+    getSize: 10,
+    getColor: [255, 255, 255],
+    getTextAnchor: 'middle',
+    getAlignmentBaseline: 'center',
+    fontWeight: 'bold',
+  });
 
   // const tagPointLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer22',
@@ -562,6 +618,8 @@ const Map = (props) => {
     titleLayer,
     scatterplotSearchFilterAreaPointsLayer,
     scatterplotSearchHoveredFilterAreaPointsLayer,
+    clusterLayer,
+    clusterTextLayer,
     // heatmapLayer,
     // tagPointLayer
   ]
@@ -572,10 +630,22 @@ const Map = (props) => {
 
   const style = { zIndex: '1', overflow: 'hidden' }
 
-  const onViewStateChange = ({ viewState: { zoom, longitude, latitude } }) => {
+  const onViewStateChange = ({ viewState: { zoom, longitude, latitude, width, height } }) => {
+    // console.log(viewState)
+
+    const viewport = new WebMercatorViewport({
+      longitude,
+      latitude,
+      zoom,
+      width,
+      height,
+    });
+    const bounds = viewport.getBounds()
+
     setZoom(zoom)
     setLatitude(latitude)
     setLongitude(longitude)
+    setBounds(bounds)
 
     jsCookie.set('_map_location', `${latitude}|${longitude}|${zoom}`)
     {/*setHoveredAreaId(null);*/}
