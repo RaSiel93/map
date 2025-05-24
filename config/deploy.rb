@@ -46,3 +46,7 @@ namespace :puma do
 
   before :start, :make_dirs
 end
+
+set :default_env, {
+  'RUBYOPT' => '-rrbtrace'
+}

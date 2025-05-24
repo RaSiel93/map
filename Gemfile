@@ -12,6 +12,7 @@ gem 'rack-cors'
 gem 'rails', '~> 6.1.4', '>= 6.1.4.4'
 gem 'sass-rails', require: false
 gem 'active_model_serializers', '~> 0.10.0'
+gem 'rbtrace'
 
 group :development do
   gem 'capistrano', '~> 3.11'
