@@ -24,7 +24,7 @@ set :pty, true
 set :use_sudo, false
 set :stage, :production
 set :deploy_via, :remote_cache
-set :puma_threads, [0, 5]
+set :puma_threads, [0, 2]
 set :puma_workers, 0
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
 set :puma_state, "#{shared_path}/tmp/pids/puma.state"
