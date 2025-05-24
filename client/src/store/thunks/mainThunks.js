@@ -21,7 +21,7 @@ const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate) => {
       },
       withCredentials: true,
       onDownloadProgress: (progressEvent) => {
-        const percent = (progressEvent.loaded / (progressEvent?.total || 1)) * 100;
+        const percent = (progressEvent.loaded / (progressEvent?.total ?? 1)) * 100;
 
         dispatch(setProgressDuration(performance.now() - start));
         dispatch(setProgressContentLength(progressEvent.total));
