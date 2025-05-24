@@ -24,9 +24,6 @@ import {
   IconLayer,
 } from '@deck.gl/layers';
 import jsCookie from 'js-cookie'
-import { FILTER_COMPANY } from 'constants'
-
-const clusterIndex = new Supercluster();
 
 const convertHexToRGBA = (hexCode, opacity = 1) => {
   let hex = hexCode.replace('#', '');
@@ -77,6 +74,8 @@ const Map = (props) => {
 
   const [clusters, setClusters] = useState([]);
   const [bounds, setBounds] = useState([]);
+
+  const [clusterIndex] = useState(() => new Supercluster());
 
   // const pointsLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer1',
@@ -352,14 +351,20 @@ const Map = (props) => {
 
   // CLUSTER
 
-  clusterIndex.load(tagSelectedAreas.map((d, i) => ({
-    geometry: { type: 'Point', coordinates: [d.longitude, d.latitude] },
-    properties: { id: i }
-  })));
+  useEffect(() => {
+    const data = tagSelectedAreas.map((d, i) => ({
+      geometry: { type: 'Point', coordinates: [d.longitude, d.latitude] },
+      properties: { id: i }
+    }))
+
+    clusterIndex.load(data);
+  }, [clusterIndex, tagSelectedAreas]);
 
   useEffect(() => {
+    if (!bounds || !zoom) return;
+
     setClusters(clusterIndex.getClusters(bounds, Math.floor(zoom)));
-  }, [zoom, areasData, selectedTags]);
+  }, [clusterIndex, zoom, bounds]);
 
   const getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
 
@@ -551,7 +556,7 @@ const Map = (props) => {
   });
 
   const scatterplotSearchHoveredFilterAreaPointsLayer = new ScatterplotLayer({
-    id: 'scatterplot-layer3',
+    id: 'scatterplot-layer4',
     data: searchHoveredAreaId && [searchResult.find(({ id }) => (id === searchHoveredAreaId))],
     pickable: true,
     opacity: 1,
