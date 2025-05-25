@@ -6,6 +6,7 @@ import {
   setDate,
 } from 'store/actions'
 
+import { formatInputYear } from 'utils/helper'
 import { formatInputDate } from 'utils/helper'
 
 const Container = styled('div')`
@@ -47,6 +48,7 @@ const Container = styled('div')`
 const DateMode = ({ date, setDate }) => {
   const onChange = (event) => {
     // debugger
+    console.log(date)
     saveDate(event.target.value)
   }
 
@@ -55,40 +57,47 @@ const DateMode = ({ date, setDate }) => {
     localStorage.setItem('date', date)
   }
 
-  // const changeDate = (shift) => {
-  //   const changedDate = dayjs(date).add(shift, 'year').format("YYYY")
+  const changeDate = (shift) => {
+    const changedDate = dayjs(date).add(shift, 'year').format("YYYY-MM-DD")
 
-  //   saveDate(changedDate)
-  // }
+    saveDate(changedDate)
+  }
 
   // debugger
 
   return <Container>
-    {/* <div className="Button" title="100 гадоў назад" onClick={() => changeDate(-100)}>
+    <div className="Button" title="100 гадоў назад" onClick={() => changeDate(-100)}>
       ⇇
-    </div> */}
-    {/* <div className="Button" title="10 гадоў назад" onClick={() => changeDate(-10)}>
+    </div>
+    <div className="Button" title="10 гадоў назад" onClick={() => changeDate(-10)}>
       ↞
-    </div> */}
-    {/* <div className="Button" title="1 гадоў назад" onClick={() => changeDate(-1)}>
+    </div>
+    <div className="Button" title="1 гадоў назад" onClick={() => changeDate(-1)}>
       ←
-    </div> */}
+    </div>
     <input
-      type="datetime-local"
+      // type="datetime-local"
+      type="date"
+      // type="number"
+      // value={formatInputYear(date)}
       // value={formatInputDate(date)}
       value={date}
       onChange={onChange}
       className="Date"
+      // min="500"
+      // max="2500"
+      // step="1"
+      // placeholder="YYYY"
     />
-    {/* <div className="Button" title="1 гадоў наперад" onClick={() => changeDate(1)}>
+    <div className="Button" title="1 гадоў наперад" onClick={() => changeDate(1)}>
       →
-    </div> */}
-    {/* <div className="Button" title="10 гадоў наперад" onClick={() => changeDate(10)}>
+    </div>
+    <div className="Button" title="10 гадоў наперад" onClick={() => changeDate(10)}>
       ↠
-    </div> */}
-    {/* <div className="Button" title="100 гадоў наперад" onClick={() => changeDate(100)}>
+    </div>
+    <div className="Button" title="100 гадоў наперад" onClick={() => changeDate(100)}>
       ⇉
-    </div> */}
+    </div>
   </Container>
 }
 

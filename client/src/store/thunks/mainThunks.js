@@ -31,6 +31,9 @@ const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate, tags) 
       }
     })
     .then((response) => {
+      const jsonSize = new Blob([JSON.stringify(response.data)]).size;
+
+      dispatch(setProgressContentLength(jsonSize));
       dispatch(setAreasData(response.data.map(areaToPolygonObject)));
     })
     .catch((error) => {

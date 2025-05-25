@@ -325,8 +325,6 @@ const Map = (props) => {
     background: true,
   });
 
-  console.log('tags', selectedTags)
-
   const tagSelectedAreas = useMemo(() => {
     return (data || []).filter(({ tags }) => {
       return tags.find(({ key: { id: keyId, name: keyName }, value: { id: valueId, name: keyValue }}) => {
