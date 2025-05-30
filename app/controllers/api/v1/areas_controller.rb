@@ -22,8 +22,8 @@ module Api
           .includes(:company).includes(tags: [:key, :value])
 
         if tags.present?
-          areas = tags.reduce(nil) do |acc, (key_id, value_id)|
-            condition = areas.where(tags: { tag_key_id: key_id, tag_value_id: value_id })
+          areas = tags.reduce(nil) do |acc, (tag)|
+            condition = areas.where(tags: { tag_value_id: tag.dig('id') })
             acc ? acc.or(condition) : condition
           end
         end

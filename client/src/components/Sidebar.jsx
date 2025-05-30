@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import cx from 'classnames'
 
 import { FILTER_START_DATE, FILTER_INFO, FILTER_ICON, FILTER_TITLE, FILTER_CLUSTER, SELECTED_TAGS } from 'constants'
-import { safeParseJson, compareTags } from 'utils/helper'
 import { NavigateMode } from './Sidebar/navigate'
 import { setMapStyle, setSearchQuery, setSelectedTags, setTitleShow, setClusterShow, setIconShow, setAreaShow } from 'store/actions'
 
@@ -28,10 +27,10 @@ const Container = styled.div`
   }
 
   .Filters {
-    width: 184px;
+    // width: 184px;
     display: flex;
     flex-direction: column;
-    gap: 16px;
+    gap: 8px;
   }
 
   .FilterGroup {
@@ -46,6 +45,24 @@ const Container = styled.div`
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
+  }
+
+  .FilterGroupValueItem {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    width: 100%;
+  }
+
+  .FilterGroupValueItemLabel {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: no-wrap;
+  }
+
+  .FilterGroupValueItem label {
   }
 `
 
@@ -70,12 +87,13 @@ const Sidebar = ({
   }) => {
   const [startDateFilter, setStartDateFilter] = useState(localStorage.getItem(FILTER_START_DATE) === 'true')
   const [infoFilter, setInfoFilter] = useState(localStorage.getItem(FILTER_INFO) === 'true')
+  const [collapsedGroups, setCollapsedGroups] = useState({})
 
-  const toogleTagsFilter = (key, value) => {
-    if (selectedTags.some(compareTags(key, value))) {
-      setSelectedTags([...selectedTags.filter(([key2, value2]) => (key !== key2) || (value !== value2))])
+  const toogleTagsFilter = (id) => {
+    if (selectedTags.find(({ id: selectedId }) => id === selectedId)) {
+      setSelectedTags([...selectedTags.filter(({ id: selectedId }) => id !== selectedId)])
     } else {
-      setSelectedTags([...selectedTags, [key, value]])
+      setSelectedTags([...selectedTags, { id }])
     }
   }
 
@@ -113,6 +131,23 @@ const Sidebar = ({
 
   const onSearch = ({ target: { value }}) => {
     setSearchQuery(value)
+  }
+
+  const toggleGroup = (key) => {
+    setCollapsedGroups(prev => ({
+      ...prev,
+      [key]: !prev[key]
+    }))
+  }
+
+  const changeTagColor = (id, color) => {
+    setSelectedTags(selectedTags.map((tag) => {
+      if (tag.id === id) {
+        return { ...tag, color }
+      }
+
+      return tag
+    }))
   }
 
   return (
@@ -154,19 +189,33 @@ const Sidebar = ({
             tags && tags.map(({ id: tagId, name: key, options }, index) => {
               return (
                 <div className='FilterGroup' key={index}>
-                  <div className='FilterGroupKey'>{key}</div>
-                  <div className='FilterGroupValues'>
-                    {
-                      options.map(({ id: valueId, name: value }, index) => {
-                        return (
-                          <div key={index}>
-                            <input id={idFromTag(key, value)} type='checkbox' onChange={() => toogleTagsFilter(tagId, valueId)} checked={selectedTags.some(compareTags(tagId, valueId))}></input>
-                            <label htmlFor={idFromTag(key, value)}>{value}</label>
-                          </div>
-                        )
-                      })
-                    }
+                  <div className='FilterGroupKey' onClick={() => toggleGroup(key)} style={{ cursor: 'pointer' }}>
+                    {collapsedGroups[key] ? '▸' : '▾'} {key}
                   </div>
+                  {!collapsedGroups[key] && (
+                    <div className='FilterGroupValues'>
+                      {
+                        options.map(({ id, name: value }, index) => {
+                          const checked = selectedTags.find(({ id: selectedId }) => id === selectedId);
+                          const color = selectedTags.find(({ id: selectedId }) => id === selectedId)?.color;
+
+                          return (
+                            <div key={index} className='FilterGroupValueItem'>
+                              <div className='FilterGroupValueItemLabel'>
+                                <input id={value} type='checkbox' onChange={() => toogleTagsFilter(id)} checked={checked}></input>
+                                <label htmlFor={value}>{value}</label>
+                              </div>
+                              <div>
+                                {
+                                  checked && <input type='color' onChange={(e) => changeTagColor(id, e.target.value)} value={color ?? '#ffffff'}></input>
+                                }
+                              </div>
+                            </div>
+                          )
+                        })
+                      }
+                    </div>
+                  )}
                 </div>
               )
             })

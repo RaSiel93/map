@@ -4,7 +4,6 @@ import { StaticMap } from 'react-map-gl'
 import { WebMercatorViewport } from '@deck.gl/core';
 import DeckGL from '@deck.gl/react'
 import { MAPBOX_ACCESS_TOKEN, API_URL, DEBOUNCE_TIME, modes, FILTER_START_DATE, FILTER_CITY, FILTER_TAGS } from 'constants'
-import { compareTags } from 'utils/helper'
 import Supercluster from 'supercluster';
 
 import {
@@ -24,25 +23,7 @@ import {
   IconLayer,
 } from '@deck.gl/layers';
 import jsCookie from 'js-cookie'
-
-const convertHexToRGBA = (hexCode, opacity = 1) => {
-  let hex = hexCode.replace('#', '');
-
-  if (hex.length === 3) {
-    hex = `${hex[0]}${hex[0]}${hex[1]}${hex[1]}${hex[2]}${hex[2]}`;
-  }
-
-  const r = parseInt(hex.substring(0, 2), 16);
-  const g = parseInt(hex.substring(2, 4), 16);
-  const b = parseInt(hex.substring(4, 6), 16);
-
-  /* Backward compatibility for whole number based opacity values. */
-  if (opacity > 0.01 && opacity <= 1) {
-    opacity = opacity * 255;
-  }
-
-  return [r, g , b, opacity];
-};
+import { convertHexToRGBA } from 'utils/helper';
 
 const Map = (props) => {
   const {
@@ -72,10 +53,18 @@ const Map = (props) => {
     areaShow,
   } = props;
 
-  const [clusters, setClusters] = useState([]);
+  // const [clusters, setClusters] = useState([]);
   const [bounds, setBounds] = useState([]);
+  const [clustersGroup, setClustersGroup] = useState([]);
+  const [clustersLayersGroup, setClustersLayersGroup] = useState([]);
 
-  const [clusterIndex] = useState(() => new Supercluster());
+  const [clusterIndexes, setClusterIndexes] = useState([]);
+
+  useEffect(() => {
+    const clusterIndexes = selectedTags.map(({ color }) => new Supercluster({ properties: { color } }));
+
+    setClusterIndexes(clusterIndexes);
+  }, [selectedTags])
 
   // const pointsLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer1',
@@ -325,17 +314,23 @@ const Map = (props) => {
     background: true,
   });
 
-  const tagSelectedAreas = useMemo(() => {
-    return (data || []).filter(({ tags }) => {
-      return tags.find(({ key: { id: keyId, name: keyName }, value: { id: valueId, name: keyValue }}) => {
-        return selectedTags.some(compareTags(keyId, valueId))
-      })
+  const tagSelectedAreasGroup = useMemo(() => {
+    return selectedTags.map(({ id: selectedId, color }) => {
+      return {
+        id: selectedId,
+        color,
+        data: (data || []).filter(({ tags }) => {
+          return tags.find(({ value: { id }}) => {
+            return selectedId === id
+          })
+        })
+      }
     })
   }, [data, selectedTags])
 
   const tagsLayer = new TextLayer({
     id: 'tags-layer',
-    data: tagSelectedAreas,
+    data: tagSelectedAreasGroup.flatMap(({ data }) => data),
     pickable: true,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getText: d => d.number,
@@ -352,57 +347,81 @@ const Map = (props) => {
   // CLUSTER
 
   useEffect(() => {
-    const data = tagSelectedAreas.map((d, i) => ({
-      geometry: { type: 'Point', coordinates: [d.longitude, d.latitude] },
-      properties: { id: i }
-    }))
+    if (clusterIndexes.length !== tagSelectedAreasGroup.length) {
+      return
+    }
 
-    clusterIndex.load(data);
-  }, [clusterIndex, tagSelectedAreas]);
+    tagSelectedAreasGroup.forEach(({ data }, index) => {
+      const points = data.map((d, i) => ({
+        geometry: { type: 'Point', coordinates: [d.longitude, d.latitude] },
+        properties: { id: i }
+      }))
+
+      clusterIndexes[index].load(points)
+    })
+  }, [clusterIndexes, tagSelectedAreasGroup]);
 
   useEffect(() => {
     if (!bounds || !zoom) return;
-    const newClusters = clusterIndex.getClusters(bounds, Math.floor(zoom));
 
-    if (JSON.stringify(newClusters) !== JSON.stringify(clusters)) {
-      setClusters(newClusters);
+    const newClustersGroup = clusterIndexes.map((clusterIndex) => {
+      return clusterIndex.getClusters(bounds, Math.floor(zoom));
+    });
+    if (JSON.stringify(newClustersGroup) !== JSON.stringify(clustersGroup)) {
+      setClustersGroup(newClustersGroup);
     }
-  }, [bounds, zoom, clusterIndex, data]);
+  }, [bounds, zoom, clusterIndexes, data]);
 
   const getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
 
-  const clusterLayer = new ScatterplotLayer({
-    id: 'scatterplot-layer-2',
-    data: clusters,
-    stroked: true,
-    radiusScale: 1,
-    radiusMinPixels: 8,
-    radiusMaxPixels: 40,
-    radiusUnits: 'pixels',
-    lineWidthMinPixels: 2,
-    getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
-    getRadius: getRadius,
-    getFillColor: [255, 0, 0],
-    getLineColor: [255, 255, 255],
-    onDragStart: (info, event) => {
-      // console.log('onDragStart', info, event)
-    },
-    onDragEnd: (info, event) => {
-      // console.log('onDragEnd', info, event)
-    }
-  });
+  // const clustersGroup = [];
+  // const clustersTextGroup = [];
 
-  const clusterTextLayer = new TextLayer({
-    id: 'text-layer',
-    data: clusters.filter(d => d.properties.cluster),
-    getPosition: d => d.geometry.coordinates,
-    getText: d => String(d.properties.point_count),
-    getSize: 10,
-    getColor: [255, 255, 255],
-    getTextAnchor: 'middle',
-    getAlignmentBaseline: 'center',
-    fontWeight: 'bold',
-  });
+  useEffect(() => {
+    const clusterLayersGroup = clustersGroup.map((clusters, index) => {
+      return (
+        [
+          new ScatterplotLayer({
+            id: `scatterplot-layer-${index}`,
+            data: clusters,
+            stroked: true,
+            radiusScale: 1,
+            radiusMinPixels: 8,
+            radiusMaxPixels: 40,
+            radiusUnits: 'pixels',
+            lineWidthMinPixels: 2,
+            getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
+            getRadius: getRadius,
+            getFillColor: (d) => {
+              const color = clusterIndexes[index].options.properties.color;
+
+              return color ? convertHexToRGBA(color) : [255, 0, 0]
+            },
+            getLineColor: [255, 255, 255],
+            onDragStart: (info, event) => {
+              // console.log('onDragStart', info, event)
+            },
+            onDragEnd: (info, event) => {
+              // console.log('onDragEnd', info, event)
+            }
+          }),
+          new TextLayer({
+            id: `text-layer-${index}`,
+            data: clusters.filter(d => d.properties.cluster),
+            getPosition: d => d.geometry.coordinates,
+            getText: d => String(d.properties.point_count),
+            getSize: 10,
+            getColor: [255, 255, 255],
+            getTextAnchor: 'middle',
+            getAlignmentBaseline: 'center',
+            fontWeight: 'bold',
+          })
+        ]
+      )
+    })
+
+    setClustersLayersGroup(clusterLayersGroup);
+  }, [clustersGroup])
 
   // const tagPointLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer22',
@@ -630,8 +649,9 @@ const Map = (props) => {
     titleShow ? titleLayer : null,
     scatterplotSearchFilterAreaPointsLayer,
     scatterplotSearchHoveredFilterAreaPointsLayer,
-    clusterShow ? clusterLayer : null,
-    clusterShow ? clusterTextLayer : null,
+    clusterShow ? clustersLayersGroup : null,
+    // clusterShow ? clusterLayer : null,
+    // clusterShow ? clusterTextLayer : null,
     // heatmapLayer,
     // tagPointLayer
   ]
