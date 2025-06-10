@@ -19,7 +19,10 @@ module Api
         areas = areas
           .where("end_at is null OR end_at > ?", date)
           .where("max_zoom > ?", zoom)
-          .includes(:company).includes(tags: [:key, :value])
+          # .includes(:company)
+          # .includes(tags: [:key, :value])
+          .includes(:tags)
+
 
         if tags.present?
           areas = tags.reduce(nil) do |acc, (tag)|
@@ -28,8 +31,7 @@ module Api
           end
         end
 
-        cached_areas = render_to_string json: areas, include: %w[tags.key tags.value], fields: %i[id title description max_zoom area_id people_count logo_url longitude latitude start_at end_at color coordinates]
-        # end
+        cached_areas = render_to_string json: areas, include: %w[], fields: %i[id title area_id longitude latitude color coordinates tag_value_ids]
 
         response.headers['Content-Length'] = cached_areas.bytesize.to_s
 

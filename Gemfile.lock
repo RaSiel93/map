@@ -91,6 +91,7 @@ GEM
       activesupport (>= 3.0.0, < 7.1)
       ruby2_keywords (>= 0.0.2, < 1.0)
     bcrypt (3.1.18)
+    bigdecimal (3.2.2)
     bootsnap (1.15.0)
       msgpack (~> 1.2)
     builder (3.2.4)
@@ -197,6 +198,9 @@ GEM
     pry (0.14.1)
       coderay (~> 1.1)
       method_source (~> 1.0)
+    pry-byebug (3.10.1)
+      byebug (~> 11.0)
+      pry (>= 0.13, < 0.15)
     pry-rails (0.3.9)
       pry (>= 0.10.4)
     public_suffix (5.0.1)
@@ -257,6 +261,12 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    sentry-rails (5.24.0)
+      railties (>= 5.0)
+      sentry-ruby (~> 5.24.0)
+    sentry-ruby (5.24.0)
+      bigdecimal
+      concurrent-ruby (~> 1.0, >= 1.0.2)
     sprockets (4.2.0)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -267,6 +277,7 @@ GEM
     sshkit (1.21.3)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    stackprof (0.2.27)
     thor (1.2.1)
     tilt (2.0.11)
     timeout (0.3.1)
@@ -296,12 +307,16 @@ DEPENDENCIES
   dragonfly (~> 1.4.0)
   pg (~> 1.1)
   pry
+  pry-byebug
   pry-rails
   puma (~> 5.0)
   rack-cors
   rails (~> 6.1.4, >= 6.1.4.4)
   rbtrace
   sass-rails
+  sentry-rails
+  sentry-ruby
+  stackprof
 
 RUBY VERSION
    ruby 3.1.2p20

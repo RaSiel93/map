@@ -91,6 +91,7 @@ const App = (props) => {
     progress,
     progressContentLength,
     progressDuration,
+    selectedTags,
   } = props;
 
   // const [date, setDate] = useState(localStorage.getItem('date'))
@@ -113,6 +114,10 @@ const App = (props) => {
   useEffect(() => {
     reloadData()
   }, [date])
+
+  useEffect(() => {
+    loadAreasData()
+  }, [selectedTags])
 
   return token && (
     <Container>
@@ -156,6 +161,7 @@ export default connect(
     progress: state.main.progress,
     progressContentLength: state.main.progressContentLength,
     progressDuration: state.main.progressDuration,
+    selectedTags: state.main.selectedTags,
   }),
   (dispatch) => ({
     loadAreasData: () => dispatch(loadAreasData()),

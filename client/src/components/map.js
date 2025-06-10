@@ -27,6 +27,7 @@ import { convertHexToRGBA } from 'utils/helper';
 
 const Map = (props) => {
   const {
+    tags,
     latitude,
     longitude,
     mode,
@@ -57,6 +58,7 @@ const Map = (props) => {
   const [bounds, setBounds] = useState([]);
   const [clustersGroup, setClustersGroup] = useState([]);
   const [clustersLayersGroup, setClustersLayersGroup] = useState([]);
+  const [adminLevelTags, setAdminLevelTags] = useState({});
 
   const [clusterIndexes, setClusterIndexes] = useState([]);
 
@@ -65,6 +67,23 @@ const Map = (props) => {
 
     setClusterIndexes(clusterIndexes);
   }, [selectedTags])
+
+  useEffect(() => {
+    if (tags.length === 0) {
+      return;
+    }
+
+    const adminLevelTags = {};
+
+    tags.find(({ label }) => label === 'admin_level').options.forEach(({ id, name }) => {
+      adminLevelTags[name] = id;
+    });
+
+    console.log('adminLevelTags', adminLevelTags)
+
+
+    setAdminLevelTags(adminLevelTags);
+  }, [tags])
 
   // const pointsLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer1',
@@ -106,35 +125,23 @@ const Map = (props) => {
   //   }
   // });
 
-  const data = areasData.filter(({ id, maxZoom, tags }) => {
-    const adminLevelTag = tags.find(({ key: { label }}) => label === 'admin_level');
+  const data = areasData;//.filter(({ id, tagValueIds }) => {
+    // if (tagValueIds.includes(adminLevelTags[2])) {
+    //   return zoom < 6.0
+    // } else if (tagValueIds.includes(adminLevelTags[4])) {
+    //   return zoom < 7.0 && zoom > 6.0
+    // } else if (tagValueIds.includes(adminLevelTags[6])) {
+    //   return zoom < 10 && zoom > 7.0
+    // } else if (tagValueIds.includes(adminLevelTags[8])) {
+    //   return zoom < 11 && zoom > 10.0
+    // } else if (tagValueIds.includes(adminLevelTags[9])) {
+    //   return zoom < 14 && zoom > 11.0
+    // } else if (tagValueIds.includes(adminLevelTags[10])) {
+    //   return zoom < 14 && zoom > 11.0
+    // }
 
-    if (adminLevelTag) {
-      if (adminLevelTag.value.name === "2") {
-        return zoom < 6.0
-      } else if (adminLevelTag.value.name === "4") {
-        return zoom < 7.0 && zoom > 6.0
-      } else if (adminLevelTag.value.name === "6") {
-        return zoom < 10 && zoom > 7.0
-      } else if (adminLevelTag.value.name === "8") {
-        return zoom < 11 && zoom > 10.0
-      } else if (adminLevelTag.value.name === "9") {
-        return zoom < 14 && zoom > 11.0
-      } else if (adminLevelTag.value.name === "10") {
-        return zoom < 14 && zoom > 11.0
-      } else {
-        return maxZoom > zoom
-      }
-    }
-
-    const sourceTag = tags.find(({ key: { label }}) => label === 'source');
-
-    if (sourceTag) {
-      return true
-    }
-
-    return maxZoom > zoom
-  })
+  //   return true;
+  // })
 
   const getFillColor = ({ id, areaId, peopleCount, addedPeopleCount, color }) => {
     let fillColor, defaultColor = null;
@@ -163,36 +170,30 @@ const Map = (props) => {
     return fillColor;
   }
 
-  const getLineWidth = ({ id, tags }) => {
+  const getLineWidth = ({ id, tagValueIds = [] }) => {
     let resultElevation = 0
-  //   let hoverMultiplier = 1
+    // let hoverMultiplier = 1
 
-    const adminLevelTag = tags.find(({ key: { label }}) => label === 'admin_level')
-
-    if (adminLevelTag) {
-      if (adminLevelTag.value.name === "2") {
+      if (tagValueIds.includes(adminLevelTags[2])) {
         resultElevation = 1500
         // hoverMultiplier = 5
-      } else if (adminLevelTag.value.name === "4") {
+      } else if (tagValueIds.includes(adminLevelTags[4])) {
         resultElevation = 800
         // hoverMultiplier = 4
-      } else if (adminLevelTag.value.name === "6") {
+      } else if (tagValueIds.includes(adminLevelTags[6])) {
         resultElevation = 400
         // hoverMultiplier = 3
-      } else if (adminLevelTag.value.name === "8") {
+      } else if (tagValueIds.includes(adminLevelTags[8])) {
         resultElevation = 100
         // hoverMultiplier = 2
-      } else if (adminLevelTag.value.name === "9") {
+      } else if (tagValueIds.includes(adminLevelTags[9])) {
         resultElevation = 20
         // hoverMultiplier = 1.5
-      } else if (adminLevelTag.value.name === "10") {
+      } else if (tagValueIds.includes(adminLevelTags[10])) {
         resultElevation = 20
         // hoverMultiplier = 1.5
-      } else {
-        resultElevation = 10
-        // hoverMultiplier = 3
       }
-    }
+    // }
 
     // if (hoveredAreaId === id || selectedAreaData?.id === id) {
       // resultElevation *= hoverMultiplier
@@ -223,9 +224,10 @@ const Map = (props) => {
 
   const areasLayer = new PolygonLayer({
     id: 'polygon-layer',
-    data,
+    data: areasData,
     getFillColor,
-    getLineWidth,
+    // getLineWidth,
+    getLineWidth: () => 1,
     getLineColor,
     getPolygon,
     onClick,
@@ -274,30 +276,43 @@ const Map = (props) => {
     // },
   });
 
-  const textData = data.filter(({ tags, maxZoom }) => {
-    const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
+  const selectedAreasLayer = new PolygonLayer({
+    id: 'selected-areas-layer',
+    data: [selectedAreaData],
+    getFillColor,
+    // getLineWidth,
+    getLineWidth: () => 10,
+    getLineColor,
+    getPolygon,
+    onClick,
+    onHover,
+    pickable: true,
+    filled: true,
+    lineJointRounded: true,
+  });
 
-    if (adminLevelTag) {
-      // debugger
-      if (adminLevelTag.value.name === "2") {
-        return zoom < 6.0
-      } else if (adminLevelTag.value.name === "4") {
-        return zoom < 7.0 && zoom > 6.0
-      } else if (adminLevelTag.value.name === "6") {
-        return zoom < 10 && zoom > 7.0
-      } else if (adminLevelTag.value.name === "8") {
-        return zoom < 11 && zoom > 10.0
-      } else if (adminLevelTag.value.name === "9") {
-        return zoom < 14 && zoom > 11.0
-      } else if (adminLevelTag.value.name === "10") {
-        return zoom < 14 && zoom > 11.0
-      } else {
-        // return maxZoom > zoom
-      }
-    }
+  const textData = data;//.filter(({ tagValueIds = [] }) => {
+    // const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
 
-    return false
-  })
+    // if (adminLevelTag) {
+  //     if (tagValueIds.includes(adminLevelTags[2])) {
+  //       return zoom < 6.0
+  //     } else if (tagValueIds.includes(adminLevelTags[4])) {
+  //       return zoom < 7.0 && zoom > 6.0
+  //     } else if (tagValueIds.includes(adminLevelTags[6])) {
+  //       return zoom < 10 && zoom > 7.0
+  //     } else if (tagValueIds.includes(adminLevelTags[8])) {
+  //       return zoom < 11 && zoom > 10.0
+  //     } else if (tagValueIds.includes(adminLevelTags[9])) {
+  //       return zoom < 14 && zoom > 11.0
+  //     } else if (tagValueIds.includes(adminLevelTags[10])) {
+  //       return zoom < 14 && zoom > 11.0
+  //     }
+  //     // return maxZoom > zoom
+  //   // }
+
+  //   return false
+  // })
 
   const titleLayer = new TextLayer({
     id: 'text-layer',
@@ -314,15 +329,13 @@ const Map = (props) => {
     background: true,
   });
 
-  const tagSelectedAreasGroup = useMemo(() => {
+  const tagSelectedAreasGroup = useMemo(() => {    
     return selectedTags.map(({ id: selectedId, color }) => {
       return {
         id: selectedId,
         color,
-        data: (data || []).filter(({ tags }) => {
-          return tags.find(({ value: { id }}) => {
-            return selectedId === id
-          })
+        data: (data || []).filter(({ tagValueIds }) => {
+          return tagValueIds.includes(selectedId)
         })
       }
     })
@@ -638,10 +651,13 @@ const Map = (props) => {
     bearing: 0
   }
 
+  console.log('selectedAreaData', selectedAreaData)
+  
   const layers = [
     // pointsLayer,
     // contourAreasLayer,
     areaShow ? areasLayer : null,
+    selectedAreaData ? selectedAreasLayer : null,
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
     iconShow ? iconLayer : null,
@@ -717,6 +733,7 @@ export default connect(
     longitude: state.main.longitude,
     zoom: state.main.zoom,
     mode: state.main.mode,
+    tags: state.main.tags,
     longitude: state.main.longitude,
     latitude: state.main.latitude,
     areasData: state.main.areasData,

@@ -3,7 +3,7 @@ module Api
     class AreaSerializer < ActiveModel::Serializer
       attributes :id, :title, :description, :max_zoom, :area_id,
         :people_count, :logo_url, :longitude, :latitude, :start_at, :end_at, :color, :coordinates,
-        :notes, :areas, :company_id, :added_people_count, :estimated_people_count
+        :notes, :areas, :company_id, :added_people_count, :estimated_people_count, :tag_value_ids
 
       has_many :tags
       has_many :people
@@ -11,6 +11,10 @@ module Api
 
       def coordinates
         JSON.parse("[#{object.coordinates.join(',')}]")
+      end
+
+      def tag_value_ids
+        object.tags.pluck(:tag_value_id)
       end
     end
   end
