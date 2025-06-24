@@ -24,7 +24,7 @@ const Container = styled.div`
     padding: 8px;
   }
 
-  .SearchResult {
+  .SearchResult, .TagResult {
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -90,7 +90,7 @@ const SearchPanel = ({ id, sidebarExtended, search, setSearchQuery, searchQuery,
   return (
     <Container className={cx('SearchPanel', { active: sidebarExtended })}>
       <div className='Wrapper'>
-        <input className='Search' placeholder='Пошук' value={searchQuery} onChange={onSearch}></input>
+        <input className='Search' placeholder='Пошук' value={searchQuery ?? ''} onChange={onSearch}></input>
         <div className='SearchResult'>
           Колькасьць: {searchResult.length}
           {
@@ -98,6 +98,19 @@ const SearchPanel = ({ id, sidebarExtended, search, setSearchQuery, searchQuery,
               return (
                 <div key={`${index}-${id}`} className='SearchResult-Item' onClick={() => changeArea(id)} onMouseEnter={() => setSearchHoveredAreaId(id)} onMouseLeave={() => setSearchHoveredAreaId(null)}>
                   <span className='SearchResult-Item-Title'>{title}</span>
+                  { description }
+                </div>
+              )
+            })
+          }
+        </div>
+        <div className='SearchResult'>
+          Тэгі: {areasData.length}
+          {
+            areasData.map(({ id, number: title, description }, index) => {
+              return (
+                <div key={`${index}-${id}`} className='TagResult-Item' onClick={() => changeArea(id)} onMouseEnter={() => setSearchHoveredAreaId(id)} onMouseLeave={() => setSearchHoveredAreaId(null)}>
+                  <span className='TagResult-Item-Title'>{title}</span>
                   { description }
                 </div>
               )

@@ -651,7 +651,7 @@ const Map = (props) => {
     bearing: 0
   }
 
-  console.log('selectedAreaData', selectedAreaData)
+  // console.log('selectedAreaData', selectedAreaData)
   
   const layers = [
     // pointsLayer,

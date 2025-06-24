@@ -149,7 +149,7 @@ const EditModeModal = (props) => {
     toggleMode(modes.EDIT)
   }
 
-  console.log('selectedTags', selectedTags)
+  // console.log('selectedTags', selectedTags)
   // console.log('tagKeyOptions', tagKeyOptions)
   // console.log('tagValuesOptions', tagValuesOptions)
 

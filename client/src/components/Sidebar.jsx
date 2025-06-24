@@ -153,7 +153,7 @@ const Sidebar = ({
   return (
     <Container className={cx('Sidebar', { active: sidebarExtended })}>
       <div className='Wrapper'>
-        <input className='Search' placeholder='Пошук' value={searchQuery} onChange={onSearch}></input>
+        <input className='Search' placeholder='Пошук' value={searchQuery ?? ''} onChange={onSearch}></input>
         <div className="Filters">
           <div className='FilterGroup'>
             <div className="Filter">

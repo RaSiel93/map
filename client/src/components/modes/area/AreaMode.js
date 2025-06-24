@@ -56,6 +56,8 @@ const AreaMode = (props) => {
     toggleMode,
     createAreaForAreaMode,
     updateAreaForAreaMode,
+    tags,
+    selectedTags,
     // createStatus,
     // updateStatus,
   } = props;
@@ -80,9 +82,15 @@ const AreaMode = (props) => {
   };
 
   const onCreate = () => {
+    const tags_attributes = selectedTags.map(({ id }) => ({
+      tag_key_id: tags.find(t => t.options.some(o => o.id === id)).id,
+      tag_value_id: id,
+    }));
+
     const params = {
       area: {
         coordinates: newAreaPoints.map(JSON.stringify),
+        tags_attributes: tags_attributes,
       }
     };
 
@@ -127,6 +135,8 @@ export default connect(
     mode: state.main.mode,
     selectedAreaData: state.main.selectedAreaData,
     newAreaPoints: state.modes.area.newAreaPoints,
+    tags: state.main.tags,
+    selectedTags: state.main.selectedTags,
     // createStatus: state.modes.area.createStatus,
     // updateStatus: state.modes.area.createStatus,
   }),
