@@ -79,9 +79,6 @@ const Map = (props) => {
       adminLevelTags[name] = id;
     });
 
-    console.log('adminLevelTags', adminLevelTags)
-
-
     setAdminLevelTags(adminLevelTags);
   }, [tags])
 

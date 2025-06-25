@@ -92,13 +92,14 @@ const App = (props) => {
     progressContentLength,
     progressDuration,
     selectedTags,
+    longitude,
+    latitude,
   } = props;
 
   // const [date, setDate] = useState(localStorage.getItem('date'))
 
-  const reloadData = useCallback(() => {
-    loadAreasData()
-    // loadPointsData()
+  useEffect(() => {
+    loadPointsData()
     loadCompanies()
     loadTags()
   }, [])
@@ -112,12 +113,8 @@ const App = (props) => {
   useDrag()
 
   useEffect(() => {
-    reloadData()
-  }, [date])
-
-  useEffect(() => {
     loadAreasData()
-  }, [selectedTags])
+  }, [date, longitude, latitude, selectedTags])
 
   return token && (
     <Container>
@@ -162,6 +159,8 @@ export default connect(
     progressContentLength: state.main.progressContentLength,
     progressDuration: state.main.progressDuration,
     selectedTags: state.main.selectedTags,
+    longitude: state.main.longitude,
+    latitude: state.main.latitude,
   }),
   (dispatch) => ({
     loadAreasData: () => dispatch(loadAreasData()),

@@ -10,10 +10,11 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_06_14_175519) do
+ActiveRecord::Schema.define(version: 2025_06_25_075134) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+  enable_extension "postgis"
 
   create_table "active_admin_comments", force: :cascade do |t|
     t.string "namespace"
@@ -41,25 +42,8 @@ ActiveRecord::Schema.define(version: 2024_06_14_175519) do
     t.index ["reset_password_token"], name: "index_admin_users_on_reset_password_token", unique: true
   end
 
-  create_table "areas", force: :cascade do |t|
-    t.string "coordinates", default: [], array: true
-    t.datetime "created_at", precision: 6, null: false
-    t.datetime "updated_at", precision: 6, null: false
-    t.string "title"
-    t.string "description"
-    t.decimal "max_zoom", default: "100.0", null: false
-    t.boolean "hidden", default: false, null: false
-    t.bigint "area_id"
-    t.integer "people_count"
-    t.bigint "company_id"
-    t.decimal "longitude"
-    t.decimal "latitude"
-    t.datetime "start_at"
-    t.datetime "end_at"
-    t.string "color"
-    t.index ["area_id"], name: "index_areas_on_area_id"
-    t.index ["company_id"], name: "index_areas_on_company_id"
-  end
+# Could not dump table "areas" because of following StandardError
+#   Unknown type 'geography' for column 'location'
 
   create_table "cars", force: :cascade do |t|
     t.string "number"
@@ -106,6 +90,14 @@ ActiveRecord::Schema.define(version: 2024_06_14_175519) do
     t.index ["company_id"], name: "index_people_on_company_id"
     t.index ["father_id"], name: "index_people_on_father_id"
     t.index ["mother_id"], name: "index_people_on_mother_id"
+  end
+
+  create_table "spatial_ref_sys", primary_key: "srid", id: :integer, default: nil, force: :cascade do |t|
+    t.string "auth_name", limit: 256
+    t.integer "auth_srid"
+    t.string "srtext", limit: 2048
+    t.string "proj4text", limit: 2048
+    t.check_constraint "(srid > 0) AND (srid <= 998999)", name: "spatial_ref_sys_srid_check"
   end
 
   create_table "tag_keys", force: :cascade do |t|

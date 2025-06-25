@@ -7,7 +7,7 @@ import { API_URL } from 'constants'
 
 let controller = null;
 
-const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate, tags) => {
+const throttledLoadAreasData = throttle((dispatch, date, zoom, longitude, latitude, startDate, tags) => {
   dispatch(setProgressDuration(0))
   dispatch(setProgress(10));
   const start = performance.now();
@@ -17,6 +17,8 @@ const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate, tags) 
       params: {
         date,
         zoom,
+        longitude,
+        latitude,
         startDate,
         tags
       },
@@ -43,7 +45,7 @@ const throttledLoadAreasData = throttle((dispatch, date, zoom, startDate, tags) 
         console.error(error);
       }
     });
-}, 1000);
+}, 300);
 
 export const loadAreasData = () => (dispatch, state) => {
   if (controller) controller.abort();
@@ -52,9 +54,11 @@ export const loadAreasData = () => (dispatch, state) => {
 
   const date = localStorage.getItem('date');
   const zoom = state().main.zoom;
+  const longitude = state().main.longitude;
+  const latitude = state().main.latitude;
   const startDate = localStorage.getItem('filters.startDate') === 'true';
 
-  throttledLoadAreasData(dispatch, date, zoom, startDate, state().main.selectedTags);
+  throttledLoadAreasData(dispatch, date, zoom, longitude, latitude, startDate, state().main.selectedTags);
 }
 
 export const loadCompanies = () => (dispatch) => {

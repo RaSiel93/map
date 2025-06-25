@@ -3,7 +3,9 @@ module Api
     class AreasController < ApplicationController
       def index
         date = params[:date].present? ? Time.zone.parse(params[:date]) : Time.zone.now
-        zoom = params[:zoom] || 1
+        zoom = params[:zoom].to_f || 1
+        longitude = params[:longitude]
+        latitude = params[:latitude]
         start_date = params[:startDate] === "true"
         tags = (params[:tags] || []).map { |tag| JSON.parse(tag) }
 
@@ -23,6 +25,12 @@ module Api
           # .includes(tags: [:key, :value])
           .includes(:tags)
 
+        if (longitude.present? && latitude.present? && zoom.present?)
+          areas = areas.where(
+            "ST_DWithin(location, ST_SetSRID(ST_MakePoint(?, ?), 4326)::geography, ?)",
+            longitude, latitude, tile_radius_for_zoom(zoom)
+          )
+        end
 
         if tags.present?
           areas = tags.reduce(nil) do |acc, (tag)|
@@ -95,6 +103,16 @@ module Api
           coordinates: [],
           tags_attributes: [:id, :area_id, :tag_key_id, :tag_value_id, :_destroy]
         )
+      end
+
+      def tile_radius_for_zoom(zoom)
+        earth_circumference = 40_075_016.686 # м
+        tile_size = 256.0
+        resolution_m_per_px = earth_circumference / tile_size / (2 ** zoom)
+        visible_tile_count = 3 # або 2–4 у залежнасці ад буфера
+
+        radius_m = resolution_m_per_px * tile_size * visible_tile_count / 2
+        radius_m.round(2)
       end
     end
   end
