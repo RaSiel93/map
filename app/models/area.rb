@@ -11,6 +11,8 @@ class Area < ApplicationRecord
 
   delegate :logo, to: :company, allow_nil: true
 
+  before_save :set_location_from_coordinates
+
   ZOOM_MULTIPLICATOR = 23525234
   ZOOM_LEVEL = 1.0/8.00
 
@@ -72,5 +74,9 @@ class Area < ApplicationRecord
       longitudes.min + (longitudes.max - longitudes.min) / 2,
       latitudes.min + (latitudes.max - latitudes.min) / 2
     ]
+  end
+
+  def set_location_from_coordinates
+    self.location = "SRID=4326;POINT(#{longitude} #{latitude})"
   end
 end
