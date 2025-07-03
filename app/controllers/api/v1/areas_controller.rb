@@ -48,12 +48,16 @@ module Api
 
       def create
         date = params[:date].present? ? params[:date] : nil
-        area = Area.create(area_params.merge(start_at: date))
+        area = Area.new(area_params.merge(start_at: date))
 
-        area.update_max_zoom
-        area.update_coordinate
+        area.set_max_zoom
+        area.set_coordinate
 
-        render json: area, include: %w[tags.key tags.value]
+        if area.save
+          render json: area, include: %w[tags.key tags.value]
+        else
+          render json: { errors: area.errors }, status: :unprocessable_entity
+        end
       end
 
       def show
@@ -70,7 +74,7 @@ module Api
         date = params[:date] ? params[:date] : Time.zone.now
 
         if (area.start_at === nil || !area_params['coordinates'] || date.year === area.start_at.year)
-          area.update(area_params)
+          area.assign_attributes(area_params)
         else
           area = Area.create(area_params.merge(
             title: area.title,
@@ -81,10 +85,14 @@ module Api
           ))
         end
 
-        area.update_max_zoom
-        area.update_coordinate
+        area.set_max_zoom
+        area.set_coordinate
 
-        render json: area, include: %w[tags.key tags.value]
+        if area.save
+          render json: area, include: %w[tags.key tags.value]
+        else
+          render json: { errors: area.errors }, status: :unprocessable_entity
+        end
       end
 
       def destroy

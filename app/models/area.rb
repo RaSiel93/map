@@ -16,14 +16,15 @@ class Area < ApplicationRecord
   ZOOM_MULTIPLICATOR = 23525234
   ZOOM_LEVEL = 1.0/8.00
 
-  def update_max_zoom
-    update(max_zoom: calculate_max_zoom)
+  def set_max_zoom
+    self.max_zoom = calculate_max_zoom
   end
 
-  def update_coordinate
+  def set_coordinate
     longitude, latitude = calculate_coordinate
 
-    update(longitude: longitude, latitude: latitude)
+    self.longitude = longitude
+    self.latitude = latitude
   end
 
   def added_people_count
