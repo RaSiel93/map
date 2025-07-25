@@ -93,14 +93,36 @@ export const loadTags = () => (dispatch) => {
     })
 }
 
-export const search = () => (dispatch) => {
-  client.get(`${API_URL}/api/v1/search.json`, { withCredentials: true, params: { q: localStorage.getItem('searchQuery'), date: localStorage.getItem('date') }})
-    .then(response => {
-      dispatch(setSearchResult(response.data));
-    })
-    .catch((response) => {
-      console.log(response);
+export const throttledSearch = throttle((dispatch, q, date, zoom, longitude, latitude, startDate, tags) => {
+  client.get(`${API_URL}/api/v1/search.json`, {
+    withCredentials: true,
+    params: {
+      q,
+      date,
+      tags,
+      zoom,
+      longitude,
+      latitude,
+      startDate
+    }
+  })
+  .then(response => {
+    dispatch(setSearchResult(response.data));
+  })
+  .catch((response) => {
+    console.log(response);
 
-      return [];
-    })
+    return [];
+  })
+}, 300);
+
+export const search = () => (dispatch, state) => {
+  const q = localStorage.getItem('searchQuery');
+  const date = localStorage.getItem('date');
+  const zoom = state().main.zoom;
+  const longitude = state().main.longitude;
+  const latitude = state().main.latitude;
+  const startDate = localStorage.getItem('filters.startDate') === 'true';
+
+  throttledSearch(dispatch, q, date, zoom, longitude, latitude, startDate, state().main.selectedTags);
 }
