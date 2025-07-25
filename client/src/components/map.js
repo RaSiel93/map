@@ -432,6 +432,7 @@ const Map = (props) => {
             lineWidthMinPixels: 2,
             getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
             getRadius: getRadius,
+            getLineColor: [0, 0, 0],
             getFillColor: (d) => {
               const color = clusterIndexes[index].options.properties.color;
 
@@ -451,9 +452,8 @@ const Map = (props) => {
             getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
             getText,
             getSize: 10,
-            getLineColor: [255, 255, 255],
             // getLineColor: [0, 0, 0],
-            getColor: [255, 255, 255],
+            getColor: [0, 0, 0],
             // getColor: [0, 0, 0],
             getTextAnchor: 'middle',
             getAlignmentBaseline: 'center',
