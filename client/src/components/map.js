@@ -401,9 +401,9 @@ const Map = (props) => {
   let getText = () => '?';
 
   if(clusterShowValue === 'point_count') {
-    getText = (d) => String(d.properties.point_count || '');
+    getText = (d) => String(d.properties.point_count ?? '');
   } else {
-    getText = (d) => String(d.properties.people_count || '?');
+    getText = (d) => String(d.properties.people_count ?? '?');
   }
 
   // const clustersGroup = [];
