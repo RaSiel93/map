@@ -18,8 +18,6 @@ class AreasImportService
   def call
     areas = parser.parse(file)
 
-    binding.pry
-
     Area.create(areas)
   end
 end
