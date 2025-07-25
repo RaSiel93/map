@@ -39,7 +39,7 @@ module Api
           end
         end
 
-        cached_areas = render_to_string json: areas, include: %w[], fields: %i[id title area_id longitude latitude color coordinates tag_value_ids]
+        cached_areas = render_to_string json: areas, include: %w[], fields: %i[id title area_id longitude latitude color coordinates tag_value_ids people_count]
 
         response.headers['Content-Length'] = cached_areas.bytesize.to_s
 

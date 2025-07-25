@@ -2,7 +2,7 @@ import { createStore, applyMiddleware } from 'redux';
 import thunk from 'redux-thunk';
 import reducer from './reducers';
 import jsCookie from 'js-cookie'
-import { SELECTED_TAGS, FILTER_TITLE, FILTER_CLUSTER, FILTER_ICON, FILTER_AREA } from 'constants'
+import { SELECTED_TAGS, FILTER_TITLE, FILTER_CLUSTER, FILTER_ICON, FILTER_AREA, FILTER_CLUSTER_SHOW_VALUE } from 'constants'
 import { safeParseJson } from 'utils/helper'
 
 const [latitude, longitude, zoom] = (jsCookie.get('_map_location') || '').split('|')
@@ -16,6 +16,7 @@ const initialState = {
     progressContentLength: 0,
     progressDuration: 0,
     clusterShow: localStorage.getItem(FILTER_CLUSTER) === 'true',
+    clusterShowValue: localStorage.getItem(FILTER_CLUSTER_SHOW_VALUE) || 'point_count',
     iconShow: localStorage.getItem(FILTER_ICON) === 'true',
     titleShow: localStorage.getItem(FILTER_TITLE) === 'true',
     areaShow: localStorage.getItem(FILTER_AREA) === 'true',

@@ -28,6 +28,7 @@ import {
   SET_PROGRESS_CONTENT_LENGTH,
   SET_PROGRESS_DURATION,
   SET_CLUSTER_SHOW,
+  SET_CLUSTER_SHOW_VALUE,
   SET_ICON_SHOW,
   SET_AREA_SHOW,
 } from 'constants'
@@ -85,6 +86,8 @@ export const setAreaShow = (show) => ({ type: SET_AREA_SHOW, payload: show })
 export const setDate = (date) => ({ type: SET_DATE, payload: date })
 
 export const setClusterShow = (show) => ({ type: SET_CLUSTER_SHOW, payload: show })
+
+export const setClusterShowValue = (value) => ({ type: SET_CLUSTER_SHOW_VALUE, payload: value })
 
 export const setProgress = (progress) => ({ type: SET_PROGRESS, payload: progress })
 

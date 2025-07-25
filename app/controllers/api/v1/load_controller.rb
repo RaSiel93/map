@@ -4,10 +4,10 @@ module Api
       def create
         areas = AreasImportService.new(params[:file]).call
 
-        areas.each do |area|
-          area.update_max_zoom
-          area.update_coordinate
-        end
+        # areas.each do |area|
+        #   area.update_max_zoom
+        #   area.update_coordinate
+        # end
       end
     end
   end

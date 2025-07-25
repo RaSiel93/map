@@ -5,7 +5,7 @@ import cx from 'classnames'
 
 import { FILTER_START_DATE, FILTER_INFO, FILTER_ICON, FILTER_TITLE, FILTER_CLUSTER, SELECTED_TAGS } from 'constants'
 import { NavigateMode } from './Sidebar/navigate'
-import { setMapStyle, setSearchQuery, setSelectedTags, setTitleShow, setClusterShow, setIconShow, setAreaShow } from 'store/actions'
+import { setMapStyle, setSearchQuery, setSelectedTags, setTitleShow, setClusterShow, setIconShow, setAreaShow, setClusterShowValue } from 'store/actions'
 
 const Container = styled.div`
   flex-basis: 0;
@@ -80,6 +80,8 @@ const Sidebar = ({
     titleShow,
     clusterShow,
     setClusterShow,
+    clusterShowValue,
+    setClusterShowValue,
     iconShow,
     setIconShow,
     areaShow,
@@ -123,6 +125,10 @@ const Sidebar = ({
 
   const changeClusterShow = () => {
     setClusterShow(!clusterShow)
+  }
+
+  const changeClusterShowValue = (e) => {
+    setClusterShowValue(e.target.value)
   }
 
   const changeAreaShow = () => {
@@ -177,12 +183,22 @@ const Sidebar = ({
               <label htmlFor="titleShow">Подпісы</label>
             </div>
             <div className='Filter'>
-              <input type="checkbox" id="clusterShow" checked={clusterShow} onChange={changeClusterShow}/>
-              <label htmlFor="clusterShow">Кластэры</label>
-            </div>
-            <div className='Filter'>
               <input type="checkbox" id="areaShow" checked={areaShow} onChange={changeAreaShow}/>
               <label htmlFor="areaShow">Абьекты</label>
+            </div>
+            <br/>
+            <div className='FilterGroup'>
+              <div className='FilterGroupKey'>Кластэры</div>
+              <div className='Filter'>
+                <input type="checkbox" id="clusterShow" checked={clusterShow} onChange={changeClusterShow}/>
+                <label htmlFor="clusterShow">Уключыць</label>
+              </div>
+              <div className='Filter'>
+                <select id="clusterShowValue" value={clusterShowValue} onChange={changeClusterShowValue}>
+                  <option value="people_count">Колькасць людзёў</option>
+                  <option value="point_count">Колькасць пунктаў</option>
+                </select>
+              </div>
             </div>
           </div>
           {
@@ -238,6 +254,7 @@ export default connect(
     titleShow: state.main.titleShow,
     iconShow: state.main.iconShow,
     clusterShow: state.main.clusterShow,
+    clusterShowValue: state.main.clusterShowValue,
     areaShow: state.main.areaShow,
   }),
   (dispatch) => ({
@@ -247,6 +264,7 @@ export default connect(
     setTitleShow: (show) => dispatch(setTitleShow(show)),
     setIconShow: (show) => dispatch(setIconShow(show)),
     setClusterShow: (show) => dispatch(setClusterShow(show)),
+    setClusterShowValue: (value) => dispatch(setClusterShowValue(value)),
     setAreaShow: (show) => dispatch(setAreaShow(show)),
   })
 )(Sidebar);

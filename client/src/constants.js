@@ -25,6 +25,7 @@ export const SET_SEARCH_RESULT = 'main/setSearchResult'
 export const SET_MAP_STYLE = 'main/setMapStyle'
 export const SET_TITLE_SHOW = 'main/setTitleShow'
 export const SET_CLUSTER_SHOW = 'main/setClusterShow'
+export const SET_CLUSTER_SHOW_VALUE = 'main/setClusterShowValue'
 export const SET_DATE = 'main/setDate'
 export const SET_PROGRESS = 'main/setProgress'
 export const SET_PROGRESS_CONTENT_LENGTH = 'main/setProgressContentLength'
@@ -66,9 +67,11 @@ export const FILTER_START_DATE = 'filters.startDate'
 export const FILTER_INFO = 'filters.info'
 export const FILTER_TITLE = 'filters.title'
 export const FILTER_CLUSTER = 'filters.cluster'
+export const FILTER_CLUSTER_SHOW_VALUE = 'filters.clusterShowValue'
 export const SELECTED_TAGS = 'selected.tags'
 export const FILTER_ICON = 'filters.icon'
 export const FILTER_AREA = 'filters.area'
+
 // export const ADD_AREA_POINT = 'areas/addAreaPoint';
 
 // export const MODES_TOGGLE = 'modes/toggle';

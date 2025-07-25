@@ -25,6 +25,7 @@ export {
   setTitleShow,
   setIconShow,
   setClusterShow,
+  setClusterShowValue,
   setDate,
   setProgress,
   setProgressContentLength,

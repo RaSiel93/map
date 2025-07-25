@@ -50,6 +50,7 @@ const Map = (props) => {
     titleShow,
     iconShow,
     clusterShow,
+    clusterShowValue,
     searchHoveredAreaId,
     areaShow,
   } = props;
@@ -63,7 +64,11 @@ const Map = (props) => {
   const [clusterIndexes, setClusterIndexes] = useState([]);
 
   useEffect(() => {
-    const clusterIndexes = selectedTags.map(({ color }) => new Supercluster({ properties: { color } }));
+    const clusterIndexes = selectedTags.map(({ color }) => new Supercluster({
+      properties: { color },
+      map: (props) => ({people_count: props.people_count}),
+      reduce: (accumulated, props) => { accumulated.people_count += props.people_count; }
+    }));
 
     setClusterIndexes(clusterIndexes);
   }, [selectedTags])
@@ -326,7 +331,7 @@ const Map = (props) => {
     background: true,
   });
 
-  const tagSelectedAreasGroup = useMemo(() => {    
+  const tagSelectedAreasGroup = useMemo(() => {
     return selectedTags.map(({ id: selectedId, color }) => {
       return {
         id: selectedId,
@@ -364,12 +369,14 @@ const Map = (props) => {
     tagSelectedAreasGroup.forEach(({ data }, index) => {
       const points = data.map((d, i) => ({
         geometry: { type: 'Point', coordinates: [d.longitude, d.latitude] },
-        properties: { id: i }
+        properties: { id: i, people_count: d.peopleCount }
       }))
 
       clusterIndexes[index].load(points)
     })
   }, [clusterIndexes, tagSelectedAreasGroup]);
+
+  // console.log(tagSelectedAreasGroup)
 
   useEffect(() => {
     if (!bounds || !zoom) return;
@@ -382,10 +389,33 @@ const Map = (props) => {
     }
   }, [bounds, zoom, clusterIndexes, data]);
 
-  const getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
+  // const getRadius = (d) => d.properties.cluster ? d.properties.people_count / 40 : 1; //* metersPerPixel(d.geometry.coordinates[1]) : 1
+  let getRadius = () => 1;
+
+  if(clusterShowValue === 'point_count') {
+    getRadius = (d) => d.properties.cluster ? d.properties.point_count : 1;
+  } else {
+    getRadius = (d) => d.properties.people_count / 40;
+  }
+
+  let getText = () => '?';
+
+  if(clusterShowValue === 'point_count') {
+    getText = (d) => String(d.properties.point_count || '');
+  } else {
+    getText = (d) => String(d.properties.people_count || '?');
+  }
 
   // const clustersGroup = [];
   // const clustersTextGroup = [];
+
+  let radiusMinPixels = 1;
+
+  if (clusterShowValue === 'point_count') {
+    radiusMinPixels = 8;
+  } else {
+    radiusMinPixels = 15;
+  }
 
   useEffect(() => {
     const clusterLayersGroup = clustersGroup.map((clusters, index) => {
@@ -396,7 +426,7 @@ const Map = (props) => {
             data: clusters,
             stroked: true,
             radiusScale: 1,
-            radiusMinPixels: 8,
+            radiusMinPixels,
             radiusMaxPixels: 40,
             radiusUnits: 'pixels',
             lineWidthMinPixels: 2,
@@ -407,7 +437,6 @@ const Map = (props) => {
 
               return color ? convertHexToRGBA(color) : [255, 0, 0]
             },
-            getLineColor: [255, 255, 255],
             onDragStart: (info, event) => {
               // console.log('onDragStart', info, event)
             },
@@ -417,11 +446,15 @@ const Map = (props) => {
           }),
           new TextLayer({
             id: `text-layer-${index}`,
-            data: clusters.filter(d => d.properties.cluster),
-            getPosition: d => d.geometry.coordinates,
-            getText: d => String(d.properties.point_count),
+            // data: clusters.filter(d => d.properties.cluster),
+            data: clusters,
+            getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
+            getText,
             getSize: 10,
+            getLineColor: [255, 255, 255],
+            // getLineColor: [0, 0, 0],
             getColor: [255, 255, 255],
+            // getColor: [0, 0, 0],
             getTextAnchor: 'middle',
             getAlignmentBaseline: 'center',
             fontWeight: 'bold',
@@ -745,6 +778,7 @@ export default connect(
     titleShow: state.main.titleShow,
     iconShow: state.main.iconShow,
     clusterShow: state.main.clusterShow,
+    clusterShowValue: state.main.clusterShowValue,
     areaShow: state.main.areaShow,
   }),
   (dispatch) => ({

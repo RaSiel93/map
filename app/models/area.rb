@@ -78,6 +78,7 @@ class Area < ApplicationRecord
   end
 
   def set_location_from_coordinates
+    self.set_coordinate
     self.location = "SRID=4326;POINT(#{longitude} #{latitude})"
   end
 end

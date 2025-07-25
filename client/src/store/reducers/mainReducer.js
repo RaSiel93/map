@@ -31,7 +31,9 @@ import {
   SET_PROGRESS_CONTENT_LENGTH,
   SET_PROGRESS_DURATION,
   SET_CLUSTER_SHOW,
+  SET_CLUSTER_SHOW_VALUE,
   FILTER_CLUSTER,
+  FILTER_CLUSTER_SHOW_VALUE,
   FILTER_ICON,
   FILTER_AREA,
   SET_AREA_SHOW,
@@ -203,6 +205,14 @@ export const mainReducer = (state = {}, action) => {
       return {
         ...state,
         clusterShow: action.payload
+      }
+    }
+    case SET_CLUSTER_SHOW_VALUE: {
+      localStorage.setItem(FILTER_CLUSTER_SHOW_VALUE, action.payload)
+
+      return {
+        ...state,
+        clusterShowValue: action.payload
       }
     }
     case SET_ICON_SHOW: {
