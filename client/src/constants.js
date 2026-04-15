@@ -33,7 +33,7 @@ export const SET_PROGRESS_DURATION = 'main/setProgressDuration'
 export const SET_ICON_SHOW = 'main/setIconShow'
 export const SET_AREA_SHOW = 'main/setAreaShow'
 
-export const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZmFld2ZhZXdmIiwiYSI6ImNsNHkyczJveTA5bXgzY282Y244NzZldTQifQ.e_xurgA24psxPjnR6sBHZA'
+export const MAPBOX_ACCESS_TOKEN = process.env.REACT_APP_MAPBOX_ACCESS_TOKEN || ''
 
 export const ADD_NEW_AREA_POINT_FOR_AREA_MODE = 'modes/addNewAreaPoint';
 export const RESET_NEW_AREA_POINTS_FOR_AREA_MODE = 'modes/resetNewAreaPoints';
