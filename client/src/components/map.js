@@ -228,8 +228,8 @@ const Map = (props) => {
     id: 'polygon-layer',
     data: areasData,
     getFillColor,
-    // getLineWidth,
-    getLineWidth: () => 1,
+    getLineWidth,
+    // getLineWidth: () => 1,
     getLineColor,
     getPolygon,
     onClick,
@@ -293,7 +293,25 @@ const Map = (props) => {
     lineJointRounded: true,
   });
 
-  const textData = data;//.filter(({ tagValueIds = [] }) => {
+  // const textData = data;//.filter(({ tagValueIds = [] }) => {
+  
+  const adminTags = new Set([
+    adminLevelTags[2],
+    adminLevelTags[4],
+    adminLevelTags[6],
+    adminLevelTags[8],
+    adminLevelTags[9],
+    adminLevelTags[10],
+  ]);
+  
+  const adminAreasData = data.filter(({ tagValueIds = [] }) =>
+    tagValueIds.some(id => adminTags.has(id))
+  );
+  
+  const textData = data.filter(({ tagValueIds = [] }) =>
+    !tagValueIds.some(id => adminTags.has(id))
+  );
+
     // const adminLevelTag = tags.find(({ key: { name }}) => name === 'admin_level')
 
     // if (adminLevelTag) {
@@ -323,12 +341,112 @@ const Map = (props) => {
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
     getText: d => d.number,
     characterSet: 'auto',
-    fontFamily: 'sans-serif',
-    fontWeight: "bold",
-    backgroundPadding: [6, 6, 6, 6],
-    maxWidth: 500,
-    getSize: 14,
-    background: true,
+    fontFamily: 'Arial',
+    // fontWeight: "bold",
+    // backgroundPadding: [6, 6, 6, 6],
+    // maxWidth: 500,
+    // getSize: 14,
+    fontWeight: 'bold',
+    getSize: d => {
+      const z = zoom;
+
+      if (z < 5) return 10;
+      if (z < 7) return 12;
+      if (z < 9) return 14;
+      if (z < 11) return 18;
+      return 22;
+    },
+    fontSettings: {
+      sdf: true,
+      fontSize: 32,
+      radius: 12,
+      buffer: 4,
+      cutoff: 0.25,
+      smoothing: 0.12,
+    },
+    wordBreak: 'break-word',
+    maxWidth: 8.0,
+    lineHeight: 0.8,
+    contentCutoffPixels: [16, 8],
+
+    outlineWidth: 4,
+    outlineColor: [0, 0, 0, 255],
+
+    contentAlignHorizontal: 'center',
+    contentAlignVertical: 'center',
+    // getTextColor: [255, 255, 255, 255],
+    getColor: (d) => {
+      if (d.tagValueIds.includes(adminLevelTags[2])) {
+        return [250, 0, 0, 0]
+      } else if (d.tagValueIds.includes(adminLevelTags[4])) {
+        return [0, 0, 0, 0]
+      } else if (d.tagValueIds.includes(adminLevelTags[6])) {
+        return [250, 0, 0, 0]
+      } else if (d.tagValueIds.includes(adminLevelTags[8])) {
+        return [250, 0, 0, 0]
+      }
+
+      return [255, 255, 255]
+    },
+  });
+
+  const adminAreasTitleLayer = new TextLayer({
+    id: 'admin-areas-title-layer',
+    data: adminAreasData,
+    pickable: true,
+    getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
+    getText: d => d.number,
+    characterSet: 'auto',
+    fontFamily: 'Helvetica, sans-serif',
+    fontWeight: 900,
+    // fontFamily: 'Arial, sans-serif',
+    // fontStyle: 'italic',
+    // fontWeight: "bold",
+    // backgroundPadding: [6, 6, 6, 6],
+    // maxWidth: 500,
+    // getSize: 14,
+    getSize: d => {
+      const z = zoom;
+
+      if (z < 5) return 10;
+      if (z < 7) return 12;
+      if (z < 9) return 14;
+      if (z < 11) return 18;
+      return 22;
+    },
+    fontSettings: {
+      sdf: true,
+      fontSize: 32,
+      radius: 12,
+      buffer: 4,
+      cutoff: 0.25,
+      smoothing: 0.12
+    },
+    wordBreak: 'break-word',
+    maxWidth: 8.0,
+    lineHeight: 0.8,
+    contentCutoffPixels: [16, 8],
+
+    outlineWidth: 6,
+    outlineColor: [0, 0, 0, 255],
+
+    contentAlignHorizontal: 'center',
+    contentAlignVertical: 'center',
+    // getTextColor: [255, 255, 255, 255],
+    opacity: 0.05,
+    getColor: (d) => {
+      // if (d.tagValueIds.includes(adminLevelTags[2])) {
+      //   return [250, 0, 0, 0]
+      // } else if (d.tagValueIds.includes(adminLevelTags[4])) {
+      //   return [0, 0, 0, 0]
+      // } else if (d.tagValueIds.includes(adminLevelTags[6])) {
+      //   return [250, 0, 0, 0]
+      // } else if (d.tagValueIds.includes(adminLevelTags[8])) {
+      //   return [250, 0, 0, 0]
+      // }
+
+      return [255, 255, 255]
+    },
   });
 
   const tagSelectedAreasGroup = useMemo(() => {
@@ -348,9 +466,9 @@ const Map = (props) => {
     data: tagSelectedAreasGroup.flatMap(({ data }) => data),
     pickable: true,
     getPosition: ({ longitude, latitude }) => [+longitude, +latitude],
-    getText: d => d.number,
+    // getText: d => d.number,
     characterSet: 'auto',
-    // fontFamily: 'sans-serif',
+    fontFamily: 'sans-serif',
     backgroundPadding: [4, 4, 4, 4],
     maxWidth: 500,
     getSize: 12,
@@ -691,7 +809,8 @@ const Map = (props) => {
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,
     iconShow ? iconLayer : null,
-    titleShow ? tagsLayer : null,
+    // titleShow ? tagsLayer : null,
+    titleShow ? adminAreasTitleLayer : null,
     titleShow ? titleLayer : null,
     scatterplotSearchFilterAreaPointsLayer,
     scatterplotSearchHoveredFilterAreaPointsLayer,
