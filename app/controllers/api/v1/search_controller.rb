@@ -26,7 +26,7 @@ module Api
 
           Area.where(id: ids).order(:title, :description).includes(:tags)
         else
-          []
+          Area.none
         end
 
         if (longitude.present? && latitude.present? && zoom.present?)
