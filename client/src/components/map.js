@@ -537,48 +537,52 @@ const Map = (props) => {
 
   useEffect(() => {
     const clusterLayersGroup = clustersGroup.map((clusters, index) => {
-      return (
-        [
-          new ScatterplotLayer({
-            id: `scatterplot-layer-${index}`,
-            data: clusters,
-            stroked: true,
-            radiusScale: 1,
-            radiusMinPixels,
-            radiusMaxPixels: 40,
-            radiusUnits: 'pixels',
-            lineWidthMinPixels: 2,
-            getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
-            getRadius: getRadius,
-            getLineColor: [0, 0, 0],
-            getFillColor: (d) => {
-              const color = clusterIndexes[index].options.properties.color;
+      const color = clusterIndexes[index].options.properties.color;
 
-              return color ? convertHexToRGBA(color) : [255, 0, 0]
-            },
-            onDragStart: (info, event) => {
-              // console.log('onDragStart', info, event)
-            },
-            onDragEnd: (info, event) => {
-              // console.log('onDragEnd', info, event)
-            }
-          }),
-          new TextLayer({
-            id: `text-layer-${index}`,
-            // data: clusters.filter(d => d.properties.cluster),
-            data: clusters,
-            getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
-            getText,
-            getSize: 10,
-            // getLineColor: [0, 0, 0],
-            getColor: [0, 0, 0],
-            // getColor: [0, 0, 0],
-            getTextAnchor: 'middle',
-            getAlignmentBaseline: 'center',
-            fontWeight: 'bold',
-          })
-        ]
-      )
+      if (color) {
+        const rgbaColor = convertHexToRGBA(color);
+
+        return (
+          [
+            new ScatterplotLayer({
+              id: `scatterplot-layer-${index}`,
+              data: clusters,
+              stroked: true,
+              radiusScale: 1,
+              radiusMinPixels,
+              radiusMaxPixels: 40,
+              radiusUnits: 'pixels',
+              lineWidthMinPixels: 2,
+              getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
+              getRadius: getRadius,
+              getLineColor: [0, 0, 0],
+              getFillColor: rgbaColor,
+              onDragStart: (info, event) => {
+                // console.log('onDragStart', info, event)
+              },
+              onDragEnd: (info, event) => {
+                // console.log('onDragEnd', info, event)
+              }
+            }),
+            new TextLayer({
+              id: `text-layer-${index}`,
+              // data: clusters.filter(d => d.properties.cluster),
+              data: clusters,
+              getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
+              getText,
+              getSize: 10,
+              // getLineColor: [0, 0, 0],
+              getColor: [0, 0, 0],
+              // getColor: [0, 0, 0],
+              getTextAnchor: 'middle',
+              getAlignmentBaseline: 'center',
+              fontWeight: 'bold',
+            })
+          ]
+        )
+      } else {
+        return []
+      }
     })
 
     setClustersLayersGroup(clusterLayersGroup);
