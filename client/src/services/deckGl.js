@@ -1,5 +1,5 @@
 export function pointToScatterplotObject(car) {
-  const { id, number, notice, longitude, latitude } = car.attributes;
+  const { id, number, notice, longitude, latitude } = car;
 
   return {
     id: id,

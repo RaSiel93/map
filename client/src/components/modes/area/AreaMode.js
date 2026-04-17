@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import styled from 'styled-components';
 import { connect } from 'react-redux';
@@ -63,6 +63,7 @@ const AreaMode = (props) => {
   } = props;
 
   const active = mode === modes.AREA;
+  const [coordinates, setCoordinates] = useState('');
 
   // useEffect(() => {
   //   if (createStatus === requestStatuses.CREATED) {
@@ -97,6 +98,24 @@ const AreaMode = (props) => {
     createAreaForAreaMode(params);
   };
 
+  const onCreateByCoordinates = (e) => {
+    const tags_attributes = selectedTags.map(({ id }) => ({
+      tag_key_id: tags.find(t => t.options.some(o => o.id === id)).id,
+      tag_value_id: id,
+    }));
+
+    const [latitude, longitude] = e.target.value.split(', ');
+
+    const params = {
+      area: {
+        coordinates: [`[${longitude}, ${latitude}]`],
+        tags_attributes: tags_attributes,
+      }
+    };
+
+    createAreaForAreaMode(params);
+  };
+
   const onUpdate = () => {
     const params = {
       area: {
@@ -109,6 +128,9 @@ const AreaMode = (props) => {
 
   return <>
     <ModeButton onClick={onClick} title="Тэрыторыя" className={active ? 'active' : ''}/>
+    {
+      active && <input type="text" value={coordinates} onChange={onCreateByCoordinates}/>
+    }
     {
       active && newAreaPoints.length > 0 && <>
         <CreateButton onClick={onCreate}/>

@@ -87,19 +87,40 @@ const Map = (props) => {
     setAdminLevelTags(adminLevelTags);
   }, [tags])
 
+  // new ScatterplotLayer({
+  //   id: `scatterplot-layer-${index}`,
+  //   data: clusters,
+  //   stroked: true,
+  //   radiusScale: 1,
+  //   radiusMinPixels,
+  //   radiusMaxPixels: 40,
+  //   radiusUnits: 'pixels',
+  //   lineWidthMinPixels: 2,
+  //   getPosition: d => [+d.geometry.coordinates[0], +d.geometry.coordinates[1]],
+  //   getRadius: getRadius,
+  //   getLineColor: [0, 0, 0],
+  //   getFillColor: rgbaColor,
+  //   onDragStart: (info, event) => {
+  //     // console.log('onDragStart', info, event)
+  //   },
+  //   onDragEnd: (info, event) => {
+  //     // console.log('onDragEnd', info, event)
+  //   }
+  // }),
+
   // const pointsLayer = new ScatterplotLayer({
   //   id: 'scatterplot-layer1',
   //   data: pointsData,
   //   pickable: true,
-  //   opacity: 0.6,
+  //   // opacity: 0.6,
   //   stroked: true,
   //   filled: true,
-  //   radiusScale: 3,
-  //   radiusMinPixels: 1,
-  //   radiusMaxPixels: 20,
-  //   lineWidthMinPixels: 1,
+  //   radiusScale: 1,
+  //   radiusMinPixels: 8,
+  //   radiusMaxPixels: 40,
+  //   lineWidthMinPixels: 2,
   //   getPosition: d => d.coordinates,
-  //   getRadius: d => Math.sqrt(d.exits),
+  //   getRadius: 1,
   //   getFillColor: () => {
   //     // getFillColor: ({ id }) => {
   //     let color = null;
@@ -224,9 +245,36 @@ const Map = (props) => {
     }
   }
 
+  const onePointAreasData = areasData.filter(({ contour = [] }) =>
+    contour.length === 1
+  );
+
+  const manyPointsAreasData = areasData.filter(({ contour = [] }) =>
+    contour.length > 1
+  );
+
+  const onePointAreasLayer = new ScatterplotLayer({
+    id: 'one-point-areas-layer',
+    data: onePointAreasData,
+    pickable: true,
+    // opacity: 0.6,
+    stroked: true,
+    filled: true,
+    radiusScale: 1,
+    radiusMinPixels: 8,
+    radiusMaxPixels: 40,
+    lineWidthMinPixels: 2,
+    getPosition: d => [+d.longitude, +d.latitude],
+    getRadius: 1,
+    getFillColor,
+    getLineColor: () => [0, 0, 0],
+    onClick,
+    onHover,
+  });
+
   const areasLayer = new PolygonLayer({
-    id: 'polygon-layer',
-    data: areasData,
+    id: 'many-points-areas-layer',
+    data: manyPointsAreasData,
     getFillColor,
     getLineWidth,
     // getLineWidth: () => 1,
@@ -806,9 +854,10 @@ const Map = (props) => {
   // console.log('selectedAreaData', selectedAreaData)
   
   const layers = [
-    // pointsLayer,
     // contourAreasLayer,
     areaShow ? areasLayer : null,
+    onePointAreasLayer,
+    // pointsLayer,
     selectedAreaData ? selectedAreasLayer : null,
     polygonNewAreaPointsLayer,
     scatterplotNewAreaPointsLayer,

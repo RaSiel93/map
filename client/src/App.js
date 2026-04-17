@@ -99,7 +99,7 @@ const App = (props) => {
   // const [date, setDate] = useState(localStorage.getItem('date'))
 
   useEffect(() => {
-    loadPointsData()
+    // loadPointsData()
     loadCompanies()
     loadTags()
   }, [])
