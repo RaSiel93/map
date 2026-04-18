@@ -16,6 +16,7 @@ gem 'rbtrace'
 gem 'stackprof'
 gem 'sentry-ruby'
 gem 'sentry-rails'
+gem 'telegram-bot'
 
 group :development do
   gem 'capistrano', '~> 3.11'

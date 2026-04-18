@@ -20,4 +20,6 @@ Rails.application.routes.draw do
   end
 
   get '/*path' => 'home#index'
+
+  telegram_webhook Telegram::WebhookController
 end
