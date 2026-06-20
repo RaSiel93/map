@@ -61,7 +61,54 @@ Open http://localhost:3000 — `REACT_APP_API_URL` is not needed (same origin).
 
 ## Deployment
 
-Capistrano — see `config/deploy.rb`. Linked files on server: `config/database.yml`, `config/master.key`, `.env`.
+Production deploy via Capistrano. React builds **on the server** during deploy — build artifacts are not committed to git.
+
+### Server requirements
+
+- Ruby 3.1.2 (rbenv), Bundler, PostgreSQL
+- Node.js + Yarn (for `client/` build)
+- Linked files in `shared/`: `config/database.yml`, `config/master.key`, `.env`
+
+Server `.env` must include at least:
+
+```
+MAP_DATABASE_PASSWORD=...
+REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1...
+```
+
+`REACT_APP_API_URL` can be empty — frontend and API share the same origin in production.
+
+### Deploy
+
+Full deploy (Rails + React build on server):
+
+```bash
+git push origin main
+bin/deploy
+# or: make deploy
+# or: yarn deploy:production
+```
+
+Backend only — skip React build, copy `public/` from previous release:
+
+```bash
+bin/deploy-backend
+# or: make deploy-backend
+# or: BUILD_FRONTEND=false cap production deploy
+```
+
+Rollback:
+
+```bash
+cap production deploy:rollback
+```
+
+### Local production-like run
+
+```bash
+yarn build && yarn deploy
+bin/rails server
+```
 
 ---
 

@@ -27,6 +27,9 @@
 !/storage/.keep
 
 /public/assets
+/public/static/
+/public/index.html
+/public/asset-manifest.json
 /files/
 .byebug_history
 

@@ -1,4 +1,4 @@
-.PHONY: setup dev build
+.PHONY: setup dev build deploy
 
 setup:
 	bin/setup
@@ -9,3 +9,9 @@ dev:
 
 build:
 	yarn build && yarn deploy
+
+deploy:
+	bin/deploy
+
+deploy-backend:
+	bin/deploy-backend

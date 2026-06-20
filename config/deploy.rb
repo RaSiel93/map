@@ -21,6 +21,8 @@ append :linked_files, "config/database.yml", 'config/master.key', '.env'
 append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "tmp/webpacker", ".bundle", "public/system", "files/system", "public/uploads", "vendor", "storage"
 
 set :keep_releases, 3
+set :assets_roles, []
+set :build_frontend, ENV.fetch('BUILD_FRONTEND', 'true') == 'true'
 
 set :pty, true
 set :use_sudo, false
@@ -31,8 +33,8 @@ set :puma_workers, 0
 set :puma_bind, "unix://#{shared_path}/tmp/sockets/puma.sock"
 set :puma_state, "#{shared_path}/tmp/pids/puma.state"
 set :puma_pid, "#{shared_path}/tmp/pids/puma.pid"
-set :puma_access_log, "#{release_path}/log/puma.error.log"
-set :puma_error_log, "#{release_path}/log/puma.access.log"
+set :puma_access_log, "#{release_path}/log/puma.access.log"
+set :puma_error_log, "#{release_path}/log/puma.error.log"
 set :puma_preload_app, true
 set :puma_worker_timeout, nil
 set :puma_init_active_record, true
