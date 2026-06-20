@@ -115,6 +115,21 @@ After changing `config/nginx.conf` on the server, reload nginx:
 sudo nginx -t && sudo systemctl reload nginx
 ```
 
+### Server logs
+
+```bash
+bin/logs rails          # tail Rails log
+bin/logs puma           # tail Puma logs
+bin/logs nginx          # tail nginx logs
+bin/logs tail           # tail all logs
+bin/logs show 200       # last 200 lines, no follow
+
+# or via cap directly:
+bundle exec cap production logs:rails
+```
+
+Local Capistrano deploy log: `log/capistrano.log`
+
 ### Local production-like run
 
 ```bash

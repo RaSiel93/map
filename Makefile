@@ -15,3 +15,6 @@ deploy:
 
 deploy-backend:
 	bin/deploy-backend
+
+logs:
+	bin/logs rails

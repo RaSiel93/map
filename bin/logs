@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+set -e
+
+cd "$(dirname "$0")/.."
+
+LOG="${1:-rails}"
+
+case "$LOG" in
+  rails|puma|nginx|tail)
+    bundle exec cap production "logs:${LOG}"
+    ;;
+  show)
+    LINES="${2:-100}"
+    bundle exec cap production "logs:show[${LINES}]"
+    ;;
+  *)
+    echo "Usage: bin/logs [rails|puma|nginx|tail|show] [lines]"
+    echo
+    echo "  bin/logs rails       # tail Rails production.log"
+    echo "  bin/logs puma        # tail Puma logs"
+    echo "  bin/logs nginx       # tail nginx logs"
+    echo "  bin/logs tail        # tail all logs"
+    echo "  bin/logs show 200    # last 200 lines (no follow)"
+    exit 1
+    ;;
+esac
