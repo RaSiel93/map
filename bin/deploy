@@ -3,4 +3,11 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-cap production deploy
+set -a
+[ -f .env ] && . .env
+[ -f client/.env ] && . client/.env
+set +a
+export REACT_APP_API_URL="${REACT_APP_API_URL:-}"
+
+yarn build && yarn deploy
+FRONTEND_STRATEGY=upload bundle exec cap production deploy

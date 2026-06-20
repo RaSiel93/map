@@ -3,4 +3,4 @@ set -e
 
 cd "$(dirname "$0")/.."
 
-BUILD_FRONTEND=false cap production deploy
+FRONTEND_STRATEGY=copy bundle exec cap production deploy

@@ -22,7 +22,11 @@ append :linked_dirs, "log", "tmp/pids", "tmp/cache", "tmp/sockets", "tmp/webpack
 
 set :keep_releases, 3
 set :assets_roles, []
-set :build_frontend, ENV.fetch('BUILD_FRONTEND', 'true') == 'true'
+# upload — build locally, upload public/ (default via bin/deploy)
+# copy   — reuse public/ from previous release (bin/deploy-backend)
+# server — build on server (requires Node/Yarn for deploy user)
+set :frontend_strategy, ENV.fetch('FRONTEND_STRATEGY', 'upload')
+set :yarn_bin, 'yarn'
 
 set :pty, true
 set :use_sudo, false

@@ -61,26 +61,26 @@ Open http://localhost:3000 — `REACT_APP_API_URL` is not needed (same origin).
 
 ## Deployment
 
-Production deploy via Capistrano. React builds **on the server** during deploy — build artifacts are not committed to git.
+Production deploy via Capistrano. React builds **locally**, then `public/` uploads to the server — Node.js on the server is not required.
 
 ### Server requirements
 
 - Ruby 3.1.2 (rbenv), Bundler, PostgreSQL
-- Node.js + Yarn (for `client/` build)
 - Linked files in `shared/`: `config/database.yml`, `config/master.key`, `.env`
+
+Local machine needs Node.js + Yarn for `bin/deploy`.
+
+Set `REACT_APP_MAPBOX_ACCESS_TOKEN` in `client/.env` before deploy (baked into the build).
 
 Server `.env` must include at least:
 
 ```
 MAP_DATABASE_PASSWORD=...
-REACT_APP_MAPBOX_ACCESS_TOKEN=pk.eyJ1...
 ```
-
-`REACT_APP_API_URL` can be empty — frontend and API share the same origin in production.
 
 ### Deploy
 
-Full deploy (Rails + React build on server):
+Full deploy (Rails + React — build locally, upload to server):
 
 ```bash
 git push origin main
@@ -89,18 +89,30 @@ bin/deploy
 # or: yarn deploy:production
 ```
 
-Backend only — skip React build, copy `public/` from previous release:
+Backend only — reuse `public/` from previous release:
 
 ```bash
 bin/deploy-backend
 # or: make deploy-backend
-# or: BUILD_FRONTEND=false cap production deploy
+# or: FRONTEND_STRATEGY=copy bundle exec cap production deploy
+```
+
+Build on server instead (requires Node/Yarn for `deploy` user):
+
+```bash
+FRONTEND_STRATEGY=server bundle exec cap production deploy
 ```
 
 Rollback:
 
 ```bash
-cap production deploy:rollback
+bundle exec cap production deploy:rollback
+```
+
+After changing `config/nginx.conf` on the server, reload nginx:
+
+```bash
+sudo nginx -t && sudo systemctl reload nginx
 ```
 
 ### Local production-like run
