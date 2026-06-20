@@ -4,7 +4,7 @@
     "start": "yarn --cwd client start",
     "build": "yarn --cwd client --max_old_space_size=4096 build",
     "lint": "yarn --cwd client lint",
-    "deploy": "cp -a client/build/. public/",
+    "deploy": "rm -rf public/static public/index.html public/asset-manifest.json && cp -a client/build/. public/",
     "deploy:production": "bin/deploy",
     "deploy:backend": "bin/deploy-backend"
   },

@@ -8,6 +8,7 @@ set -a
 [ -f client/.env ] && . client/.env
 set +a
 export REACT_APP_API_URL="${REACT_APP_API_URL:-}"
+export GENERATE_SOURCEMAP=false
 
 yarn build && yarn deploy
 FRONTEND_STRATEGY=upload bundle exec cap production deploy

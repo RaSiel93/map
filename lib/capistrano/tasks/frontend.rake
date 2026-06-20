@@ -20,7 +20,12 @@ namespace :deploy do
         within release_path do
           execute :rm, '-rf', 'public/static', 'public/index.html', 'public/asset-manifest.json'
         end
-        upload!('public/.', "#{release_path}/public/.", recursive: true)
+        # scp uploads the directory itself — target must be release_path, not release_path/public
+        upload!(
+          File.join(Dir.pwd, 'public'),
+          release_path,
+          recursive: true
+        )
         within release_path do
           unless test('[ -d public/static/js ]') && test('[ -f public/index.html ]')
             raise 'Frontend upload failed: public/static or public/index.html missing on server'
