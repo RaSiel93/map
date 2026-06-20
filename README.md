@@ -70,7 +70,7 @@ Production deploy via Capistrano. React builds **locally**, then `public/` uploa
 
 Local machine needs Node.js + Yarn for `bin/deploy`.
 
-Set `REACT_APP_MAPBOX_ACCESS_TOKEN` in `client/.env` before deploy (baked into the build).
+Set `REACT_APP_MAPBOX_ACCESS_TOKEN` in `client/.env` before deploy (baked into the build). Production build uses empty `REACT_APP_API_URL` (same origin) — see `client/.env.production`.
 
 Server `.env` must include at least:
 

@@ -7,7 +7,8 @@ set -a
 [ -f .env ] && . .env
 [ -f client/.env ] && . client/.env
 set +a
-export REACT_APP_API_URL="${REACT_APP_API_URL:-}"
+# Production serves API on the same origin — never bake localhost into the build
+export REACT_APP_API_URL=""
 export GENERATE_SOURCEMAP=false
 
 yarn build && yarn deploy
