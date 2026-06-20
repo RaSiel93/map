@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+set -e
+
+cd "$(dirname "$0")/.."
+
+echo "Starting Rails (:3000) and React (:3001)..."
+trap 'kill 0' EXIT INT TERM
+
+bin/rails server -p 3000 &
+(cd client && PORT=3001 yarn start) &
+wait

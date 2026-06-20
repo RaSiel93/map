@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "dev": "bin/dev",
     "start": "yarn --cwd client start",
     "build": "yarn --cwd client --max_old_space_size=4096 build",
     "lint": "yarn --cwd client lint",

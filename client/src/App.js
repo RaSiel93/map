@@ -9,6 +9,7 @@ import cx from 'classnames'
 
 import { useDrag } from 'hooks'
 import { Sidebar, Information, Map, Navigation, SearchPanel } from 'components'
+import { API_URL } from 'constants'
 import {
   loadAreasData,
   loadCompanies,
@@ -21,8 +22,6 @@ import {
   toggleSidebar,
   setDate,
 } from 'store/actions'
-
-const token = Cookies.get('csrf_token')
 
 const Container = styled.div`
   display: flex;
@@ -96,27 +95,55 @@ const App = (props) => {
     latitude,
   } = props;
 
-  // const [date, setDate] = useState(localStorage.getItem('date'))
+  const [isReady, setIsReady] = useState(false)
 
   useEffect(() => {
+    let cancelled = false
+
+    fetch(`${API_URL}/health`, {
+      credentials: 'include',
+      headers: { Accept: 'application/json' },
+    })
+      .then((response) => {
+        if (cancelled) return
+        setIsReady(response.ok && !!Cookies.get('csrf_token'))
+      })
+      .catch(() => {
+        if (!cancelled) setIsReady(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!isReady) return
+
     // loadPointsData()
     loadCompanies()
     loadTags()
-  }, [])
+  }, [isReady])
 
   const throttledSearch = useCallback(throttle((value) => search(value), 1000), [search]);
 
   useEffect(() => {
+    if (!isReady) return
+
     throttledSearch(searchQuery)
-  }, [throttledSearch, searchQuery, date])
+  }, [isReady, throttledSearch, searchQuery, date])
 
   useDrag()
 
   useEffect(() => {
-    loadAreasData()
-  }, [date, longitude, latitude, selectedTags])
+    if (!isReady) return
 
-  return token && (
+    loadAreasData()
+  }, [isReady, date, longitude, latitude, selectedTags])
+
+  if (!isReady) return null
+
+  return (
     <Container>
       <Sidebar/>
       <div className='Main'>

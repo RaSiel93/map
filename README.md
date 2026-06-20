@@ -1,36 +1,84 @@
-# Create Castle tags
+# Map
+
+Rails API + React frontend (Create React App in `client/`).
+
+## Requirements
+
+- Ruby 3.1.2 (see `.ruby-version`)
+- Node.js + Yarn
+- PostgreSQL (development: user `postgres`, password `password` — see `config/database.yml`)
+
+## First-time setup
+
+```bash
+bin/setup        # install deps, copy .env files, prepare database
+bin/rails db:seed
+```
+
+Edit `client/.env` and set `REACT_APP_MAPBOX_ACCESS_TOKEN`.
+
+Admin panel: http://localhost:3000/admin — `admin@example.com` / `password`
+
+## Development
+
+Start Rails (port 3000) and React dev server (port 3001) together:
+
+```bash
+bin/dev
+# or: make dev
+# or: yarn dev
+```
+
+Open http://localhost:3001
+
+### Environment variables
+
+| File | Variable | Purpose |
+|------|----------|---------|
+| `client/.env` | `REACT_APP_API_URL` | Rails API URL (`http://localhost:3000`) |
+| `client/.env` | `REACT_APP_MAPBOX_ACCESS_TOKEN` | Mapbox access token |
+| `client/.env` | `PORT` | CRA dev server port (`3001`) |
+| `.env` | `MAP_DATABASE_PASSWORD` | Production DB password |
+| `.env` | `SENTRY_DSN` | Optional error tracking |
+
+Copy from examples if missing:
+
+```bash
+cp .env.example .env
+cp client/.env.example client/.env
+```
+
+## Production-like local run
+
+Build frontend into `public/` and serve everything from Rails:
+
+```bash
+yarn build && yarn deploy
+bin/rails server
+```
+
+Open http://localhost:3000 — `REACT_APP_API_URL` is not needed (same origin).
+
+## Deployment
+
+Capistrano — see `config/deploy.rb`. Linked files on server: `config/database.yml`, `config/master.key`, `.env`.
+
+---
+
+## Notes
+
+### Create Castle tags
+
+```ruby
 Area.where(company: Company.find_by(name: 'Замак')).each {|a| a.tags.create(key: TagKey.find_by(name: 'пабудова'), value: TagValue.find_by(name: 'замак'))}
 Area.where(company: Company.find_by(name: 'Замак')).update_all(company_id: nil)
+```
 
-# README
+### Optimization
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+#### api/v1/areas.json
 
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-# Optimization
-## api/v1/areas.json
-### Before
+##### Before
 
 1915
 720ms (Views: 0.3ms | ActiveRecord: 31.5ms | Allocations: 497831)
@@ -47,17 +95,20 @@ Things you may want to cover:
 909ms (Views: 0.2ms | ActiveRecord: 30.1ms | Allocations: 867535)
 1012ms (Views: 0.1ms | ActiveRecord: 27.6ms | Allocations: 867564)
 
-### After
+##### After
+
 398ms (Views: 0.1ms | ActiveRecord: 38.4ms | Allocations: 668664)
 593ms (Views: 0.1ms | ActiveRecord: 180.1ms | Allocations: 588853)
 725ms (Views: 0.1ms | ActiveRecord: 320.7ms | Allocations: 588835)
 479ms (Views: 0.3ms | ActiveRecord: 47.0ms | Allocations: 584751)
 574ms (Views: 0.1ms | ActiveRecord: 153.7ms | Allocations: 585309)
 
-
 ##### coordinates
+
 id: 232
-### Before
+
+###### Before
+
 12ms (Views: 7.6ms | ActiveRecord: 0.8ms | Allocations: 12367)
 11ms (Views: 7.4ms | ActiveRecord: 0.6ms | Allocations: 12354)
 10ms (Views: 6.7ms | ActiveRecord: 0.6ms | Allocations: 12363)
