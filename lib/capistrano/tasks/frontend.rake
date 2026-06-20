@@ -6,36 +6,41 @@ namespace :deploy do
     case strategy
     when 'upload'
       public_dir = File.join(Dir.pwd, 'public')
-      index_html = File.join(public_dir, 'index.html')
-      static_dir = File.join(public_dir, 'static')
+      tarball = File.join(Dir.pwd, 'tmp/public-upload.tar.gz')
 
-      unless File.directory?(static_dir)
+      unless File.directory?(File.join(public_dir, 'static'))
         raise 'public/static is missing. Run: yarn build && yarn deploy'
       end
-      unless File.file?(index_html)
+      unless File.file?(File.join(public_dir, 'index.html'))
         raise 'public/index.html is missing. Run: yarn build && yarn deploy'
+      end
+
+      run_locally do
+        execute :mkdir, '-p', 'tmp'
+        execute :tar, '-czf', tarball, '-C', 'public', '.'
       end
 
       on roles(:app) do
         within release_path do
           execute :rm, '-rf', 'public/static', 'public/index.html', 'public/asset-manifest.json'
-        end
-        # scp uploads the directory itself — target must be release_path, not release_path/public
-        upload!(
-          File.join(Dir.pwd, 'public'),
-          release_path,
-          recursive: true
-        )
-        within release_path do
-          unless test('[ -d public/static/js ]') && test('[ -f public/index.html ]')
-            raise 'Frontend upload failed: public/static or public/index.html missing on server'
+          upload!(tarball, "#{release_path}/public-upload.tar.gz")
+          execute :mkdir, '-p', 'public'
+          execute :tar, '-xzf', 'public-upload.tar.gz', '-C', 'public'
+          execute :rm, 'public-upload.tar.gz'
+
+          unless test('test', '-d', 'public/static/js') && test('test', '-f', 'public/index.html')
+            raise 'Frontend upload failed: public/static/js or public/index.html missing on server'
           end
         end
+      end
+
+      run_locally do
+        execute :rm, '-f', tarball
       end
     when 'copy'
       on roles(:app) do
         within release_path do
-          if test("[ -d #{previous_release}/public/static ]")
+          if test('test', '-d', "#{previous_release}/public/static")
             execute :cp, '-a', "#{previous_release}/public/.", 'public/'
           end
         end
